@@ -1,0 +1,8 @@
+UI:
+//layout/content_main.xml
+//values/strings.xml
+//layout/nav_header_main.xml
+//menu/activity_main_drawer.xml
+//layout/content_main.xml = "Hello World" (main activity)
+Strings:
+Constants from BluetoothAdvertisements

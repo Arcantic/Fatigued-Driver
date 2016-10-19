@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.example.nieves.myapplication">
+
+    <!--jsnieves:BEGIN-->
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <!--jsnieves:END-->
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <!--jsnieves:BEGIN:from OpenGL assignment-->
+        <activity
+            android:name="com.example.nieves.myapplication.BluetoothAdapterDemoActivity"
+            android:parentActivityName="com.example.nieves.myapplication.MainActivity"
+
+            > </activity>
+        <!--jsnieves: from above: android:screenOrientation="landscape"-->
+        <!--jsnieves:END:from OpenGL assignment-->
+
+        <!--jsnieves:BEGIN:from BluetoothAdvertisements-->
+        <!-- Service to handle BLE Advertising - Using a service allows advertising to continue
+        when the app is no longer on screen in a reliable manner. -->
+
+        <!--TODO-->
+        <!--service
+            android:name=".AdvertiserService"
+            android:enabled="true"
+            android:exported="false" >
+        </service-->
+
+        <!--jsnieves:END:from BluetoothAdvertisements-->
+
+    </application>
+
+</manifest>
