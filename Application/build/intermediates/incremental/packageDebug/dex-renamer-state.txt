@@ -1,7 +1,0 @@
-#Wed Oct 05 00:03:17 EDT 2016
-base.0=C\:\\Users\\Eric\\StudioProjects\\Fatigued-Driver\\Application\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\10\\instant-run_0acc9bcdd61fd883f4ef9738c62c438cfedb141b
-renamed.1=classes.dex
-renamed.0=classes2.dex
-file.1=C\:\\Users\\Eric\\StudioProjects\\Fatigued-Driver\\Application\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\10\\instant-run-bootstrap_34f63065577912971744c276a25e92375d727448\\classes.dex
-base.1=C\:\\Users\\Eric\\StudioProjects\\Fatigued-Driver\\Application\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\10\\instant-run-bootstrap_34f63065577912971744c276a25e92375d727448
-file.0=C\:\\Users\\Eric\\StudioProjects\\Fatigued-Driver\\Application\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\10\\instant-run_0acc9bcdd61fd883f4ef9738c62c438cfedb141b\\classes.dex
