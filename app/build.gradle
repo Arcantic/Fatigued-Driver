@@ -26,4 +26,5 @@ dependencies {
     compile 'com.android.support:design:24.2.1'
     compile files('libs/libStreamSDK_v1.2.0.jar')
     compile files('libs/NskAlgoSdk.jar')
+    compile files('libs/GraphView-4.2.1.jar')
 }
