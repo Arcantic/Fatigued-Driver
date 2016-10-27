@@ -159,8 +159,6 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onClick(View arg0) {
-                //jsnieves:changed below
-                // Intent intent = new Intent(DemoActivity.this,BluetoothAdapterDemoActivity.class);
                 Intent intent = new Intent(MainActivity.this, TestOne.class);
 
                 Log.d(TAG,"Starting the BluetoothAdapterDemoActivity");
@@ -172,8 +170,6 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onClick(View arg0) {
-                //jsnieves:changed below
-                // Intent intent = new Intent(DemoActivity.this,BluetoothAdapterDemoActivity.class);
                 Intent intent = new Intent(MainActivity.this, TestTwo.class);
 
                 Log.d(TAG,"Starting the BluetoothAdapterDemoActivity");
@@ -185,8 +181,6 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onClick(View arg0) {
-                //jsnieves:changed below
-                // Intent intent = new Intent(DemoActivity.this,BluetoothAdapterDemoActivity.class);
                 Intent intent = new Intent(MainActivity.this, TestThree.class);
 
                 Log.d(TAG,"Starting the BluetoothAdapterDemoActivity");
