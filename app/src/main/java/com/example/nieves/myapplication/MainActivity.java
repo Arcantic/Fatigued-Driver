@@ -161,7 +161,7 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View arg0) {
                 Intent intent = new Intent(MainActivity.this, TestOne.class);
 
-                Log.d(TAG,"Starting the BluetoothAdapterDemoActivity");
+                Log.d(TAG,"Starting TestOne Activity");
                 startActivity(intent);
             }
         });
@@ -172,7 +172,7 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View arg0) {
                 Intent intent = new Intent(MainActivity.this, TestTwo.class);
 
-                Log.d(TAG,"Starting the BluetoothAdapterDemoActivity");
+                Log.d(TAG,"Starting TestTwo Activity");
                 startActivity(intent);
             }
         });
@@ -183,7 +183,7 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View arg0) {
                 Intent intent = new Intent(MainActivity.this, TestThree.class);
 
-                Log.d(TAG,"Starting the BluetoothAdapterDemoActivity");
+                Log.d(TAG,"Starting TestThree Activity");
                 startActivity(intent);
             }
         });
