@@ -425,6 +425,9 @@ public class BluetoothAdapterDemoActivity extends Activity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+
+                        showToast("TEST123", Toast.LENGTH_SHORT);
+
                         // change UI elements here
                     }
                 });

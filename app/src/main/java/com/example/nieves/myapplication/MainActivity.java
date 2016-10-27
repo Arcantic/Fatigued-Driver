@@ -39,6 +39,13 @@ public class MainActivity extends AppCompatActivity
     //jsnieves:from TGStream
     private Button btn_adapter = null;
 
+    //jsnieves:begin:init test buttons
+    private Button btn_test1 = null;
+    private Button btn_test2 = null;
+    private Button btn_test3 = null;
+    //jsnieves:end:init test buttons
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -126,6 +133,12 @@ public class MainActivity extends AppCompatActivity
 
         btn_adapter = (Button) findViewById(R.id.btn_adapter);
 
+        //jsnieves:begin:added init test activity buttons
+        btn_test1 = (Button) findViewById(R.id.btn_test1);
+        btn_test2 = (Button) findViewById(R.id.btn_test2);
+        btn_test3 = (Button) findViewById(R.id.btn_test3);
+        //jsnieves:end:added init test activity buttons
+
         //jsnieves: btn_adapter is 2nd button on main_view.xml and of our primary and current concern
         //launches BluetoothAdapterDemoActivity
         btn_adapter.setOnClickListener(new View.OnClickListener() {
@@ -141,8 +154,47 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        //jsnieves;begin:added onClickListeners for test buttons
+        btn_test1.setOnClickListener(new View.OnClickListener() {
 
+            @Override
+            public void onClick(View arg0) {
+                //jsnieves:changed below
+                // Intent intent = new Intent(DemoActivity.this,BluetoothAdapterDemoActivity.class);
+                Intent intent = new Intent(MainActivity.this, TestThree.class);
 
+                Log.d(TAG,"Starting the BluetoothAdapterDemoActivity");
+                startActivity(intent);
+            }
+        });
+
+        btn_test2.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                //jsnieves:changed below
+                // Intent intent = new Intent(DemoActivity.this,BluetoothAdapterDemoActivity.class);
+                Intent intent = new Intent(MainActivity.this, TestTwo.class);
+
+                Log.d(TAG,"Starting the BluetoothAdapterDemoActivity");
+                startActivity(intent);
+            }
+        });
+
+        btn_test3.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                //jsnieves:changed below
+                // Intent intent = new Intent(DemoActivity.this,BluetoothAdapterDemoActivity.class);
+                Intent intent = new Intent(MainActivity.this, TestThree.class);
+
+                Log.d(TAG,"Starting the BluetoothAdapterDemoActivity");
+                startActivity(intent);
+            }
+        });
+
+        //jsnieves;end:added onClickListeners for test buttons
 
     }
 

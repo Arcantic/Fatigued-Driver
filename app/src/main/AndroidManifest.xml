@@ -30,6 +30,25 @@
             android:parentActivityName="com.example.nieves.myapplication.MainActivity"
 
             > </activity>
+
+        <!--jsnieves:begin:added TestOne, TestTwo, TestThree-->
+        <activity
+            android:name="com.example.nieves.myapplication.TestOne"
+            android:parentActivityName="com.example.nieves.myapplication.MainActivity"
+
+            > </activity>
+        <activity
+            android:name="com.example.nieves.myapplication.TestTwo"
+            android:parentActivityName="com.example.nieves.myapplication.MainActivity"
+
+            > </activity>
+        <activity
+            android:name="com.example.nieves.myapplication.TestThree"
+            android:parentActivityName="com.example.nieves.myapplication.MainActivity"
+
+            > </activity>
+        <!--TODO: rename all com.example.nieves.*-->
+        <!--jsnieves:end:added TestOne, TestTwo, TestThree-->
         <!--jsnieves: from above: android:screenOrientation="landscape"-->
         <!--jsnieves:END:from OpenGL assignment-->
 
