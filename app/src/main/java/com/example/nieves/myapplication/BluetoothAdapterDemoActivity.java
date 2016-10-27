@@ -75,6 +75,10 @@ public class BluetoothAdapterDemoActivity extends Activity {
     private Button btn_start = null;
     private Button btn_stop = null;
     //jsnieves:END:from Algo_SDK_Sample
+    //jsnieves:begin:add heartrate
+    private TextView tv_heartrate = null;
+    //jsnieves:end:add heartrate
+
     private LinearLayout wave_layout;
     private int badPacketCount = 0;
     //jsnieves:BEGIN:from Algo_SDK_Sample
@@ -87,6 +91,9 @@ public class BluetoothAdapterDemoActivity extends Activity {
             // (8) demo of MindDataType
             switch (msg.what) {
                 case MindDataType.CODE_RAW:
+                    //jsnieves:BEGIN:Log
+                    Log.i(TAG, "Raw " + msg.arg1);
+                    //jsnieves:END:Log
                     updateWaveView(msg.arg1);
                     break;
                 case MindDataType.CODE_MEDITATION:
@@ -103,7 +110,7 @@ public class BluetoothAdapterDemoActivity extends Activity {
                     Log.d(TAG, "CODE_HEARTRATE " + msg.arg1);
 
                     //TODO: output data
-                    //tv_heartrate.setText("" +msg.arg1);
+                    tv_heartrate.setText("" +msg.arg1);
                     break;
 
                 //jsnieves:end:heart
@@ -349,6 +356,7 @@ public class BluetoothAdapterDemoActivity extends Activity {
         //jsnieves:BEGIN
         tv_delta_lowest = (TextView) findViewById(R.id.tv_delta_lowest);
         tv_delta_highest = (TextView) findViewById(R.id.tv_delta_highest);
+        tv_heartrate = (TextView) findViewById(R.id.tv_heartrate);
         //jsnieves:END
 
 

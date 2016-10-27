@@ -446,6 +446,74 @@ Needed for BluetoothAdapterDemoActivity.java-->
                    android:textColor="#ffffffff"
                    android:textSize="15dp"/>
            </TableRow>
+
+
+        <TableRow
+            android:id="@+id/tableRow6"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tv_heartrate_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:text="HR:"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="#ffffffff"
+                android:textSize="15dp"
+                />
+
+            <TextView
+                android:id="@+id/tv_heartrate"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|right"
+                android:layout_marginRight="15dp"
+                android:layout_toLeftOf="@+id/tv_r2r_label"
+                android:layout_weight="1"
+                android:ems="10"
+                android:gravity="right"
+                android:lines="1"
+                android:text="-"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="#ffffffff"
+                android:textSize="15dp"/>
+
+            <TextView
+                android:id="@+id/tv_placeholder"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:text="Placeholder"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="#ffffffff"
+                android:textSize="15dp"
+                />
+
+            <TextView
+                android:id="@+id/tv_placeholder2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|right"
+                android:layout_weight="1"
+                android:ems="10"
+                android:gravity="right"
+                android:lines="1"
+                android:text="00"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="#ffffffff"
+                android:textSize="15dp"/>
+        </TableRow>
+
+
+
+
+
+
+
        </TableLayout>
     
     <!-- drawing with view.  -->
