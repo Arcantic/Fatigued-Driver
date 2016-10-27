@@ -17,6 +17,15 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    //jsnieves:begin:from Algo_SDK_Sample
+    //jsnieves: includes *.so files in folders under app/libs/
+    //jsnieves: replaces default location app/src/main/jniLibs
+    sourceSets.main {
+        jniLibs.srcDir 'libs'
+        jni.srcDirs = [] //disable automatic ndk-build call
+    }
+    //jsnieves:end:from Algo_SDK_Sample
 }
 
 dependencies {
@@ -27,4 +36,5 @@ dependencies {
     compile files('libs/libStreamSDK_v1.2.0.jar')
     compile files('libs/NskAlgoSdk.jar')
     compile files('libs/GraphView-4.2.1.jar')
+    compile files('libs/androidplot-core-0.6.1.jar')
 }

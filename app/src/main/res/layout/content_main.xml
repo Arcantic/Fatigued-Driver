@@ -25,6 +25,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/Hello"
-        android:text="Launch BluetoothAdapterDemoActivity"/>
+        android:text="Launch modified BluetoothAdapterDemoActivity"/>
 
 </RelativeLayout>

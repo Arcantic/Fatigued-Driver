@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "Replace this with a DriverF action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity
                 // Intent intent = new Intent(DemoActivity.this,BluetoothAdapterDemoActivity.class);
                 Intent intent = new Intent(MainActivity.this, BluetoothAdapterDemoActivity.class);
 
-                Log.d(TAG,"Start the BluetoothAdapterDemoActivity");
+                Log.d(TAG,"Starting the BluetoothAdapterDemoActivity");
                 startActivity(intent);
             }
         });

@@ -97,6 +97,17 @@ public class BluetoothAdapterDemoActivity extends Activity {
                     Log.d(TAG, "CODE_ATTENTION " + msg.arg1);
                     tv_attention.setText("" +msg.arg1 );
                     break;
+
+                //jsnieves:begin:heart
+                case 3: //0x03 HEART_RATE (0-255) Once/s on EGO. "http://developer.neurosky.com/docs/doku.php?id=thinkgear_communications_protocol"
+                    Log.d(TAG, "CODE_HEARTRATE " + msg.arg1);
+
+                    //TODO: output data
+                    //tv_heartrate.setText("" +msg.arg1);
+                    break;
+
+                //jsnieves:end:heart
+
                 case MindDataType.CODE_EEGPOWER:
                     EEGPower power = (EEGPower)msg.obj;
                     if(power.isValidate()){
@@ -109,14 +120,14 @@ public class BluetoothAdapterDemoActivity extends Activity {
                         tv_lowgamma.setText("" +power.lowGamma);
                         tv_middlegamma.setText("" +power.middleGamma);
 
-                        //jsnieves:BEGIN:Log
+                        //jsnieves:begin:simple conversions dB
+                        //(rawValue * (1.8/4096)) / 2000 ... convert TGAT-based EEG sensor values (such as TGAT, TGAM, MindWave, MindWave Mobile) to voltage values
                         //TODO:Test/complete
+                        //jsnieves:end:simple conversions
+
+
+                        //jsnieves:BEGIN:Log
                         Log.i(TAG, "Delta " + power.delta);
-
-
-
-
-
 
                         //jsnieves:END:Log
 
@@ -140,6 +151,15 @@ public class BluetoothAdapterDemoActivity extends Activity {
                     tv_ps.setText(""+msg.arg1);
 
                     break;
+
+                //jsnieves:begin:add MindDataType CODE_FILTER_TYPE:from:Stream SDK PDF
+                //Enum FilterType   FILTER_50HZ(4), FILTER_60HZ(5)
+                case MindDataType.CODE_FILTER_TYPE:
+                    Log.d(TAG,"CODE_FILTER_TYPE: " + msg.arg1 );
+                    break;
+                //jsnieves:end:add MindDataType CODE_FILTER_TYPE
+
+
                 case MSG_UPDATE_BAD_PACKET:
                     tv_badpacket.setText("" + msg.arg1);
 
@@ -153,18 +173,23 @@ public class BluetoothAdapterDemoActivity extends Activity {
     // (7) demo of TgStreamHandler
     private TgStreamHandler callback = new TgStreamHandler() {
 
-        //jsnieves:BT states
+        //jsnieves:comment:BT states
 
         @Override
         public void onStatesChanged(int connectionStates) {
             // TODO Auto-generated method stub
             Log.d(TAG, "connectionStates change to: " + connectionStates);
             switch (connectionStates) {
+                //jsnieves:begin:added additional state from ConnectionStates.class, sorted all states by their numeric equivalents
+                case ConnectionStates.STATE_INIT:
+                    showToast("STATE_INIT", Toast.LENGTH_SHORT);
+                    break;
+                //jsnieves:end
                 case ConnectionStates.STATE_CONNECTING:
                     // Do something when connecting
 
                     //jsnieves:begin
-                    showToast("Connecting", Toast.LENGTH_SHORT);
+                    showToast("STATE_CONNECTING", Toast.LENGTH_SHORT);
                     //jsnieves:end
                     break;
                 case ConnectionStates.STATE_CONNECTED:
@@ -179,8 +204,37 @@ public class BluetoothAdapterDemoActivity extends Activity {
                     //or you can add a button to control it.
                     //You can change the save path by calling setRecordStreamFilePath(String filePath) before startRecordRawData
                     tgStreamReader.startRecordRawData();
-
+                    //jsnieves:begin
+                    showToast("STATE_WORKING", Toast.LENGTH_SHORT);
+                    //jsnieves:end
                     break;
+                case ConnectionStates.STATE_STOPPED:
+                    // Do something when stopped
+                    // We have to call tgStreamReader.stop() and tgStreamReader.close() much more than
+                    // tgStreamReader.connectAndstart(), because we have to prepare for that.
+
+                    //jsnieves:begin
+                    showToast("STATE_STOPPED", Toast.LENGTH_SHORT);
+                    //jsnieves:end
+                    break;
+                case ConnectionStates.STATE_DISCONNECTED:
+                    // Do something when disconnected
+
+                    //jsnieves:begin
+                    showToast("STATE_DISCONNECTED", Toast.LENGTH_SHORT);
+                    //jsnieves:end
+                    break;
+                //jsnieves:begin:added additional state from ConnectionStates.class
+                case ConnectionStates.STATE_COMPLETE:
+                    showToast("STATE_COMPLETE", Toast.LENGTH_SHORT);
+                    break;
+                case ConnectionStates.STATE_RECORDING_START:
+                    showToast("STATE_RECORDING_START", Toast.LENGTH_SHORT);
+                    break;
+                case ConnectionStates.STATE_RECORDING_END:;
+                    showToast("STATE_RECORDING_END", Toast.LENGTH_SHORT);
+                    break;
+                //jsnieves:end:added additional state from ConnectionStates.class
                 case ConnectionStates.STATE_GET_DATA_TIME_OUT:
                     // Do something when getting data timeout
 
@@ -189,29 +243,6 @@ public class BluetoothAdapterDemoActivity extends Activity {
 
                     showToast("Get data time out!", Toast.LENGTH_SHORT);
                     break;
-                case ConnectionStates.STATE_STOPPED:
-                    // Do something when stopped
-                    // We have to call tgStreamReader.stop() and tgStreamReader.close() much more than
-                    // tgStreamReader.connectAndstart(), because we have to prepare for that.
-
-                    //jsnieves:begin
-                    showToast("Stopped", Toast.LENGTH_SHORT);
-                    //jsnieves:end
-                    break;
-                case ConnectionStates.STATE_DISCONNECTED:
-                    // Do something when disconnected
-
-                    //jsnieves:begin
-                    showToast("Disconnected", Toast.LENGTH_SHORT);
-                    //jsnieves:end
-                    break;
-                case ConnectionStates.STATE_ERROR:
-                    // Do something when you get error message
-
-                    //jsnieves:begin
-                    showToast("Error", Toast.LENGTH_SHORT);
-                    //jsnieves:end
-                    break;
                 case ConnectionStates.STATE_FAILED:
                     // Do something when you get failed message
                     // It always happens when open the BluetoothSocket error or timeout
@@ -219,7 +250,14 @@ public class BluetoothAdapterDemoActivity extends Activity {
                     // Maybe you have to try again
 
                     //jsnieves:begin
-                    showToast("Failed", Toast.LENGTH_SHORT);
+                    showToast("STATE_FAILED", Toast.LENGTH_SHORT);
+                    //jsnieves:end
+                    break;
+                case ConnectionStates.STATE_ERROR:
+                    // Do something when you get error message
+
+                    //jsnieves:begin
+                    showToast("STATE_ERROR", Toast.LENGTH_SHORT);
                     //jsnieves:end
                     break;
             }
@@ -271,6 +309,9 @@ public class BluetoothAdapterDemoActivity extends Activity {
         setContentView(R.layout.first_view);
 
         initView();
+        //jsnieves:begin
+        initNskAlgoSdk();
+        //jsnieves:end
         setUpDrawWaveView();
 
         try {
@@ -297,6 +338,7 @@ public class BluetoothAdapterDemoActivity extends Activity {
         // (3) Demo of startLog, you will get more sdk log by logcat if you call this function
         tgStreamReader.startLog();
     }
+
 
     private void initView() {
         tv_ps = (TextView) findViewById(R.id.tv_ps);
@@ -326,10 +368,7 @@ public class BluetoothAdapterDemoActivity extends Activity {
         btn_stop = (Button) findViewById(R.id.btn_stop);
         wave_layout = (LinearLayout) findViewById(R.id.wave_layout);
 
-        //jsnieves:BEGIN:from Algo_SDK_Sample
-        //nskAlgoSdk = new NskAlgoSdk();
-        //jsnieves:END:from Algo_SDK_Sample
-        //TODO:implement eye detection
+
 
         btn_start.setOnClickListener(new OnClickListener() {
 
@@ -362,6 +401,34 @@ public class BluetoothAdapterDemoActivity extends Activity {
             }
 
         });
+    }
+
+
+    private void initNskAlgoSdk(){
+        //jsnieves:BEGIN:from Algo_SDK_Sample
+        nskAlgoSdk = new NskAlgoSdk(); //added jni libs (*.so files)
+
+        //jsnieves:begin:from EEG algorithm SDK PDF
+        nskAlgoSdk.setOnBPAlgoIndexListener(new NskAlgoSdk.OnBPAlgoIndexListener() {
+            @Override
+            public void onBPAlgoIndex(float delta, float theta, float alpha, float beta, float gamma) {
+                Log.i(TAG, "NskAlgoBPAlgoIndexListener: BP: D[" + delta + " dB] T[" + theta + " dB] A[" +
+                        alpha + " dB] B[" + beta + " dB] G[" + gamma + "]");
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        // change UI elements here
+                    }
+                });
+            }
+        });
+
+        //jsnieves:end:from EEG algorithm SDK PDF
+
+        //jsnieves:END:from Algo_SDK_Sample
+        //TODO:implement eye detection
+
+
     }
 
     public void stop() {
