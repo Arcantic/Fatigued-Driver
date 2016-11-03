@@ -92,7 +92,7 @@ public class BluetoothAdapterDemoActivity extends Activity {
             switch (msg.what) {
                 case MindDataType.CODE_RAW:
                     //jsnieves:BEGIN:Log
-                    Log.i(TAG, "Raw " + msg.arg1);
+                    //Log.i(TAG, "Raw " + msg.arg1);
                     //jsnieves:END:Log
                     updateWaveView(msg.arg1);
                     break;
@@ -134,7 +134,36 @@ public class BluetoothAdapterDemoActivity extends Activity {
 
 
                         //jsnieves:BEGIN:Log
-                        Log.i(TAG, "Delta " + power.delta);
+                        //TODO:retag as RAW Power
+                        //jsnieves:comment:Gamma (low and middle)
+
+                        //Log.i(TAG, "lowGammaRaw " + power.lowGamma);
+                        //Log.i(TAG, "lowGammaVolts " + powerToVolts(power.lowGamma));
+                        //Log.i(TAG, "middleGammaRaw " + power.middleGamma);
+                        //Log.i(TAG, "middleGammaVolts " + powerToVolts(power.middleGamma));
+
+
+                        //jsnieves:comment:Beta (low and high)
+                        //Log.i(TAG, "lowBetaRaw " + power.lowBeta);
+                        //Log.i(TAG, "lowBetaVolts " + powerToVolts(power.lowBeta));
+                        //Log.i(TAG, "highBetaRaw " + power.highBeta);
+                        //Log.i(TAG, "highBetaVolts " + powerToVolts(power.highBeta));
+
+
+                        //jsnieves:comment:Alpha (low and high)
+                        Log.i(TAG, "lowAlphaRaw " + power.lowAlpha);
+                        Log.i(TAG, "lowAlphaVolts " + powerToVolts(power.lowAlpha));
+                        Log.i(TAG, "highAlphaRaw " + power.highAlpha);
+                        Log.i(TAG, "highAlphaVolts " + powerToVolts(power.highAlpha));
+
+
+                        //jsnieves:comment:Theta
+                        Log.i(TAG, "ThetaRaw " + power.theta);
+                        Log.i(TAG, "ThetaVolts " + powerToVolts(power.theta));
+
+                        //jsnieves:comment:Delta
+                        //Log.i(TAG, "DeltaRaw " + power.delta);
+                        //Log.i(TAG, "DeltaVolts " + powerToVolts(power.delta));
 
                         //jsnieves:END:Log
 
@@ -494,5 +523,13 @@ public class BluetoothAdapterDemoActivity extends Activity {
             }
 
         });
+    }
+
+
+
+    public double powerToVolts(int rawValue) {
+        //jsnieves:begin:method to calc dB from RAW
+        return ((rawValue * (1.8/4096)) / 2000);
+        //jsnieves:end:method to calc dB from RAW
     }
 }
