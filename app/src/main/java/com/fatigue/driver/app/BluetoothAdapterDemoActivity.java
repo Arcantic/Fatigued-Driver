@@ -342,7 +342,7 @@ public class BluetoothAdapterDemoActivity extends Activity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        setContentView(R.layout.first_view);
+        setContentView(R.layout.test_first_view);
 
         initView();
         //jsnieves:begin
