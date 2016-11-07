@@ -1,4 +1,4 @@
-package com.example.nieves.myapplication;
+package com.fatigue.driver.app;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

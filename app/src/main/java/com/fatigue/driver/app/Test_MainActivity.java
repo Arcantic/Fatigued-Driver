@@ -1,4 +1,4 @@
-package com.example.nieves.myapplication;
+package com.fatigue.driver.app;
 
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
@@ -26,11 +26,11 @@ import android.widget.TextView;
                 // (21) to support: if (mBluetoothAdapter.isMultipleAdvertisementSupported())
 //jsnieves:END
 
-public class MainActivity extends AppCompatActivity
+public class Test_MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     //jsnieves:BEGIN:From TGStream
-    private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String TAG = Test_MainActivity.class.getSimpleName();
     //jsnieves:END:From TGStream
 
     //jsnieves:Begin:From BluetoothAdvertisements
@@ -147,7 +147,7 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View arg0) {
                 //jsnieves:changed below
                 // Intent intent = new Intent(DemoActivity.this,BluetoothAdapterDemoActivity.class);
-                Intent intent = new Intent(MainActivity.this, BluetoothAdapterDemoActivity.class);
+                Intent intent = new Intent(Test_MainActivity.this, BluetoothAdapterDemoActivity.class);
 
                 Log.d(TAG,"Starting the BluetoothAdapterDemoActivity");
                 startActivity(intent);
@@ -159,9 +159,9 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onClick(View arg0) {
-                Intent intent = new Intent(MainActivity.this, TestOne.class);
+                Intent intent = new Intent(Test_MainActivity.this, MainActivity.class);
 
-                Log.d(TAG,"Starting TestOne Activity");
+                Log.d(TAG,"Starting MainActivity Activity");
                 startActivity(intent);
             }
         });
@@ -170,7 +170,7 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onClick(View arg0) {
-                Intent intent = new Intent(MainActivity.this, TestTwo.class);
+                Intent intent = new Intent(Test_MainActivity.this, TestTwo.class);
 
                 Log.d(TAG,"Starting TestTwo Activity");
                 startActivity(intent);
@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onClick(View arg0) {
-                Intent intent = new Intent(MainActivity.this, TestThree.class);
+                Intent intent = new Intent(Test_MainActivity.this, TestThree.class);
 
                 Log.d(TAG,"Starting TestThree Activity");
                 startActivity(intent);

@@ -1,4 +1,4 @@
-package com.example.nieves.myapplication;
+package com.fatigue.driver.app;
 
 import org.junit.Test;
 

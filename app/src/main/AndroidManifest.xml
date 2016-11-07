@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.example.nieves.myapplication">
+          package="com.fatigue.driver.app">
 
     <!--jsnieves:BEGIN-->
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name="com.fatigue.driver.app.Test_MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -26,29 +26,29 @@
 
         <!--jsnieves:BEGIN:from OpenGL assignment-->
         <activity
-            android:name="com.example.nieves.myapplication.BluetoothAdapterDemoActivity"
-            android:parentActivityName="com.example.nieves.myapplication.MainActivity"
+            android:name="com.fatigue.driver.app.BluetoothAdapterDemoActivity"
+            android:parentActivityName="com.fatigue.driver.app.Test_MainActivity"
 
             > </activity>
 
-        <!--jsnieves:begin:added TestOne, TestTwo, TestThree-->
+        <!--jsnieves:begin:added MainActivity, TestTwo, TestThree-->
         <activity
-            android:name="com.example.nieves.myapplication.TestOne"
-            android:parentActivityName="com.example.nieves.myapplication.MainActivity"
+            android:name="com.fatigue.driver.app.MainActivity"
+            android:parentActivityName="com.fatigue.driver.app.Test_MainActivity"
 
             > </activity>
         <activity
-            android:name="com.example.nieves.myapplication.TestTwo"
-            android:parentActivityName="com.example.nieves.myapplication.MainActivity"
+            android:name="com.fatigue.driver.app.TestTwo"
+            android:parentActivityName="com.fatigue.driver.app.Test_MainActivity"
 
             > </activity>
         <activity
-            android:name="com.example.nieves.myapplication.TestThree"
-            android:parentActivityName="com.example.nieves.myapplication.MainActivity"
+            android:name="com.fatigue.driver.app.TestThree"
+            android:parentActivityName="com.fatigue.driver.app.Test_MainActivity"
 
             > </activity>
         <!--TODO: rename all com.example.nieves.*-->
-        <!--jsnieves:end:added TestOne, TestTwo, TestThree-->
+        <!--jsnieves:end:added MainActivity, TestTwo, TestThree-->
         <!--jsnieves: from above: android:screenOrientation="landscape"-->
         <!--jsnieves:END:from OpenGL assignment-->
 
