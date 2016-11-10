@@ -23,27 +23,27 @@ import android.widget.TextView;
 
 //jsnieves:BEGIN
 @TargetApi(21)  // (18) to support:  mBluetoothAdapter = ((BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
-                // (21) to support: if (mBluetoothAdapter.isMultipleAdvertisementSupported())
+// (21) to support: if (mBluetoothAdapter.isMultipleAdvertisementSupported())
 //jsnieves:END
 
 public class Test_MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    //jsnieves:BEGIN:From TGStream
+    //jsnieves:BEGIN:from TGStream
     private static final String TAG = Test_MainActivity.class.getSimpleName();
-    //jsnieves:END:From TGStream
+    //jsnieves:END:from TGStream
 
-    //jsnieves:Begin:From BluetoothAdvertisements
+    //jsnieves:BEGIN:from BluetoothAdvertisements
     private BluetoothAdapter mBluetoothAdapter;
     //jsnieves:End:From BluetoothAdvertisements
     //jsnieves:from TGStream
     private Button btn_adapter = null;
 
-    //jsnieves:begin:init test buttons
+    //jsnieves:BEGIN:init test buttons
     private Button btn_test1 = null;
     private Button btn_test2 = null;
     private Button btn_test3 = null;
-    //jsnieves:end:init test buttons
+    //jsnieves:END:init test buttons
 
 
     @Override
@@ -74,11 +74,10 @@ public class Test_MainActivity extends AppCompatActivity
 
         //jsnieves: ALL above is stock
         //See: http://developer.android.com/shareables/training/NavigationDrawer.zip for further customization?
-        //end:jsnieves
+        //END:jsnieves
 
         //jsnieves:BEGIN:From BluetoothAdvertisements
         setTitle(R.string.activity_main_title);
-
 
 
         if (savedInstanceState == null) {
@@ -110,7 +109,7 @@ public class Test_MainActivity extends AppCompatActivity
                     // Prompt user to turn on Bluetooth (logic continues in onActivityResult()).
                     Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                     startActivityForResult(enableBtIntent, Constants.REQUEST_ENABLE_BT);
-                    //jsnieves:TODO: create OnResult method
+                    //jsnieves:TODO:create OnResult method
                 }
             } else {
 
@@ -124,44 +123,43 @@ public class Test_MainActivity extends AppCompatActivity
         initView();
 
 
-
     }
     //end
 
     private void initView() {
-        //jsnieves:entire method from TGStream
+        //jsnieves:COMMENT:entire method from TGStream
 
         btn_adapter = (Button) findViewById(R.id.btn_adapter);
 
-        //jsnieves:begin:added init test activity buttons
+        //jsnieves:BEGIN:added init test activity buttons
         btn_test1 = (Button) findViewById(R.id.btn_test1);
         btn_test2 = (Button) findViewById(R.id.btn_test2);
         btn_test3 = (Button) findViewById(R.id.btn_test3);
-        //jsnieves:end:added init test activity buttons
+        //jsnieves:END:added init test activity buttons
 
-        //jsnieves: btn_adapter is 2nd button on main_view.xml and of our primary and current concern
+        //jsnieves:COMMENT: btn_adapter is 2nd button on main_view.xml and of our primary and current concern
         //launches BluetoothAdapterDemoActivity
         btn_adapter.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View arg0) {
-                //jsnieves:changed below
+                //jsnieves:COMMENT:changed below
                 // Intent intent = new Intent(DemoActivity.this,BluetoothAdapterDemoActivity.class);
                 Intent intent = new Intent(Test_MainActivity.this, BluetoothAdapterDemoActivity.class);
 
-                Log.d(TAG,"Starting the BluetoothAdapterDemoActivity");
+                Log.d(TAG, "Starting the BluetoothAdapterDemoActivity");
                 startActivity(intent);
             }
         });
 
-        //jsnieves;begin:added onClickListeners for test buttons
+        //jsnieves;BEGIN:added onClickListeners for test buttons
         btn_test1.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View arg0) {
                 Intent intent = new Intent(Test_MainActivity.this, MainActivity.class);
 
-                Log.d(TAG,"Starting MainActivity Activity");
+                Log.d(TAG, "Starting MainActivity Activity");
                 startActivity(intent);
             }
         });
@@ -172,7 +170,7 @@ public class Test_MainActivity extends AppCompatActivity
             public void onClick(View arg0) {
                 Intent intent = new Intent(Test_MainActivity.this, TestTwo.class);
 
-                Log.d(TAG,"Starting TestTwo Activity");
+                Log.d(TAG, "Starting TestTwo Activity");
                 startActivity(intent);
             }
         });
@@ -183,12 +181,12 @@ public class Test_MainActivity extends AppCompatActivity
             public void onClick(View arg0) {
                 Intent intent = new Intent(Test_MainActivity.this, TestThree.class);
 
-                Log.d(TAG,"Starting TestThree Activity");
+                Log.d(TAG, "Starting TestThree Activity");
                 startActivity(intent);
             }
         });
 
-        //jsnieves;end:added onClickListeners for test buttons
+        //jsnieves:END:added onClickListeners for test buttons
 
     }
 
@@ -227,10 +225,10 @@ public class Test_MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
+        //Handle navigation view item clicks here.
 
-        //jsnieves: TODO: (below) correct R.id.names to match a generic form, or rename to match the finalized menu
-        //end jsnieves
+        //jsnieves:TODO: (below) correct R.id.names to match a generic form, or rename to match the finalized menu
+        //END jsnieves
         int id = item.getItemId();
 
         if (id == R.id.nav_1) {
@@ -253,9 +251,8 @@ public class Test_MainActivity extends AppCompatActivity
     }
 
 
-
     private void showErrorText(int messageId) {
-    //jsnieves:BEGIN: Entire method from BluetoothAdvertisements
+        //jsnieves:BEGIN: Entire method from BluetoothAdvertisements
 
         TextView view = (TextView) findViewById(R.id.error_textview);
         view.setText(getString(messageId));

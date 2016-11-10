@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.fatigue.driver.app"
-        minSdkVersion 16
+        minSdkVersion 19
         targetSdkVersion 24
         versionCode 1
         versionName "1.0"
@@ -18,14 +18,14 @@ android {
         }
     }
 
-    //jsnieves:begin:from Algo_SDK_Sample
+    //jsnieves:BEGIN:from Algo_SDK_Sample
     //jsnieves: includes *.so files in folders under app/libs/
     //jsnieves: replaces default location app/src/main/jniLibs
     sourceSets.main {
         jniLibs.srcDir 'libs'
         jni.srcDirs = [] //disable automatic ndk-build call
     }
-    //jsnieves:end:from Algo_SDK_Sample
+    //jsnieves:END:from Algo_SDK_Sample
 }
 
 dependencies {
