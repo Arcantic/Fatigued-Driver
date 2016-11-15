@@ -77,7 +77,7 @@ public class Test_MainActivity extends AppCompatActivity
         //END:jsnieves
 
         //jsnieves:BEGIN:From BluetoothAdvertisements
-        setTitle(R.string.activity_main_title);
+        setTitle(R.string.title_main);
 
 
         if (savedInstanceState == null) {
