@@ -145,10 +145,13 @@ public class MainActivity extends AppCompatActivity
                 fragmentClass = MainFragment.class;
                 break;
             case R.id.nav_stats:
-                //fragmentClass = SecondFragment.class;
+                fragmentClass = StatsFragment.class;
                 break;
             case R.id.nav_settings:
-                //fragmentClass = ThirdFragment.class;
+                fragmentClass = SettingsFragment.class;
+                break;
+            case R.id.nav_debugging:
+                fragmentClass = DebuggingFragment.class;
                 break;
             default:
                 fragmentClass = MainFragment.class;

@@ -2,8 +2,8 @@
 <resources>
     <color name="colorPrimary">#3F51B5</color> <!--500-->
     <color name="colorPrimaryDark">#303F9F</color> <!--700-->
-    <color name="colorAccent">#69F0AE</color> <!--A200-->
-    <color name="colorAccentDark">#00E676</color> <!--A400-->
+    <color name="colorAccent">#FF5252</color> <!--A200-->
+    <color name="colorAccentDark">#FF1744</color> <!--A400-->
     <color name="colorBackground">#fffafafa</color>
 
     <color name="colorBlackPrimary">#de000000</color>
