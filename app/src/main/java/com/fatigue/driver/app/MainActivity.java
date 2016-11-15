@@ -2,6 +2,12 @@ package com.fatigue.driver.app; /*
  |  CREATED on 10/27/16.
 */
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -36,7 +42,6 @@ public class MainActivity extends AppCompatActivity
 
         //Initialize the navigation drawer
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         drawer.setStatusBarBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -63,6 +68,15 @@ public class MainActivity extends AppCompatActivity
         Fragment fragment = new MainFragment();
         fragmentTransaction.add(R.id.content_frame, fragment);
         fragmentTransaction.commit();
+
+
+        //Check for Bluetooth Connection
+        IntentFilter filter1 = new IntentFilter(BluetoothDevice.ACTION_ACL_CONNECTED);
+        IntentFilter filter2 = new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED);
+        IntentFilter filter3 = new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECTED);
+        this.registerReceiver(mReceiver, filter1);
+        this.registerReceiver(mReceiver, filter2);
+        this.registerReceiver(mReceiver, filter3);
     }
 
     @Override
@@ -157,4 +171,36 @@ public class MainActivity extends AppCompatActivity
         // Close the navigation drawer
         drawer.closeDrawers();
     }
+
+
+
+    //The BroadcastReceiver that listens for bluetooth broadcasts
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+
+            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+                //Device found
+                System.out.println("Device Found");
+            }
+            else if (BluetoothDevice.ACTION_ACL_CONNECTED.equals(action)) {
+                //Device is now connected
+                System.out.println("Device Connected");
+            }
+            else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
+                //Done searching
+                System.out.println("Device Search Completed");
+            }
+            else if (BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED.equals(action)) {
+                //Device is about to disconnect
+                System.out.println("Device Disconnecting");
+            }
+            else if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
+                //Device has disconnected
+                System.out.println("Device Disconnected");
+            }
+        }
+    };
 }
