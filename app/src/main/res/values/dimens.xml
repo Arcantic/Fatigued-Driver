@@ -10,6 +10,9 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="activity_vertical_margin_toolbar">72dp</dimen>
+    <!--Use this if there are cards-->
+    <dimen name="activity_horizontal_margin_cards">8dp</dimen>
+    <dimen name="activity_vertical_margin_cards">24dp</dimen>
 
     <dimen name="actionbar_height">56dp</dimen>
 
@@ -44,4 +47,9 @@
     <dimen name="item_circle_size_half">-32dp</dimen>
     <dimen name="item_circle_padding">16dp</dimen>
     <dimen name="item_circle_height">88dp</dimen>
+
+    <!--Material Margins-->
+    <dimen name="card_elevation_rest">2dp</dimen>
+    <dimen name="card_corners">2dp</dimen>
+    <dimen name="card_margin_vertical">8dp</dimen>
 </resources>

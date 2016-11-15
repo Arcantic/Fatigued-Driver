@@ -18,7 +18,11 @@
     <!--end:jsnieves1-->
 
 
+
+
+
     <!--Begin Main App-->
+
     <string name="nav_home">Home</string>
     <string name="nav_stats">Stats</string>
     <string name="nav_settings">Settings</string>
@@ -28,7 +32,16 @@
 
     <string name="title_main">Driver Fatigue</string>
     <string name="title_settings">Settings</string>
+
+    <!--Main Screen-->
+    <string name="connection_status">Connection Status</string>
+    <string name="recent_alarms">Recent Alarms</string>
+    <string name="user_status">User Status</string>
+    <!--End Main Screen-->
+
     <!--End Main App-->
+
+
 
 
 

@@ -4,7 +4,7 @@
     <color name="colorPrimaryDark">#1976d2</color>
     <color name="colorAccent">#FFD740</color>
     <color name="colorAccentDark">#FFAB00</color>
-    <color name="colorBackground">#ffe5e5e5</color>
+    <color name="colorBackground">#fffafafa</color>
 
     <color name="colorBlackPrimary">#de000000</color>
     <color name="colorBlackSecondary">#8a000000</color>
