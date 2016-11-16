@@ -388,6 +388,9 @@ public class BluetoothAdapterDemoActivity extends Activity {
         tgStreamReader.setGetDataTimeOutTime(6);
         // (3) Demo of startLog, you will get more sdk log by logcat if you call this function
         tgStreamReader.startLog();
+
+        //jsnieves:TODO:set further tgStreamReader configs here
+
     }
 
 
@@ -540,5 +543,14 @@ public class BluetoothAdapterDemoActivity extends Activity {
         //jsnieves:BEGIN:method to calc dB from RAW
         return ((rawValue * (1.8 / 4096)) / 2000);
         //jsnieves:END:method to calc dB from RAW
+    }
+
+
+    public void sendCommandtoDevice(byte[] command){
+        //jsnieves:COMMENT:method to send firmware byte commands to EEG
+        if (tgStreamReader != null) {
+            //tgStreamReader.sendCommandtoDevice(byte[] command);
+
+        }
     }
 }
