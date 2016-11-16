@@ -53,6 +53,7 @@ public class BluetoothAdapterDemoActivity extends Activity {
     //jsnieves:COMMENT:added rawdata arrays
     public Complex[] rawComplexArray = new Complex[512];
     public Complex[] fftComplexArrayResults = new Complex[512];
+
     DrawWaveView waveView = null;
     private TgStreamReader tgStreamReader;
     private BluetoothAdapter mBluetoothAdapter;
@@ -112,6 +113,15 @@ public class BluetoothAdapterDemoActivity extends Activity {
                         Complex[] temp = rawComplexArray;
                         //jsnieves:COMMENT:compute FFT, store results in fftComplexArrayResults
                         fftComplexArrayResults = FFT.fft(rawComplexArray);
+
+                        //caleb magnitude testing
+                        double magnitude[] = new double[fftComplexArrayResults.length];
+                        magnitude = Magnitude.mag(fftComplexArrayResults);
+
+                        for(int i =0; i<magnitude.length; i++){
+                            System.out.println("MAGNITUDE" + "[" + i + "]: " + magnitude[i]);
+                        }
+                        //caleb magnitude testing end
 
                         //jsnieves:COMMENT:Log results
                         for (int i = 0; i < fftComplexArrayResults.length; i++) {
