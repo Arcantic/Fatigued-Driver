@@ -1,7 +1,16 @@
-package com.fatigue.driver.app; /*
- |  CREATED on 10/10/16.
-*/
+package com.fatigue.driver.app;
 
+/******************************************************************
+ +  EEG Bluetooth Communication Class
+ -  ---------------------------------
+ +  Widener University
+ +  Senior Project
+ +  Team Fourteen
+ +  2016 - 2017
+ -  ---------------------------------
+ +  [references]
+ +  TGStreamDemo_MindWaveMobile (com.neurosky.mindwavemobiledemo)
+ ******************************************************************/
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -27,6 +36,8 @@ import com.neurosky.connection.TgStreamHandler;
 import com.neurosky.connection.TgStreamReader;
 
 /**
+ * //jsnieves:COMMENT:temporary reference
+ *
  * This activity demonstrates how to use the constructor:
  * public TgStreamReader(BluetoothAdapter ba, TgStreamHandler tgStreamHandler)
  * and related functions:
@@ -41,28 +52,25 @@ import com.neurosky.connection.TgStreamReader;
  * (9) Demo of recording raw data
  */
 
-//jsnieves:ENTIRE class copied from package com.neurosky.mindwavemobiledemo; (TGStreamDemo_MindWaveMobile)
-// /home/systems/nieves/AndroidStudioProjects/Samples/TGStreamDemo_MindWaveMobile
-
-
 public class BluetoothAdapterDemoActivity extends Activity {
 
     private static final String TAG = BluetoothAdapterDemoActivity.class.getSimpleName();
     private static final int MSG_UPDATE_BAD_PACKET = 1001;
     private static final int MSG_UPDATE_STATE = 1002;
-    //jsnieves:COMMENT:added rawdata arrays
+
+    // jsnieves:COMMENT:rawdata arrays for "real-time" processing
     public Complex[] rawComplexArray = new Complex[512];
     public Complex[] fftComplexArrayResults = new Complex[512];
 
     DrawWaveView waveView = null;
     private TgStreamReader tgStreamReader;
     private BluetoothAdapter mBluetoothAdapter;
-    private TextView tv_ps = null;
+
+    private TextView tv_badpacket = null;
+    private TextView tv_ps = null;  //jsnieves:COMMENT:poor-signal
     private TextView tv_attention = null;
     private TextView tv_meditation = null;
-    //jsnieves:END
     private TextView tv_delta = null;
-    //jsnieves:BEGIN
     private TextView tv_delta_lowest = null;
     private TextView tv_delta_highest = null;
     private TextView tv_theta = null;
@@ -72,27 +80,64 @@ public class BluetoothAdapterDemoActivity extends Activity {
     private TextView tv_highbeta = null;
     private TextView tv_lowgamma = null;
     private TextView tv_middlegamma = null;
-    private TextView tv_badpacket = null;
+
     private Button btn_start = null;
-    //jsnieves:END:add heartrate
     private Button btn_stop = null;
-    //jsnieves:END:from Algo_SDK_Sample
-    //jsnieves:BEGIN:add heartrate
-    private TextView tv_heartrate = null;
+
+    private TextView tv_heartrate = null; //jsnieves:COMMENT:unused
     private LinearLayout wave_layout;
     private int badPacketCount = 0;
-    //jsnieves:BEGIN:from Algo_SDK_Sample
+
     private NskAlgoSdk nskAlgoSdk;
     private boolean isPressing = false;
     private Handler LinkDetectedHandler = new Handler() {
-        //jsnieves:COMMENT:init variables for FFT
+
         int count = 0;
         double rawReal, rawImaginary;
 
         @Override
         public void handleMessage(Message msg) {
-            // (8) demo of MindDataType
+            // jsnieves:COMMENT:Handles various MindDataTypes
             switch (msg.what) {
+
+                case MindDataType.CODE_MEDITATION:
+                    Log.d(TAG, "HeadDataType.CODE_MEDITATION " + msg.arg1);
+                    tv_meditation.setText("" + msg.arg1);
+                    break;
+
+                case MindDataType.CODE_ATTENTION:
+                    Log.d(TAG, "CODE_ATTENTION " + msg.arg1);
+                    tv_attention.setText("" + msg.arg1);
+                    break;
+
+                case 3: //jsnieves:COMMENT:0x03 HEART_RATE (0-255) 1Hz on EGO.
+                    Log.d(TAG, "CODE_HEARTRATE " + msg.arg1);
+                    tv_heartrate.setText("" + msg.arg1);
+                    break;
+                /* jsnieves:COMMENT:unfortunately, this is not a native feature of our headset model.
+                   "http://developer.neurosky.com/docs/doku.php?id=thinkgear_communications_protocol"
+                   TODO:revisit and consider manual implementations */
+
+                case MindDataType.CODE_POOR_SIGNAL:
+                    int poorSignal = msg.arg1;
+                    Log.d(TAG, "poorSignal:" + poorSignal);
+                    tv_ps.setText("" + msg.arg1);
+                    break;
+
+                case MindDataType.CODE_FILTER_TYPE: //jsnieves:COMMENT:Enum FilterType : FILTER_50HZ(4), FILTER_60HZ(5)
+                    Log.d(TAG, "CODE_FILTER_TYPE: " + msg.arg1);
+                    break;
+
+                case MSG_UPDATE_BAD_PACKET:
+                    tv_badpacket.setText("" + msg.arg1);
+                    break;
+
+
+
+
+
+
+
                 case MindDataType.CODE_RAW:
                     //jsnieves:COMMENT:Logs
                     //Log.i(TAG, "Raw " + msg.arg1);
@@ -130,21 +175,12 @@ public class BluetoothAdapterDemoActivity extends Activity {
                         }
                     }
                     break;
-                case MindDataType.CODE_MEDITATION:
-                    Log.d(TAG, "HeadDataType.CODE_MEDITATION " + msg.arg1);
-                    tv_meditation.setText("" + msg.arg1);
-                    break;
-                case MindDataType.CODE_ATTENTION:
-                    Log.d(TAG, "CODE_ATTENTION " + msg.arg1);
-                    tv_attention.setText("" + msg.arg1);
-                    break;
 
-                //jsnieves:BEGIN:heart
-                case 3: //0x03 HEART_RATE (0-255) Once/s on EGO. "http://developer.neurosky.com/docs/doku.php?id=thinkgear_communications_protocol"
-                    Log.d(TAG, "CODE_HEARTRATE " + msg.arg1); //jsnieves:COMMENT:may not be a feature of our headset... (does not appear to function properly)
-                    tv_heartrate.setText("" + msg.arg1);
-                    break;
-                //jsnieves:END:heart
+
+
+
+
+
 
                 case MindDataType.CODE_EEGPOWER:
                     EEGPower power = (EEGPower) msg.obj;
@@ -173,20 +209,17 @@ public class BluetoothAdapterDemoActivity extends Activity {
                         //Log.i(TAG, "middleGammaRaw " + power.middleGamma);
                         //Log.i(TAG, "middleGammaVolts " + powerToVolts(power.middleGamma));
 
-
                         //jsnieves:COMMENT:Beta (low and high)
                         //Log.i(TAG, "lowBetaRaw " + power.lowBeta);
                         //Log.i(TAG, "lowBetaVolts " + powerToVolts(power.lowBeta));
                         //Log.i(TAG, "highBetaRaw " + power.highBeta);
                         //Log.i(TAG, "highBetaVolts " + powerToVolts(power.highBeta));
 
-
                         //jsnieves:COMMENT:Alpha (low and high)
                         Log.i(TAG, "lowAlphaRaw " + power.lowAlpha);
                         Log.i(TAG, "lowAlphaVolts " + powerToVolts(power.lowAlpha));
                         Log.i(TAG, "highAlphaRaw " + power.highAlpha);
                         Log.i(TAG, "highAlphaVolts " + powerToVolts(power.highAlpha));
-
 
                         //jsnieves:COMMENT:Theta
                         Log.i(TAG, "ThetaRaw " + power.theta);
@@ -211,30 +244,16 @@ public class BluetoothAdapterDemoActivity extends Activity {
                         //jsnieves:END
                     }
                     break;
-                case MindDataType.CODE_POOR_SIGNAL:
-                    int poorSignal = msg.arg1;
-                    Log.d(TAG, "poorSignal:" + poorSignal);
-                    tv_ps.setText("" + msg.arg1);
-                    break;
 
-                //jsnieves:BEGIN:add MindDataType CODE_FILTER_TYPE:from:Stream SDK PDF
-                //Enum FilterType   FILTER_50HZ(4), FILTER_60HZ(5)
-                case MindDataType.CODE_FILTER_TYPE:
-                    Log.d(TAG, "CODE_FILTER_TYPE: " + msg.arg1);
-                    break;
-                //jsnieves:END:add MindDataType CODE_FILTER_TYPE
-
-
-                case MSG_UPDATE_BAD_PACKET:
-                    tv_badpacket.setText("" + msg.arg1);
-
-                    break;
                 default:
+                    //jsnieves:COMMENT:Handle and Log any/all other messages
+                    Log.d(TAG, "UNKNOWN DataType Result: " + msg.arg1);
                     break;
             }
             super.handleMessage(msg);
         }
     };
+
     // (7) demo of TgStreamHandler
     private TgStreamHandler callback = new TgStreamHandler() {
 
@@ -246,19 +265,23 @@ public class BluetoothAdapterDemoActivity extends Activity {
             Log.d(TAG, "connectionStates change to: " + connectionStates);
             switch (connectionStates) {
                     //jsnieves:BEGIN:added additional state from ConnectionStates.class, sorted all states by their numeric equivalents
+
                 case ConnectionStates.STATE_INIT:
                     showToast("STATE_INIT", Toast.LENGTH_SHORT);
                     break;
                     //jsnieves:END
+
                 case ConnectionStates.STATE_CONNECTING:
                     //jsnieves:BEGIN
                     showToast("STATE_CONNECTING", Toast.LENGTH_SHORT);
                     //jsnieves:END
                     break;
+
                 case ConnectionStates.STATE_CONNECTED:
                     tgStreamReader.start();
                     showToast("Connected", Toast.LENGTH_SHORT);
                     break;
+
                 case ConnectionStates.STATE_WORKING:
                     //(9) demo of recording raw data , stop() will call stopRecordRawData,
                     //or you can add a button to control it.
@@ -268,6 +291,7 @@ public class BluetoothAdapterDemoActivity extends Activity {
                     showToast("STATE_WORKING", Toast.LENGTH_SHORT);
                     //jsnieves:END
                     break;
+
                 case ConnectionStates.STATE_STOPPED:
                     // We have to call tgStreamReader.stop() and tgStreamReader.close() much more than
                     // tgStreamReader.connectAndstart(), because we have to prepare for that.
@@ -275,28 +299,34 @@ public class BluetoothAdapterDemoActivity extends Activity {
                     showToast("STATE_STOPPED", Toast.LENGTH_SHORT);
                     //jsnieves:END
                     break;
+
                 case ConnectionStates.STATE_DISCONNECTED:
                     //jsnieves:BEGIN
                     showToast("STATE_DISCONNECTED", Toast.LENGTH_SHORT);
                     //jsnieves:END
                     break;
+
                 //jsnieves:BEGIN:added additional state from ConnectionStates.class
                 case ConnectionStates.STATE_COMPLETE:
                     showToast("STATE_COMPLETE", Toast.LENGTH_SHORT);
                     break;
+
                 case ConnectionStates.STATE_RECORDING_START:
                     showToast("STATE_RECORDING_START", Toast.LENGTH_SHORT);
                     break;
+
                 case ConnectionStates.STATE_RECORDING_END:
                     showToast("STATE_RECORDING_END", Toast.LENGTH_SHORT);
                     break;
                 //jsnieves:END:added additional state from ConnectionStates.class
+
                 case ConnectionStates.STATE_GET_DATA_TIME_OUT:
                     //(9) demo of recording raw data, exception handling
                     tgStreamReader.stopRecordRawData();
 
                     showToast("Get data time out!", Toast.LENGTH_SHORT);
                     break;
+
                 case ConnectionStates.STATE_FAILED:
                     // It always happens when open the BluetoothSocket error or timeout
                     // Maybe the device is not working normal.
@@ -306,12 +336,14 @@ public class BluetoothAdapterDemoActivity extends Activity {
                     showToast("STATE_FAILED", Toast.LENGTH_SHORT);
                     //jsnieves:END
                     break;
+
                 case ConnectionStates.STATE_ERROR:
                     //jsnieves:BEGIN
                     showToast("STATE_ERROR", Toast.LENGTH_SHORT);
                     //jsnieves:END
                     break;
             }
+
             Message msg = LinkDetectedHandler.obtainMessage();
             msg.what = MSG_UPDATE_STATE;
             msg.arg1 = connectionStates;
@@ -322,7 +354,6 @@ public class BluetoothAdapterDemoActivity extends Activity {
         public void onRecordFail(int flag) {
             // You can handle the record error message here
             Log.e(TAG, "onRecordFail: " + flag);
-
         }
 
         @Override
@@ -333,7 +364,6 @@ public class BluetoothAdapterDemoActivity extends Activity {
             msg.what = MSG_UPDATE_BAD_PACKET;
             msg.arg1 = badPacketCount;
             LinkDetectedHandler.sendMessage(msg);
-
         }
 
         @Override
@@ -393,18 +423,16 @@ public class BluetoothAdapterDemoActivity extends Activity {
 
     }
 
-
     private void initView() {
         tv_ps = (TextView) findViewById(R.id.tv_ps);
         tv_attention = (TextView) findViewById(R.id.tv_attention);
         tv_meditation = (TextView) findViewById(R.id.tv_meditation);
         tv_delta = (TextView) findViewById(R.id.tv_delta);
 
-        //jsnieves:BEGIN
+        //jsnieves:COMMENT:unfortunately, this is not a native feature of our headset model.
         tv_delta_lowest = (TextView) findViewById(R.id.tv_delta_lowest);
         tv_delta_highest = (TextView) findViewById(R.id.tv_delta_highest);
         tv_heartrate = (TextView) findViewById(R.id.tv_heartrate);
-        //jsnieves:END
 
         tv_theta = (TextView) findViewById(R.id.tv_theta);
         tv_lowalpha = (TextView) findViewById(R.id.tv_lowalpha);
@@ -420,7 +448,6 @@ public class BluetoothAdapterDemoActivity extends Activity {
         btn_start = (Button) findViewById(R.id.btn_start);
         btn_stop = (Button) findViewById(R.id.btn_stop);
         wave_layout = (LinearLayout) findViewById(R.id.wave_layout);
-
 
         btn_start.setOnClickListener(new OnClickListener() {
 
@@ -439,7 +466,7 @@ public class BluetoothAdapterDemoActivity extends Activity {
                 // (4) Demo of  using connect() and start() to replace connectAndStart(),
                 // please call start() when the state is changed to STATE_CONNECTED
                 tgStreamReader.connect();
-//				tgStreamReader.connectAndStart();
+                // tgStreamReader.connectAndStart();
             }
         });
 
@@ -451,13 +478,12 @@ public class BluetoothAdapterDemoActivity extends Activity {
                 tgStreamReader.stop();
                 tgStreamReader.close();
             }
-
         });
     }
 
 
     private void initNskAlgoSdk() {
-        //jsnieves:BEGIN:from Algo_SDK_Sample
+        //jsnieves:COMMENT:API initialization of EEG Algorithms. Values will be compared against our own calculations.
         nskAlgoSdk = new NskAlgoSdk(); //added jni libs (*.so files)
 
         //jsnieves:BEGIN:from EEG algorithm SDK PDF
@@ -478,12 +504,7 @@ public class BluetoothAdapterDemoActivity extends Activity {
             }
         });
 
-        //jsnieves:END:from EEG algorithm SDK PDF
-
-        //jsnieves:END:from Algo_SDK_Sample
         //TODO:implement eye detection
-
-
     }
 
     public void stop() {
@@ -549,8 +570,7 @@ public class BluetoothAdapterDemoActivity extends Activity {
     public void sendCommandtoDevice(byte[] command){
         //jsnieves:COMMENT:method to send firmware byte commands to EEG
         if (tgStreamReader != null) {
-            //tgStreamReader.sendCommandtoDevice(byte[] command);
-
+            //tgStreamReader.sendCommandtoDevice(command);
         }
     }
 }
