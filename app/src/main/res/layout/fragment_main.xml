@@ -22,6 +22,88 @@
         android:text="@string/connection_status"
         />
 
+    <android.support.v7.widget.CardView
+        android:id="@+id/card_connection_status"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:background="@color/colorWhite"
+        android:layout_height="wrap_content"
+        card_view:cardUseCompatPadding="true"
+        card_view:cardElevation="@dimen/card_elevation_rest"
+        card_view:cardCornerRadius="@dimen/card_corners"
+        android:layout_below="@+id/text_connection_status"
+        android:layout_alignParentStart="true">
+
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:orientation="vertical"
+            android:id="@+id/connection_status_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/card_default_padding">
+
+            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:orientation="vertical"
+                android:id="@+id/connection_quality_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true">
+
+                <TextView
+                    android:id="@+id/connection_status_text"
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Connection Quality"
+                    android:textAlignment="viewStart"/>
+
+                <TextView
+                    android:id="@+id/test"
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/connection_status_text"
+                    android:text="Good"
+                    android:textColor="#2cac46"
+                    android:textAlignment="viewStart"/>
+
+            </RelativeLayout>
+
+            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:orientation="vertical"
+                android:id="@+id/battery_status_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true">
+
+                <TextView
+                    android:id="@+id/battery_status_text"
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Battery Status"
+                    android:textAlignment="viewEnd" />
+
+                <TextView
+                    android:id="@+id/test2"
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/battery_status_text"
+                    android:text="90%"
+                    android:textColor="#2cac46"
+                    android:textAlignment="viewEnd"/>
+
+            </RelativeLayout>
+
+
+
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
+
+
 
     <!--ALARM STATUS-->
 
@@ -33,7 +115,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/activity_horizontal_margin"
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
-        android:text="@string/recent_alarms"
+        android:text="Last Alarm"
         />
 
     <android.support.v7.widget.CardView
@@ -55,13 +137,39 @@
             android:layout_height="match_parent"
             android:padding="16dp">
 
-            <TextView
-                android:id="@+id/testetseet"
-                style="@style/TextAppearance.AppCompat.Body1"
+            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Info on recent alarms will go here."
-                />
+                android:textAlignment="center">
+
+                <TextView
+                    android:id="@+id/alarm_test1"
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Today at 7:18pm"
+                    />
+
+                <TextView
+                    android:id="@+id/alarm_test2"
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/alarm_test1"
+                    android:text="Drowsiness Detected"
+                    />
+
+                <TextView
+                    android:id="@+id/alarm_test3"
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/alarm_test2"
+                    android:text="User Alerted"
+                    />
+
+            </RelativeLayout>
 
         </RelativeLayout>
 
@@ -106,7 +214,8 @@
                 style="@style/TextAppearance.AppCompat.Body1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="&quot;You're Awake&quot;"
+                android:text="Current Condition: AWAKE"
+                android:textColor="#2cac46"
                 />
 
             <TextView
@@ -116,38 +225,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_below="@id/text_basic_status"
-                android:text="&quot;You're awake now, but were falling asleep not too long ago.&quot;"
-                />
-
-        </RelativeLayout>
-
-    </android.support.v7.widget.CardView>
-
-    <android.support.v7.widget.CardView
-        android:id="@+id/card_connection_status"
-        android:layout_gravity="center"
-        android:layout_width="match_parent"
-        android:background="@color/colorWhite"
-        android:layout_height="wrap_content"
-        card_view:cardUseCompatPadding="true"
-        card_view:cardElevation="@dimen/card_elevation_rest"
-        card_view:cardCornerRadius="@dimen/card_corners"
-        android:layout_below="@+id/text_connection_status"
-        android:layout_alignParentStart="true">
-
-        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="16dp">
-
-
-            <TextView
-                android:id="@+id/test"
-                style="@style/TextAppearance.AppCompat.Body1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Info on connection status (connection, battery) will go here"
+                android:text="You're awake right now. Your status fell slightly 12 minutes ago. Your rating for the last hour is 94%."
                 />
 
         </RelativeLayout>

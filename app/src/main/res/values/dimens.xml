@@ -52,4 +52,5 @@
     <dimen name="card_elevation_rest">2dp</dimen>
     <dimen name="card_corners">2dp</dimen>
     <dimen name="card_margin_vertical">8dp</dimen>
+    <dimen name="card_default_padding">16dp</dimen>
 </resources>
