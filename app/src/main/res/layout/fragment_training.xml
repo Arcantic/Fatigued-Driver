@@ -10,89 +10,227 @@
     android:layout_marginRight="@dimen/activity_horizontal_margin_cards"
     >
 
-    <!--CONNECTION STATUS-->
-
-    <TextView
-        android:id="@+id/text_connection_status"
-        style="@style/TextAppearance.AppCompat.Title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_marginEnd="@dimen/activity_horizontal_margin"
-        android:text="Settings"
-        />
 
 
+    <!--"Display"-->
     <android.support.v7.widget.CardView
-        android:id="@+id/card_connection_status"
+        android:id="@+id/card_display"
         android:layout_gravity="center"
         android:layout_width="match_parent"
         android:background="@color/colorWhite"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/card_height_training_display"
         card_view:cardUseCompatPadding="true"
         card_view:cardElevation="@dimen/card_elevation_rest"
         card_view:cardCornerRadius="@dimen/card_corners"
-        android:layout_below="@+id/text_connection_status"
         android:layout_alignParentStart="true">
 
         <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="16dp">
+            android:padding="@dimen/card_padding_side"
+            android:paddingTop="@dimen/card_padding_top"
+            >
+
+            <TextView
+                android:id="@+id/text_count_left"
+                android:gravity="end"
+                style="@style/TextAppearance.AppCompat.Caption"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="16dp"
+                android:text="#"
+                />
+
+            <Button
+                android:id="@+id/button_start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerInParent="true"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:text="Start" />
+
+            <TextView
+                android:id="@+id/text_training_status"
+                android:gravity="center"
+                android:layout_above="@+id/button_start"
+                style="@style/TextAppearance.AppCompat.Display1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="16dp"
+                android:text="No Test Running"
+                />
+
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
+
+
+
+
+    <!--Settings-->
+    <android.support.v7.widget.CardView
+        android:id="@+id/card_settings"
+        android:layout_gravity="center"
+        android:layout_below="@+id/card_display"
+        android:layout_width="match_parent"
+        android:background="@color/colorWhite"
+        android:layout_height="wrap_content"
+        card_view:cardUseCompatPadding="true"
+        card_view:cardElevation="@dimen/card_elevation_rest"
+        card_view:cardCornerRadius="@dimen/card_corners"
+        android:layout_alignParentStart="true">
+
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/card_padding_side"
+            android:paddingTop="@dimen/card_padding_top"
+            >
+
+            <!--Settings-->
+            <TextView
+                android:id="@+id/text_settings_title"
+                style="@style/TextAppearance.AppCompat.Headline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/card_title_margin"
+                android:text="Settings"
+                />
+
 
             <!--Eyes Open or Closed-->
-            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:orientation="vertical"
-                android:id="@+id/layout_eyes"
+            <Switch
+                android:id="@+id/switch_eyes"
+                android:layout_below="@+id/text_settings_title"
+                style="@style/TextAppearance.AppCompat.Subhead"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <Switch
-                    android:id="@+id/switch_eyes"
-                    style="@style/TextAppearance.AppCompat.Body1"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="On/Off"
-                    />
-
-            </RelativeLayout>
-
-            <!--Trial Duration-->
-            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:orientation="vertical"
-                android:id="@+id/layout_duration"
-                android:layout_below="@+id/layout_eyes"
+                android:layout_height="wrap_content"
+                android:text="Eyes are closed"
+                />
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:id="@+id/divider_switch_eyes"
+                android:layout_below="@+id/switch_eyes"
+                android:layout_marginTop="@dimen/divider_margin"
+                android:layout_marginBottom="@dimen/divider_margin"
+                android:layout_height="1dp"
+                android:background="?android:attr/dividerVertical" />
 
+
+
+
+
+            <!--Texts-->
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:orientation="horizontal"
+                android:id="@+id/layout_lin1"
+                android:layout_below="@+id/divider_switch_eyes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="1"
+                >
+                <!--Trial Duration-->
                 <TextView
                     android:id="@+id/text_duration"
-                    style="@style/TextAppearance.AppCompat.Body1"
-                    android:layout_width="match_parent"
+                    style="@style/TextAppearance.AppCompat.Subhead"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="Trial Duration"
+                    android:layout_weight="0.5"
                     />
-
-            </RelativeLayout>
-
-            <!--Trial Count-->
-            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:orientation="vertical"
-                android:id="@+id/layout_count"
-                android:layout_below="@+id/layout_duration"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
+                <!--Trial Count-->
                 <TextView
                     android:id="@+id/text_count"
-                    style="@style/TextAppearance.AppCompat.Body1"
-                    android:layout_width="match_parent"
+                    style="@style/TextAppearance.AppCompat.Subhead"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="Trial Count"
+                    android:layout_toRightOf="@+id/text_duration"
+                    android:layout_weight="0.5"
                     />
 
-            </RelativeLayout>
+            </LinearLayout>
+
+
+            <!--Hints-->
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:orientation="horizontal"
+                android:id="@+id/layout_lin3"
+                android:layout_below="@+id/layout_lin1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="1"
+                >
+                <!--Trial Duration-->
+                <TextView
+                    android:id="@+id/text_hint_dur"
+                    style="@style/TextAppearance.AppCompat.Caption"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Seconds"
+                    android:layout_weight="0.5"
+                    />
+                <!--Trial Count-->
+                <TextView
+                    android:id="@+id/text_hint_cnt"
+                    style="@style/TextAppearance.AppCompat.Caption"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Number"
+                    android:layout_weight="0.5"
+                    />
+
+            </LinearLayout>
+
+
+            <!--Inputs-->
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:orientation="horizontal"
+                android:id="@+id/layout_lin2"
+                android:layout_below="@+id/layout_lin3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="-4dp"
+                android:weightSum="1"
+                >
+                <!--Trial Duration-->
+                <EditText
+                    android:id="@+id/edit_duration"
+                    style="@style/TextAppearance.AppCompat.Subhead"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:text="5"
+
+                    android:hint="Seconds"
+                    android:layout_weight="0.33"
+                    />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.17"
+                    android:layout_marginRight="-4dp"
+                    />
+
+                <!--Trial Count-->
+                <EditText
+                    android:id="@+id/edit_count"
+                    style="@style/TextAppearance.AppCompat.Subhead"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:text="100"
+                    android:hint="Number"
+                    android:layout_toRightOf="@+id/text_duration"
+                    android:layout_weight="0.33"
+                    />
+
+            </LinearLayout>
+
 
 
         </RelativeLayout>

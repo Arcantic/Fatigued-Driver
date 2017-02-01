@@ -53,4 +53,9 @@
     <dimen name="card_corners">2dp</dimen>
     <dimen name="card_margin_vertical">8dp</dimen>
     <dimen name="card_default_padding">16dp</dimen>
+    <dimen name="card_padding_side">16dp</dimen>
+    <dimen name="card_padding_top">24dp</dimen>
+    <dimen name="divider_margin">12dp</dimen>
+    <dimen name="card_height_training_display">286dp</dimen>
+    <dimen name="card_title_margin">12dp</dimen>
 </resources>

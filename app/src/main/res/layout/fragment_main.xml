@@ -12,16 +12,6 @@
 
     <!--CONNECTION STATUS-->
 
-    <TextView
-        android:id="@+id/text_connection_status"
-        style="@style/TextAppearance.AppCompat.Title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_marginEnd="@dimen/activity_horizontal_margin"
-        android:text="@string/connection_status"
-        />
-
     <android.support.v7.widget.CardView
         android:id="@+id/card_connection_status"
         android:layout_gravity="center"
@@ -31,7 +21,6 @@
         card_view:cardUseCompatPadding="true"
         card_view:cardElevation="@dimen/card_elevation_rest"
         card_view:cardCornerRadius="@dimen/card_corners"
-        android:layout_below="@+id/text_connection_status"
         android:layout_alignParentStart="true">
 
         <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -39,65 +28,74 @@
             android:id="@+id/connection_status_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="@dimen/card_default_padding">
+            android:padding="@dimen/card_padding_side"
+            android:paddingTop="@dimen/card_padding_top">
 
-            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:orientation="vertical"
-                android:id="@+id/connection_quality_layout"
-                android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/text_connection_status"
+                style="@style/TextAppearance.AppCompat.Title"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentStart="true">
+                android:text="@string/connection_status"
+                android:layout_marginBottom="@dimen/card_title_margin"
+                />
+
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:orientation="horizontal"
+                android:id="@+id/layout_connection_text"
+                android:layout_below="@+id/text_connection_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="1">
 
                 <TextView
                     android:id="@+id/connection_status_text"
-                    style="@style/TextAppearance.AppCompat.Body1"
-                    android:layout_width="match_parent"
+                    style="@style/TextAppearance.AppCompat.Subhead"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
                     android:text="Connection Quality"
                     android:textAlignment="viewStart"/>
 
                 <TextView
                     android:id="@+id/test"
-                    style="@style/TextAppearance.AppCompat.Body1"
-                    android:layout_width="match_parent"
+                    style="@style/TextAppearance.AppCompat.Subhead"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/connection_status_text"
+                    android:layout_weight="0.5"
                     android:text="Good"
                     android:textColor="#2cac46"
-                    android:textAlignment="viewStart"/>
+                    android:textAlignment="viewEnd"/>
 
-            </RelativeLayout>
+            </LinearLayout>
 
-            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:orientation="vertical"
-                android:id="@+id/battery_status_layout"
-                android:layout_width="wrap_content"
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:orientation="horizontal"
+                android:id="@+id/layout_connection_vars"
+                android:layout_below="@+id/layout_connection_text"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentEnd="true">
+                android:weightSum="1">
 
                 <TextView
                     android:id="@+id/battery_status_text"
-                    style="@style/TextAppearance.AppCompat.Body1"
-                    android:layout_width="match_parent"
+                    style="@style/TextAppearance.AppCompat.Subhead"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Battery Status"
-                    android:textAlignment="viewEnd" />
+                    android:layout_weight="0.5"
+                    android:text="Battery Status" />
 
                 <TextView
                     android:id="@+id/test2"
-                    style="@style/TextAppearance.AppCompat.Body1"
-                    android:layout_width="match_parent"
+                    style="@style/TextAppearance.AppCompat.Subhead"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/battery_status_text"
+                    android:layout_weight="0.5"
                     android:text="90%"
                     android:textColor="#2cac46"
                     android:textAlignment="viewEnd"/>
 
-            </RelativeLayout>
-
-
+            </LinearLayout>
 
         </RelativeLayout>
 
@@ -107,21 +105,10 @@
 
     <!--ALARM STATUS-->
 
-    <TextView
-        android:id="@+id/text_recent_alarms"
-        style="@style/TextAppearance.AppCompat.Title"
-        android:layout_below="@+id/card_connection_status"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_marginEnd="@dimen/activity_horizontal_margin"
-        android:text="Last Alarm"
-        />
-
     <android.support.v7.widget.CardView
         android:id="@+id/card_recent_alarms"
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        android:layout_below="@+id/text_recent_alarms"
+        android:layout_below="@+id/card_connection_status"
         android:layout_gravity="center"
         android:layout_width="match_parent"
         android:background="@color/colorWhite"
@@ -135,7 +122,8 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="16dp">
+            android:padding="@dimen/card_padding_side"
+            android:paddingTop="@dimen/card_padding_top">
 
             <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:orientation="vertical"
@@ -144,8 +132,18 @@
                 android:textAlignment="center">
 
                 <TextView
+                    android:id="@+id/text_recent_alarms"
+                    style="@style/TextAppearance.AppCompat.Title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Last Alarm"
+                    android:layout_marginBottom="@dimen/card_title_margin"
+                    />
+
+                <TextView
                     android:id="@+id/alarm_test1"
-                    style="@style/TextAppearance.AppCompat.Body1"
+                    android:layout_below="@+id/text_recent_alarms"
+                    style="@style/TextAppearance.AppCompat.Subhead"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Today at 7:18pm"
@@ -153,7 +151,7 @@
 
                 <TextView
                     android:id="@+id/alarm_test2"
-                    style="@style/TextAppearance.AppCompat.Body1"
+                    style="@style/TextAppearance.AppCompat.Subhead"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/alarm_test1"
@@ -162,7 +160,7 @@
 
                 <TextView
                     android:id="@+id/alarm_test3"
-                    style="@style/TextAppearance.AppCompat.Body1"
+                    style="@style/TextAppearance.AppCompat.Subhead"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/alarm_test2"
@@ -179,21 +177,10 @@
 
     <!--USER STATUS-->
 
-    <TextView
-        android:id="@+id/text_user_status"
-        style="@style/TextAppearance.AppCompat.Title"
-        android:layout_below="@+id/card_recent_alarms"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_marginEnd="@dimen/activity_horizontal_margin"
-        android:text="@string/user_status"
-        />
-
     <android.support.v7.widget.CardView
         android:id="@+id/card_user_status"
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        android:layout_below="@+id/text_user_status"
+        android:layout_below="@+id/card_recent_alarms"
         android:layout_gravity="center"
         android:layout_width="match_parent"
         android:background="@color/colorWhite"
@@ -207,14 +194,25 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="16dp">
+            android:padding="@dimen/card_padding_side"
+            android:paddingTop="@dimen/card_padding_top">
+
+            <TextView
+                android:id="@+id/text_user_status"
+                style="@style/TextAppearance.AppCompat.Title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/user_status"
+                android:layout_marginBottom="@dimen/card_title_margin"
+                />
 
             <TextView
                 android:id="@+id/text_basic_status"
-                style="@style/TextAppearance.AppCompat.Body1"
+                android:layout_below="@+id/text_user_status"
+                style="@style/TextAppearance.AppCompat.Subhead"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Current Condition: AWAKE"
+                android:text="Current Condition: Awake"
                 android:textColor="#2cac46"
                 />
 

@@ -7,6 +7,7 @@ import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -24,6 +25,8 @@ public class MainFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_main, container, false);
 
+
+        /*
         RelativeLayout card = (RelativeLayout) view.findViewById(R.id.connection_status_layout);
         DisplayMetrics displaymetrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
@@ -34,10 +37,11 @@ public class MainFragment extends Fragment {
                 - (int)getResources().getDimension(R.dimen.card_corners)*2)
                 /2;
 
-        RelativeLayout lay1 = (RelativeLayout) view.findViewById(R.id.connection_quality_layout);
-        RelativeLayout lay2 = (RelativeLayout) view.findViewById(R.id.battery_status_layout);
+        LinearLayout lay1 = (LinearLayout) view.findViewById(R.id.layout_connection_text);
+        LinearLayout lay2 = (LinearLayout) view.findViewById(R.id.layout_connection_vars);
         lay1.getLayoutParams().width = half_width;
         lay2.getLayoutParams().width = half_width;
+        */
 
         return view;
     }
