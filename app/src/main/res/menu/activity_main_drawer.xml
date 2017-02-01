@@ -2,15 +2,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/nav_home"
-            android:icon="@drawable/ic_home_black_24dp"
-            android:title="@string/nav_home"/>
-        <item
-            android:id="@+id/nav_stats"
-            android:icon="@drawable/ic_receipt_black_24dp"
-            android:title="@string/nav_stats"/>
-    </group>
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/ic_home_black_24dp"
+        android:title="@string/nav_home"/>
+    <item
+        android:id="@+id/nav_stats"
+        android:icon="@drawable/ic_receipt_black_24dp"
+        android:title="@string/nav_stats"/>
+</group>
 
     <item android:title="Misc">
         <menu>
@@ -23,6 +23,10 @@
                     android:id="@+id/nav_debugging"
                     android:icon="@drawable/ic_bug_report_black_24dp"
                     android:title="@string/nav_debugging"/>
+                <item
+                    android:id="@+id/nav_training"
+                    android:icon="@drawable/ic_bug_report_black_24dp"
+                    android:title="@string/nav_training"/>
             </group>
         </menu>
     </item>

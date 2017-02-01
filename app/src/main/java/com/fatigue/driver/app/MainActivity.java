@@ -153,6 +153,9 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_debugging:
                 fragmentClass = DebuggingFragment.class;
                 break;
+            case R.id.nav_training:
+                fragmentClass = TrainingFragment.class;
+                break;
             default:
                 fragmentClass = MainFragment.class;
         }
