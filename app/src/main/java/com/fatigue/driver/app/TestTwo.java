@@ -17,7 +17,10 @@ public class TestTwo extends Activity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.test_two);
 
-        MediaPlayer mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.Loud_Alarm_Clock_Buzzer);
+
+
+
+        MediaPlayer mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.alarm_alert);
         mediaPlayer.start();
 
 
