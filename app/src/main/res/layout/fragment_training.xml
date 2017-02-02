@@ -39,7 +39,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginBottom="16dp"
-                android:text="#"
+                android:text=""
                 />
 
             <Button
@@ -54,12 +54,23 @@
             <TextView
                 android:id="@+id/text_training_status"
                 android:gravity="center"
-                android:layout_above="@+id/button_start"
+                android:layout_above="@+id/text_training_status_countdown"
                 style="@style/TextAppearance.AppCompat.Display1"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="16dp"
+                android:layout_height="wrap_content"
                 android:text="No Test Running"
+                />
+
+            <TextView
+                android:id="@+id/text_training_status_countdown"
+                android:gravity="center"
+                android:layout_above="@+id/button_start"
+                style="@style/TextAppearance.AppCompat.Display2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="48dp"
+                android:text=""
+                android:textColor="@color/colorAccent"
                 />
 
         </RelativeLayout>
