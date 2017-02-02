@@ -8,5 +8,5 @@
         android:text="Play"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/button" />
+        android:id="@+id/btn_alarm_start_stop" />
 </LinearLayout>
