@@ -17,7 +17,9 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -35,6 +37,9 @@ import com.neurosky.connection.DataType.MindDataType;
 import com.neurosky.connection.EEGPower;
 import com.neurosky.connection.TgStreamHandler;
 import com.neurosky.connection.TgStreamReader;
+
+import java.io.BufferedOutputStream;
+import java.io.File;
 
 /**
  * //jsnieves:COMMENT:temporary reference
@@ -56,14 +61,24 @@ import com.neurosky.connection.TgStreamReader;
 public class BluetoothAdapterDemoActivity extends FragmentActivity {
 
     private static final String TAG = BluetoothAdapterDemoActivity.class.getSimpleName();
+    private static final int REQUEST_WRITE_STORAGE = 112;
     private static final int MSG_UPDATE_BAD_PACKET = 1001;
     private static final int MSG_UPDATE_STATE = 1002;
+    private boolean isDebugVerbose = true;
+    private boolean isDebug = true;
+    private int badPacketCount;
+
+    private File logDir;
+    private File rawLogFile;
     private Complex[] rawComplexArray;
     private Complex[] fftComplexArrayResults;
-    private DrawWaveView waveView;
-    private TgStreamReader tgStreamReader;
-    private BluetoothAdapter mBluetoothAdapter;
+    private BufferedOutputStream rawBufferedOutputStream;
 
+    private BluetoothAdapter mBluetoothAdapter;
+    private TgStreamReader tgStreamReader;
+
+    private LinearLayout wave_layout;
+    private DrawWaveView waveView;
     private TextView tv_badpacket;
     private TextView tv_ps;
     private TextView tv_attention;
@@ -81,14 +96,8 @@ public class BluetoothAdapterDemoActivity extends FragmentActivity {
     private TextView tv_heartrate;
     private Button btn_start;
     private Button btn_stop;
-    private LinearLayout wave_layout;
-
-    private int badPacketCount;
 
     private NskAlgoSdk nskAlgoSdk;
-    private boolean isDebugVerbose = true;
-    private boolean isDebug = true;
-
     private Handler LinkDetectedHandler;
     // (7) demo of TgStreamHandler
     private TgStreamHandler callback = new TgStreamHandler() {
@@ -409,6 +418,11 @@ public class BluetoothAdapterDemoActivity extends FragmentActivity {
         initNskAlgoSdk();
         //jsnieves:END
         setUpDrawWaveView();
+
+        boolean hasPermission = ContextCompat.checkSelfPermission(this, "android.permission.WRITE_EXTERNAL_STORAGE") == 0;
+        if(!hasPermission) {
+            ActivityCompat.requestPermissions(this, new String[]{"android.permission.WRITE_EXTERNAL_STORAGE"}, 112);
+        }
 
         try {
             // (1) Make sure that the device supports Bluetooth and Bluetooth is on
