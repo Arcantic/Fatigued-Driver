@@ -12,11 +12,11 @@ package com.fatigue.driver.app;
  +  TGStreamDemo_MindWaveMobile (com.neurosky.mindwavemobiledemo)
  ******************************************************************/
 
-import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -52,210 +52,46 @@ import com.neurosky.connection.TgStreamReader;
  * (9) Demo of recording raw data
  */
 
-public class BluetoothAdapterDemoActivity extends Activity {
+public class BluetoothAdapterDemoActivity extends FragmentActivity {
 
     private static final String TAG = BluetoothAdapterDemoActivity.class.getSimpleName();
     private static final int MSG_UPDATE_BAD_PACKET = 1001;
     private static final int MSG_UPDATE_STATE = 1002;
-
-    // jsnieves:COMMENT:rawdata arrays for "real-time" processing
-    public Complex[] rawComplexArray = new Complex[512];
-    public Complex[] fftComplexArrayResults = new Complex[512];
-
-    DrawWaveView waveView = null;
+    private Complex[] rawComplexArray;
+    private Complex[] fftComplexArrayResults;
+    private DrawWaveView waveView;
     private TgStreamReader tgStreamReader;
     private BluetoothAdapter mBluetoothAdapter;
 
-    private TextView tv_badpacket = null;
-    private TextView tv_ps = null;  //jsnieves:COMMENT:poor-signal
-    private TextView tv_attention = null;
-    private TextView tv_meditation = null;
-    private TextView tv_delta = null;
-    private TextView tv_delta_lowest = null;
-    private TextView tv_delta_highest = null;
-    private TextView tv_theta = null;
-    private TextView tv_lowalpha = null;
-    private TextView tv_highalpha = null;
-    private TextView tv_lowbeta = null;
-    private TextView tv_highbeta = null;
-    private TextView tv_lowgamma = null;
-    private TextView tv_middlegamma = null;
-
-    private Button btn_start = null;
-    private Button btn_stop = null;
-
-    private TextView tv_heartrate = null; //jsnieves:COMMENT:unused
+    private TextView tv_badpacket;
+    private TextView tv_ps;
+    private TextView tv_attention;
+    private TextView tv_meditation;
+    private TextView tv_delta;
+    private TextView tv_delta_lowest;
+    private TextView tv_delta_highest;
+    private TextView tv_theta;
+    private TextView tv_lowalpha;
+    private TextView tv_highalpha;
+    private TextView tv_lowbeta;
+    private TextView tv_highbeta;
+    private TextView tv_lowgamma;
+    private TextView tv_middlegamma;
+    private TextView tv_heartrate;
+    private Button btn_start;
+    private Button btn_stop;
     private LinearLayout wave_layout;
-    private int badPacketCount = 0;
+
+    private int badPacketCount;
 
     private NskAlgoSdk nskAlgoSdk;
-    private boolean isPressing = false;
-    private Handler LinkDetectedHandler = new Handler() {
+    private boolean isDebugVerbose = true;
+    private boolean isDebug = true;
 
-        int count = 0;
-        double rawReal, rawImaginary;
-
-        @Override
-        public void handleMessage(Message msg) {
-            // jsnieves:COMMENT:Handles various MindDataTypes
-            switch (msg.what) {
-
-                case MindDataType.CODE_MEDITATION:
-                    Log.d(TAG, "HeadDataType.CODE_MEDITATION " + msg.arg1);
-                    tv_meditation.setText("" + msg.arg1);
-                    break;
-
-                case MindDataType.CODE_ATTENTION:
-                    Log.d(TAG, "CODE_ATTENTION " + msg.arg1);
-                    tv_attention.setText("" + msg.arg1);
-                    break;
-
-                case 3: //jsnieves:COMMENT:0x03 HEART_RATE (0-255) 1Hz on EGO.
-                    Log.d(TAG, "CODE_HEARTRATE " + msg.arg1);
-                    tv_heartrate.setText("" + msg.arg1);
-                    break;
-                /* jsnieves:COMMENT:unfortunately, this is not a native feature of our headset model.
-                   "http://developer.neurosky.com/docs/doku.php?id=thinkgear_communications_protocol"
-                   TODO:revisit and consider manual implementations */
-
-                case MindDataType.CODE_POOR_SIGNAL:
-                    int poorSignal = msg.arg1;
-                    Log.d(TAG, "poorSignal:" + poorSignal);
-                    tv_ps.setText("" + msg.arg1);
-                    break;
-
-                case MindDataType.CODE_FILTER_TYPE: //jsnieves:COMMENT:Enum FilterType : FILTER_50HZ(4), FILTER_60HZ(5)
-                    Log.d(TAG, "CODE_FILTER_TYPE: " + msg.arg1);
-                    break;
-
-                case MSG_UPDATE_BAD_PACKET:
-                    tv_badpacket.setText("" + msg.arg1);
-                    break;
-
-
-
-
-
-
-
-                case MindDataType.CODE_RAW:
-                    //jsnieves:COMMENT:Logs
-                    //Log.i(TAG, "Raw " + msg.arg1);
-
-                    rawReal = (double) msg.arg1;
-                    rawImaginary = 0.0;
-                    //jsnieves:COMMENT:Graph update
-                    updateWaveView(msg.arg1);
-
-                    rawComplexArray[count] = new Complex(rawReal, rawImaginary);
-                    count++;
-
-                    if (count >= 512) {
-                        //jsnieves:COMMENT:Log
-                        //Log.i(TAG, "512 Reached");
-
-                        count = 0;
-                        Complex[] temp = rawComplexArray;
-                        //jsnieves:COMMENT:compute FFT, store results in fftComplexArrayResults
-                        fftComplexArrayResults = FFT.fft(rawComplexArray);
-
-                        //caleb magnitude testing
-                        double magnitude[] = new double[fftComplexArrayResults.length];
-                        magnitude = Magnitude.mag(fftComplexArrayResults);
-
-                        for(int i =0; i<magnitude.length; i++){
-                            System.out.println("MAGNITUDE" + "[" + i + "]: " + magnitude[i]);
-                        }
-                        //caleb magnitude testing end
-
-                        //jsnieves:COMMENT:Log results
-                        for (int i = 0; i < fftComplexArrayResults.length; i++) {
-                            Log.i(TAG, " rawComplexArray[" + i + "]" + " = " + temp[i]);
-                            Log.i(TAG, " fftComplexArrayResults[" + i + "]" + " = " + fftComplexArrayResults[i]);
-                        }
-                    }
-                    break;
-
-
-
-
-
-
-
-                case MindDataType.CODE_EEGPOWER:
-                    EEGPower power = (EEGPower) msg.obj;
-                    if (power.isValidate()) {
-                        tv_delta.setText("" + power.delta);
-                        tv_theta.setText("" + power.theta);
-                        tv_lowalpha.setText("" + power.lowAlpha);
-                        tv_highalpha.setText("" + power.highAlpha);
-                        tv_lowbeta.setText("" + power.lowBeta);
-                        tv_highbeta.setText("" + power.highBeta);
-                        tv_lowgamma.setText("" + power.lowGamma);
-                        tv_middlegamma.setText("" + power.middleGamma);
-
-                        //jsnieves:BEGIN:simple conversions dB
-                        //(rawValue * (1.8/4096)) / 2000 ... convert TGAT-based EEG sensor values (such as TGAT, TGAM, MindWave, MindWave Mobile) to voltage values
-                        //TODO:Test/complete
-                        //jsnieves:END:simple conversions
-
-
-                        //jsnieves:BEGIN:Log
-                        //TODO:retag as RAW Power
-                        //jsnieves:COMMENT:Gamma (low and middle)
-
-                        //Log.i(TAG, "lowGammaRaw " + power.lowGamma);
-                        //Log.i(TAG, "lowGammaVolts " + powerToVolts(power.lowGamma));
-                        //Log.i(TAG, "middleGammaRaw " + power.middleGamma);
-                        //Log.i(TAG, "middleGammaVolts " + powerToVolts(power.middleGamma));
-
-                        //jsnieves:COMMENT:Beta (low and high)
-                        //Log.i(TAG, "lowBetaRaw " + power.lowBeta);
-                        //Log.i(TAG, "lowBetaVolts " + powerToVolts(power.lowBeta));
-                        //Log.i(TAG, "highBetaRaw " + power.highBeta);
-                        //Log.i(TAG, "highBetaVolts " + powerToVolts(power.highBeta));
-
-                        //jsnieves:COMMENT:Alpha (low and high)
-                        Log.i(TAG, "lowAlphaRaw " + power.lowAlpha);
-                        Log.i(TAG, "lowAlphaVolts " + powerToVolts(power.lowAlpha));
-                        Log.i(TAG, "highAlphaRaw " + power.highAlpha);
-                        Log.i(TAG, "highAlphaVolts " + powerToVolts(power.highAlpha));
-
-                        //jsnieves:COMMENT:Theta
-                        Log.i(TAG, "ThetaRaw " + power.theta);
-                        Log.i(TAG, "ThetaVolts " + powerToVolts(power.theta));
-
-                        //jsnieves:COMMENT:Delta
-                        //Log.i(TAG, "DeltaRaw " + power.delta);
-                        //Log.i(TAG, "DeltaVolts " + powerToVolts(power.delta));
-
-                        //jsnieves:END:Log
-
-                        //jsnieve:BEGIN
-                        //updates lowest and highest values
-                        //TODO perhaps store power.delta to a value (as it is in constant flux)
-                        //TODO: set lowest to "gone" in layout, due to information being mostly irrelevant and almost always ending up at ZERO
-                        //TODO: check to make sure textView contains a number and not a String
-                        if (power.delta < Integer.valueOf(tv_delta_lowest.getText().toString())) {
-                            tv_delta_lowest.setText("" + power.delta);
-                        } else if (power.delta > Integer.valueOf(tv_delta_highest.getText().toString())) {
-                            tv_delta_highest.setText("" + power.delta);
-                        }
-                        //jsnieves:END
-                    }
-                    break;
-
-                default:
-                    //jsnieves:COMMENT:Handle and Log any/all other messages
-                    Log.d(TAG, "UNKNOWN DataType Result: " + msg.arg1);
-                    break;
-            }
-            super.handleMessage(msg);
-        }
-    };
-
+    private Handler LinkDetectedHandler;
     // (7) demo of TgStreamHandler
     private TgStreamHandler callback = new TgStreamHandler() {
+
 
         //jsnieves:COMMENT:BT states
 
@@ -264,22 +100,22 @@ public class BluetoothAdapterDemoActivity extends Activity {
             // TODO Auto-generated method stub
             Log.d(TAG, "connectionStates change to: " + connectionStates);
             switch (connectionStates) {
-                    //jsnieves:BEGIN:added additional state from ConnectionStates.class, sorted all states by their numeric equivalents
+                //jsnieves:BEGIN:added additional state from ConnectionStates.class, sorted all states by their numeric equivalents
 
                 case ConnectionStates.STATE_INIT:
-                    showToast("STATE_INIT", Toast.LENGTH_SHORT);
+                    if (isDebugVerbose) showToast("STATE_INIT", Toast.LENGTH_SHORT);
                     break;
-                    //jsnieves:END
+                //jsnieves:END
 
                 case ConnectionStates.STATE_CONNECTING:
                     //jsnieves:BEGIN
-                    showToast("STATE_CONNECTING", Toast.LENGTH_SHORT);
+                    if (isDebugVerbose) showToast("STATE_CONNECTING", Toast.LENGTH_SHORT);
                     //jsnieves:END
                     break;
 
                 case ConnectionStates.STATE_CONNECTED:
                     tgStreamReader.start();
-                    showToast("Connected", Toast.LENGTH_SHORT);
+                    if (isDebugVerbose || isDebug) showToast("Connected", Toast.LENGTH_SHORT);
                     break;
 
                 case ConnectionStates.STATE_WORKING:
@@ -288,7 +124,7 @@ public class BluetoothAdapterDemoActivity extends Activity {
                     //You can change the save path by calling setRecordStreamFilePath(String filePath) before startRecordRawData
                     tgStreamReader.startRecordRawData();
                     //jsnieves:BEGIN
-                    showToast("STATE_WORKING", Toast.LENGTH_SHORT);
+                    if (isDebugVerbose) showToast("STATE_WORKING", Toast.LENGTH_SHORT);
                     //jsnieves:END
                     break;
 
@@ -296,27 +132,27 @@ public class BluetoothAdapterDemoActivity extends Activity {
                     // We have to call tgStreamReader.stop() and tgStreamReader.close() much more than
                     // tgStreamReader.connectAndstart(), because we have to prepare for that.
                     //jsnieves:BEGIN
-                    showToast("STATE_STOPPED", Toast.LENGTH_SHORT);
+                    if (isDebugVerbose) showToast("STATE_STOPPED", Toast.LENGTH_SHORT);
                     //jsnieves:END
                     break;
 
                 case ConnectionStates.STATE_DISCONNECTED:
                     //jsnieves:BEGIN
-                    showToast("STATE_DISCONNECTED", Toast.LENGTH_SHORT);
+                    if (isDebugVerbose || isDebug) showToast("STATE_DISCONNECTED", Toast.LENGTH_SHORT);
                     //jsnieves:END
                     break;
 
                 //jsnieves:BEGIN:added additional state from ConnectionStates.class
                 case ConnectionStates.STATE_COMPLETE:
-                    showToast("STATE_COMPLETE", Toast.LENGTH_SHORT);
+                    if (isDebugVerbose) showToast("STATE_COMPLETE", Toast.LENGTH_SHORT);
                     break;
 
                 case ConnectionStates.STATE_RECORDING_START:
-                    showToast("STATE_RECORDING_START", Toast.LENGTH_SHORT);
+                    if (isDebugVerbose || isDebug) showToast("STATE_RECORDING_START", Toast.LENGTH_SHORT);
                     break;
 
                 case ConnectionStates.STATE_RECORDING_END:
-                    showToast("STATE_RECORDING_END", Toast.LENGTH_SHORT);
+                    if (isDebugVerbose || isDebug) showToast("STATE_RECORDING_END", Toast.LENGTH_SHORT);
                     break;
                 //jsnieves:END:added additional state from ConnectionStates.class
 
@@ -324,7 +160,7 @@ public class BluetoothAdapterDemoActivity extends Activity {
                     //(9) demo of recording raw data, exception handling
                     tgStreamReader.stopRecordRawData();
 
-                    showToast("Get data time out!", Toast.LENGTH_SHORT);
+                    if (isDebugVerbose || isDebug) showToast("Get data time out!", Toast.LENGTH_SHORT);
                     break;
 
                 case ConnectionStates.STATE_FAILED:
@@ -333,13 +169,13 @@ public class BluetoothAdapterDemoActivity extends Activity {
                     // Maybe you have to try again
 
                     //jsnieves:BEGIN
-                    showToast("STATE_FAILED", Toast.LENGTH_SHORT);
+                    if (isDebugVerbose || isDebug) showToast("STATE_FAILED", Toast.LENGTH_SHORT);
                     //jsnieves:END
                     break;
 
                 case ConnectionStates.STATE_ERROR:
                     //jsnieves:BEGIN
-                    showToast("STATE_ERROR", Toast.LENGTH_SHORT);
+                    if (isDebugVerbose || isDebug) showToast("STATE_ERROR", Toast.LENGTH_SHORT);
                     //jsnieves:END
                     break;
             }
@@ -381,6 +217,184 @@ public class BluetoothAdapterDemoActivity extends Activity {
         }
 
     };
+
+    public BluetoothAdapterDemoActivity() {
+        this.rawComplexArray = new Complex[GlobalSettings.samplingSizeInt];
+        this.fftComplexArrayResults = new Complex[GlobalSettings.samplingSizeInt];
+        this.waveView = null;
+        this.tv_badpacket = null;
+        this.tv_ps = null;
+        this.tv_attention = null;
+        this.tv_meditation = null;
+        this.tv_delta = null;
+        this.tv_delta_lowest = null;
+        this.tv_delta_highest = null;
+        this.tv_theta = null;
+        this.tv_lowalpha = null;
+        this.tv_highalpha = null;
+        this.tv_lowbeta = null;
+        this.tv_highbeta = null;
+        this.tv_lowgamma = null;
+        this.tv_middlegamma = null;
+        this.tv_heartrate = null;
+        this.btn_start = null;
+        this.btn_stop = null;
+        this.badPacketCount = 0;
+
+        this.LinkDetectedHandler = new Handler() {
+            int count = 0;
+            double rawReal;
+            double rawImaginary;
+
+            @Override
+            public void handleMessage(Message msg) {
+                // jsnieves:COMMENT:Handles various MindDataTypes
+                switch (msg.what) {
+
+                    case MindDataType.CODE_MEDITATION:
+                        Log.d(TAG, "HeadDataType.CODE_MEDITATION " + msg.arg1);
+                        tv_meditation.setText("" + msg.arg1);
+                        break;
+
+                    case MindDataType.CODE_ATTENTION:
+                        Log.d(TAG, "CODE_ATTENTION " + msg.arg1);
+                        tv_attention.setText("" + msg.arg1);
+                        break;
+
+                    case 3: //jsnieves:COMMENT:0x03 HEART_RATE (0-255) 1Hz on EGO.
+                        Log.d(TAG, "CODE_HEARTRATE " + msg.arg1);
+                        tv_heartrate.setText("" + msg.arg1);
+                        break;
+                /* jsnieves:COMMENT:unfortunately, this is not a native feature of our headset model.
+                   "http://developer.neurosky.com/docs/doku.php?id=thinkgear_communications_protocol"
+                   TODO:revisit and consider manual implementations */
+
+                    case MindDataType.CODE_POOR_SIGNAL:
+                        int poorSignal = msg.arg1;
+                        if (isDebugVerbose || isDebug) Log.d(TAG, "poorSignal:" + poorSignal);
+                        tv_ps.setText("" + msg.arg1);
+                        break;
+
+                    case MindDataType.CODE_FILTER_TYPE: //jsnieves:COMMENT:Enum FilterType : FILTER_50HZ(4), FILTER_60HZ(5)
+                        Log.d(TAG, "CODE_FILTER_TYPE: " + msg.arg1);
+                        break;
+
+                    case MSG_UPDATE_BAD_PACKET:
+                        tv_badpacket.setText("" + msg.arg1);
+                        break;
+
+
+                    case MindDataType.CODE_RAW:
+                        //jsnieves:COMMENT:Logs
+                        //Log.i(TAG, "Raw " + msg.arg1);
+
+                        rawReal = (double) msg.arg1;
+                        rawImaginary = 0.0;
+                        //jsnieves:COMMENT:Graph update
+                        updateWaveView(msg.arg1);
+
+                        rawComplexArray[count] = new Complex(rawReal, rawImaginary);
+                        count++;
+
+                        if (count >= 512) {
+                            //jsnieves:COMMENT:Log
+                            //Log.i(TAG, "512 Reached");
+
+                            count = 0;
+                            Complex[] temp = rawComplexArray;
+                            //jsnieves:COMMENT:compute FFT, store results in fftComplexArrayResults
+                            fftComplexArrayResults = FFT.fft(rawComplexArray);
+
+                            //caleb magnitude testing
+                            double magnitude[] = new double[fftComplexArrayResults.length];
+                            magnitude = Magnitude.mag(fftComplexArrayResults);
+
+                            for (int i = 0; i < magnitude.length; i++) {
+                                System.out.println("MAGNITUDE" + "[" + i + "]: " + magnitude[i]);
+                            }
+                            //caleb magnitude testing end
+
+                            //jsnieves:COMMENT:Log results
+                            for (int i = 0; i < fftComplexArrayResults.length; i++) {
+                                Log.i(TAG, " rawComplexArray[" + i + "]" + " = " + temp[i]);
+                                Log.i(TAG, " fftComplexArrayResults[" + i + "]" + " = " + fftComplexArrayResults[i]);
+                            }
+                        }
+                        break;
+
+
+                    case MindDataType.CODE_EEGPOWER:
+                        EEGPower power = (EEGPower) msg.obj;
+                        if (power.isValidate()) {
+                            tv_delta.setText("" + power.delta);
+                            tv_theta.setText("" + power.theta);
+                            tv_lowalpha.setText("" + power.lowAlpha);
+                            tv_highalpha.setText("" + power.highAlpha);
+                            tv_lowbeta.setText("" + power.lowBeta);
+                            tv_highbeta.setText("" + power.highBeta);
+                            tv_lowgamma.setText("" + power.lowGamma);
+                            tv_middlegamma.setText("" + power.middleGamma);
+
+                            //jsnieves:BEGIN:simple conversions dB
+                            //(rawValue * (1.8/4096)) / 2000 ... convert TGAT-based EEG sensor values (such as TGAT, TGAM, MindWave, MindWave Mobile) to voltage values
+                            //TODO:Test/complete
+                            //jsnieves:END:simple conversions
+
+
+                            //jsnieves:BEGIN:Log
+                            //TODO:retag as RAW Power
+                            //jsnieves:COMMENT:Gamma (low and middle)
+
+                            //Log.i(TAG, "lowGammaRaw " + power.lowGamma);
+                            //Log.i(TAG, "lowGammaVolts " + powerToVolts(power.lowGamma));
+                            //Log.i(TAG, "middleGammaRaw " + power.middleGamma);
+                            //Log.i(TAG, "middleGammaVolts " + powerToVolts(power.middleGamma));
+
+                            //jsnieves:COMMENT:Beta (low and high)
+                            //Log.i(TAG, "lowBetaRaw " + power.lowBeta);
+                            //Log.i(TAG, "lowBetaVolts " + powerToVolts(power.lowBeta));
+                            //Log.i(TAG, "highBetaRaw " + power.highBeta);
+                            //Log.i(TAG, "highBetaVolts " + powerToVolts(power.highBeta));
+
+                            //jsnieves:COMMENT:Alpha (low and high)
+                            Log.i(TAG, "lowAlphaRaw " + power.lowAlpha);
+                            Log.i(TAG, "lowAlphaVolts " + powerToVolts(power.lowAlpha));
+                            Log.i(TAG, "highAlphaRaw " + power.highAlpha);
+                            Log.i(TAG, "highAlphaVolts " + powerToVolts(power.highAlpha));
+
+                            //jsnieves:COMMENT:Theta
+                            Log.i(TAG, "ThetaRaw " + power.theta);
+                            Log.i(TAG, "ThetaVolts " + powerToVolts(power.theta));
+
+                            //jsnieves:COMMENT:Delta
+                            //Log.i(TAG, "DeltaRaw " + power.delta);
+                            //Log.i(TAG, "DeltaVolts " + powerToVolts(power.delta));
+
+                            //jsnieves:END:Log
+
+                            //jsnieve:BEGIN
+                            //updates lowest and highest values
+                            //TODO perhaps store power.delta to a value (as it is in constant flux)
+                            //TODO: set lowest to "gone" in layout, due to information being mostly irrelevant and almost always ending up at ZERO
+                            //TODO: check to make sure textView contains a number and not a String
+                            if (power.delta < Integer.valueOf(tv_delta_lowest.getText().toString())) {
+                                tv_delta_lowest.setText("" + power.delta);
+                            } else if (power.delta > Integer.valueOf(tv_delta_highest.getText().toString())) {
+                                tv_delta_highest.setText("" + power.delta);
+                            }
+                            //jsnieves:END
+                        }
+                        break;
+
+                    default:
+                        //jsnieves:COMMENT:Handle and Log any/all other messages
+                        Log.d(TAG, "UNKNOWN DataType Result: " + msg.arg1);
+                        break;
+                }
+                super.handleMessage(msg);
+            }
+        };
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -485,7 +499,7 @@ public class BluetoothAdapterDemoActivity extends Activity {
     private void initNskAlgoSdk() {
         //jsnieves:COMMENT:API initialization of EEG Algorithms. Values will be compared against our own calculations.
         nskAlgoSdk = new NskAlgoSdk(); //added jni libs (*.so files)
-
+        //jsnieves:TODO:implement so that we can compare band values with ASIC's
         //jsnieves:BEGIN:from EEG algorithm SDK PDF
         nskAlgoSdk.setOnBPAlgoIndexListener(new NskAlgoSdk.OnBPAlgoIndexListener() {
             @Override
@@ -567,7 +581,7 @@ public class BluetoothAdapterDemoActivity extends Activity {
     }
 
 
-    public void sendCommandtoDevice(byte[] command){
+    public void sendCommandtoDevice(byte[] command) {
         //jsnieves:COMMENT:method to send firmware byte commands to EEG
         if (tgStreamReader != null) {
             //tgStreamReader.sendCommandtoDevice(command);
