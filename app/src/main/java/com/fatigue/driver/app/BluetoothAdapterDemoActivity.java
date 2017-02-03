@@ -14,6 +14,7 @@ package com.fatigue.driver.app;
 
 import android.bluetooth.BluetoothAdapter;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.FragmentActivity;
@@ -585,6 +586,27 @@ public class BluetoothAdapterDemoActivity extends FragmentActivity {
         //jsnieves:COMMENT:method to send firmware byte commands to EEG
         if (tgStreamReader != null) {
             //tgStreamReader.sendCommandtoDevice(command);
+        }
+    }
+
+    public boolean isExternalStorageWritable() {
+        String state = Environment.getExternalStorageState();
+        return "mounted".equals(state);
+    }
+
+    public boolean isExternalStorageReadable() {
+        String state = Environment.getExternalStorageState();
+        return "mounted".equals(state) || "mounted_ro".equals(state);
+    }
+
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch(requestCode) {
+            case 112:
+                if(grantResults.length <= 0 || grantResults[0] != 0) {
+                    Toast.makeText(this.getParent(), "Write access denied. App functionality may be limited. Please consider granting this permission.", Toast.LENGTH_SHORT).show();
+                }
+            default:
         }
     }
 }
