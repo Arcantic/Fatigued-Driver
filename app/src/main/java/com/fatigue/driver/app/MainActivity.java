@@ -21,6 +21,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -56,18 +58,21 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
         getSupportActionBar().setHomeButtonEnabled(true);
 
+
         //Initialize the navigation drawer
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setCheckedItem(R.id.nav_home);
 
-        //Replace the content with the Main Fragment
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-        Fragment fragment = new MainFragment();
-        fragmentTransaction.add(R.id.content_frame, fragment);
-        fragmentTransaction.commit();
+        //If a user has been selected, then load the MainFragment.
+        //else, load the UserSelect fragment.
+        if(User.isSelected()){
+            loadMainFragment();
+        }
+        else {
+            loadUserSelectFragment();
+        }
 
 
         //Check for Bluetooth Connection
@@ -78,6 +83,49 @@ public class MainActivity extends AppCompatActivity
         this.registerReceiver(mReceiver, filter2);
         this.registerReceiver(mReceiver, filter3);
     }
+
+    //Load the main fragment...
+    public void loadMainFragment(){
+        unlockDrawer();
+        setNavigationTitle(User.user_name);
+
+        //Replace the content with the Main Fragment
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        Fragment fragment = new MainFragment();
+        fragmentTransaction.replace(R.id.content_frame, fragment);
+        fragmentTransaction.commit();
+    }
+
+    //Load the user select fragment...
+    public void loadUserSelectFragment(){
+        lockDrawer();
+        //Replace the content with the UserSelect Fragment
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        Fragment fragment = new UserSelectFragment();
+        fragmentTransaction.replace(R.id.content_frame, fragment);
+        fragmentTransaction.commit();
+    }
+
+    public void lockDrawer() {
+        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+    }
+    public void unlockDrawer(){
+        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+    }
+
+    public void setNavigationTitle(String title){
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        View hView = navigationView.getHeaderView(0);
+        TextView nav_user = (TextView)hView.findViewById(R.id.nav_title);
+        nav_user.setText(title);
+    }
+
+
+
 
     @Override
     public void onBackPressed() {
