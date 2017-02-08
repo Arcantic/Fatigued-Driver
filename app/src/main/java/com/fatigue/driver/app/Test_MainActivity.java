@@ -21,6 +21,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import libsvm.svm_model;
+
 //jsnieves:BEGIN
 @TargetApi(21)  // (18) to support:  mBluetoothAdapter = ((BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
 // (21) to support: if (mBluetoothAdapter.isMultipleAdvertisementSupported())
@@ -175,6 +177,10 @@ public class Test_MainActivity extends AppCompatActivity
             }
         });
 
+
+
+        final SVMTrainingTest svm_test = new SVMTrainingTest();
+        svm_test.setData();
         btn_test3.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -183,6 +189,9 @@ public class Test_MainActivity extends AppCompatActivity
 
                 Log.d(TAG, "Starting TestThree Activity");
                 startActivity(intent);
+                svm_model model = svm_test.svmTrain();
+                //SAVE "model" data to text file/
+                System.out.println("TEST RESULT: "+model.nr_class);
             }
         });
 
