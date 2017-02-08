@@ -318,7 +318,7 @@ public class BluetoothAdapterDemoActivity extends FragmentActivity {
                             //caleb magnitude testing
                             double magnitude[] = new double[fftComplexArrayResults.length];
                             magnitude = Magnitude.mag(fftComplexArrayResults);
-                            double normalization[] = Magnitude.norm(magnitude);
+                            //double normalization[] = Magnitude.norm(magnitude);
 
                             for (int i = 0; i < magnitude.length; i++) {
                                 System.out.println("MAGNITUDE" + "[" + i + "]: " + magnitude[i]);

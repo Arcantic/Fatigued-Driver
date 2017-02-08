@@ -31,6 +31,7 @@ public class Magnitude {
     }
 
     public static double[] norm(double[] mag){
+        /*
         double mag_min = Math.min(mag);
         double mag_max = Math.max(mag);
 
@@ -38,8 +39,10 @@ public class Magnitude {
         for(int i=0; i<mag.length; i++){
             norm_val[i] = (mag[i]-mag_min)/(mag_max-mag_min);
         }
-
         return norm_val;
+
+        */
+        return null;
     }
 
 }
