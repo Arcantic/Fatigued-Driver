@@ -15,6 +15,9 @@ import java.util.ArrayList;
  */
 
 public class UserSelectFragment extends Fragment{
+    Button button_start;
+    Button button_new_user;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -25,7 +28,7 @@ public class UserSelectFragment extends Fragment{
         loadUserList();
 
         //TODO: Add buttons programatically using a button fragment. Right now, just using a temporary "Start"-like button.
-        button_start = (Button)view.findViewById(R.id.button_start_temp);
+        //button_start = (Button)view.findViewById(R.id.button_start_temp);
         button_start.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 User.selectUser((String)button_start.getText());//...
@@ -47,10 +50,6 @@ public class UserSelectFragment extends Fragment{
 
         return view;
     }
-
-    Button button_start;
-    Button button_new_user;
-
 
     public void loadUserList(){
         ArrayList user_list = User.loadUserList(getContext());
