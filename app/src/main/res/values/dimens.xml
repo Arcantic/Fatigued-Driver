@@ -58,4 +58,8 @@
     <dimen name="divider_margin">12dp</dimen>
     <dimen name="card_height_training_display">286dp</dimen>
     <dimen name="card_title_margin">12dp</dimen>
+
+
+
+    <dimen name="dialog_default_margin_lr">64dp</dimen>
 </resources>

@@ -38,6 +38,8 @@
                 android:id="@+id/content_frame"
                 layout="@layout/fragment_main"
                 android:layout_marginTop="@dimen/actionbar_height"
+                android:clipChildren="false"
+                android:clipToPadding="false"
                 android:background="@color/colorBackground"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
