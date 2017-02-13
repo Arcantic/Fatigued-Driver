@@ -1,20 +1,16 @@
 package com.fatigue.driver.app;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -40,8 +36,8 @@ public class UserSelectFragment extends Fragment{
         button_new_user = (FloatingActionButton)view.findViewById(R.id.button_newuser);
         button_new_user.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                DialogFragment dialog = new NewUserPopup();
-                dialog.show(getActivity().getSupportFragmentManager(), "NewUserPopup");
+                DialogFragment dialog = new NewUserDialog();
+                dialog.show(getActivity().getSupportFragmentManager(), "NewUserDialog");
 
                 InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
