@@ -23,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -93,9 +94,17 @@ public class MainActivity extends AppCompatActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-        Fragment fragment = new MainFragment();
-        fragmentTransaction.replace(R.id.content_frame, fragment);
-        fragmentTransaction.commit();
+        if(!connectionBluetooth() || !connectionHeadset()){
+            //Load connection error screen
+            Fragment fragment = new MainFragment2();
+            fragmentTransaction.replace(R.id.content_frame, fragment);
+            fragmentTransaction.commit();
+        }else{
+            //Load mains screen
+            Fragment fragment = new MainFragment();
+            fragmentTransaction.replace(R.id.content_frame, fragment);
+            fragmentTransaction.commit();
+        }
     }
 
     //Load the user select fragment...
@@ -123,6 +132,41 @@ public class MainActivity extends AppCompatActivity
         TextView nav_user = (TextView)hView.findViewById(R.id.nav_title);
         nav_user.setText(title);
     }
+
+
+    private BluetoothAdapter mBluetoothAdapter;
+    //Add code to check for bluetooth connection
+    public boolean connectionBluetooth(){
+        // Is Bluetooth supported on this device?
+        if (mBluetoothAdapter != null) {
+            // Is Bluetooth turned on?
+            if (mBluetoothAdapter.isEnabled()) {
+                // Are Bluetooth Advertisements supported on this device?
+                return true;
+            } else {
+                // Prompt user to turn on Bluetooth (logic continues in onActivityResult()).
+                Toast.makeText(getApplicationContext(), "Bluetooth not connected", Toast.LENGTH_SHORT).show();
+                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(enableBtIntent, Constants.REQUEST_ENABLE_BT);
+                //jsnieves:TODO:create OnResult method
+            }
+        } else {
+            // Bluetooth is not supported.
+            Toast.makeText(getApplicationContext(), "Bluetooth not supported on this device", Toast.LENGTH_SHORT).show();
+        }
+
+        return false;
+    }
+
+
+    //Add code to check for headset connection
+    public boolean connectionHeadset(){
+        return true;
+    }
+
+
+
+
 
 
 
