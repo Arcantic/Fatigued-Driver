@@ -54,21 +54,21 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         mTitle = getString(R.string.title_main);
 
+
+        //Actionbar creation
         //Initialize the navigation drawer
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.setStatusBarBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+        mDrawerToggle = new ActionBarDrawerToggle(this, drawer, (Toolbar)findViewById(R.id.toolbar), R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(mDrawerToggle);
+        mDrawerToggle.syncState();
+        getSupportActionBar().setHomeButtonEnabled(true);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             drawer.setElevation(16);
             toolbar.setElevation(4);
         }
 
-        //Actionbar creation
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-        getSupportActionBar().setHomeButtonEnabled(true);
 
 
         //Initialize the navigation drawer
@@ -184,7 +184,7 @@ public class MainActivity extends AppCompatActivity
     public void testIsRunningAlert(final boolean backPressed, final MenuItem menuItem){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Test Running");
-        builder.setMessage("This action will abort the test. Continue?");
+        builder.setMessage("This action will cancel the test. Continue?");
         builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 cancelTest();
@@ -258,9 +258,10 @@ public class MainActivity extends AppCompatActivity
         }else if (fragmentManager.getBackStackEntryCount() > 0) {
             Log.i("MainActivity", "popping backstack");
             fragmentManager.popBackStack();
-            if(list_title_stack.size() > 1)
-                setTitle(list_title_stack.get(list_title_stack.size()-1));
-            else{
+            if(list_title_stack.size() > 1) {
+                setTitle(list_title_stack.get(list_title_stack.size() - 1));
+                removeDrawerBackButton();
+            }else{
                 setTitle(getTitle());
                 NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
                 navigationView.setCheckedItem(R.id.nav_home);
@@ -270,6 +271,36 @@ public class MainActivity extends AppCompatActivity
             super.onBackPressed();
         }
     }
+
+    public ActionBarDrawerToggle mDrawerToggle;
+    private boolean mToolBarNavigationListenerIsRegistered = false;
+    public void removeDrawerBackButton(){
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerToggle = new ActionBarDrawerToggle(this, drawer, (Toolbar)findViewById(R.id.toolbar), R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(mDrawerToggle);
+        mDrawerToggle.syncState();
+
+        // Show hamburger
+        mDrawerToggle.setDrawerIndicatorEnabled(true);
+        // Remove the/any drawer toggle listener
+        mDrawerToggle.setToolbarNavigationClickListener(null);
+        mToolBarNavigationListenerIsRegistered = false;
+    }
+
+    public void drawDrawerBackButton(){
+        mDrawerToggle.setDrawerIndicatorEnabled(false);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        if(!mToolBarNavigationListenerIsRegistered) {
+            mDrawerToggle.setToolbarNavigationClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onBackPressed();
+                }
+            });
+        }
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

@@ -8,6 +8,10 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -65,11 +69,14 @@ public class CalibrationFragment extends Fragment{
             MainActivity.list_title_stack.add("Calibration");
             transaction.commit();
             getActivity().setTitle("Calibration");
+            ((MainActivity)getActivity()).drawDrawerBackButton();
         } catch (java.lang.InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
     }
+
+
 
 }
