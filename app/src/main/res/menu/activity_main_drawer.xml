@@ -24,9 +24,9 @@
                     android:icon="@drawable/ic_bug_report_black_24dp"
                     android:title="@string/nav_debugging"/>
                 <item
-                    android:id="@+id/nav_training"
+                    android:id="@+id/nav_calibration"
                     android:icon="@drawable/ic_build_black_24dp"
-                    android:title="@string/nav_training"/>
+                    android:title="@string/nav_calibration"/>
             </group>
         </menu>
     </item>

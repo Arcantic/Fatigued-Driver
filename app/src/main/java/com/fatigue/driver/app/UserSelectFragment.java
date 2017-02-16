@@ -1,17 +1,24 @@
 package com.fatigue.driver.app;
 
 import android.content.Context;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -51,8 +58,36 @@ public class UserSelectFragment extends Fragment{
         ArrayList user_list = User.loadUserList(getContext());
         System.out.println("USER LIST SIZE: " + user_list.size());
 
-        RelativeLayout parent_layout = (RelativeLayout)view.findViewById(R.id.layout_root_users);
+        addUserListA(user_list, view);
+        //addUserListB(user_list, view, inflater);
+    }
 
+
+    public RecyclerView mRecyclerView;
+    public RecyclerView.Adapter mAdapter;
+    public RecyclerView.LayoutManager mLayoutManager;
+    public void addUserListA(ArrayList user_list, View view){
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_users);
+        // use this setting to improve performance if you know that changes
+        // in content do not change the layout size of the RecyclerView
+        mRecyclerView.setHasFixedSize(true);
+
+        // use a linear layout manager
+        mLayoutManager = new LinearLayoutManager(view.getContext());
+        mRecyclerView.setLayoutManager(mLayoutManager);
+
+        //DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(title_text.getContext(), DividerItemDecoration.VERTICAL);
+        //mRecyclerView.addItemDecoration(dividerItemDecoration);
+
+        // specify an adapter (see also next example)
+        mAdapter = new UserListAdapter(user_list);
+        mRecyclerView.setAdapter(mAdapter);
+    }
+
+
+    //Alternate List instead of A
+    public void addUserListB(ArrayList user_list, View view, LayoutInflater inflater){
+        RelativeLayout parent_layout = (RelativeLayout)view.findViewById(R.id.layout_root_users);
         ArrayList<View> children = new ArrayList<>();
 
         //Loop through user list and add a child layout for each
@@ -65,14 +100,14 @@ public class UserSelectFragment extends Fragment{
 
             //Set params on the child layout
             RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) child_layout.getLayoutParams();
-            layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+            //layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
             if(i > 0)
                 layoutParams.addRule(RelativeLayout.BELOW, children.get(i-1).getId());
             layoutParams.setMargins(0, 0, 0, 8);
             child_layout.setLayoutParams(layoutParams);
 
             //Set the button info and click
-            final Button button = (Button) child.findViewById(R.id.button_user_name);
+            final Button button = (Button) child.findViewById(R.id.text_username);
             button.setText((String) user_list.get(i));
             button.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {

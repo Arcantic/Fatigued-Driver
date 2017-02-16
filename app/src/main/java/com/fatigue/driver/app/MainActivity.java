@@ -2,10 +2,13 @@ package com.fatigue.driver.app; /*
  |  CREATED on 10/27/16.
 */
 
+import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
@@ -17,13 +20,21 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -137,6 +148,8 @@ public class MainActivity extends AppCompatActivity
     private BluetoothAdapter mBluetoothAdapter;
     //Add code to check for bluetooth connection
     public boolean connectionBluetooth(){
+        mBluetoothAdapter = ((BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
+
         // Is Bluetooth supported on this device?
         if (mBluetoothAdapter != null) {
             // Is Bluetooth turned on?
@@ -159,12 +172,74 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+
     //Add code to check for headset connection
     public boolean connectionHeadset(){
         return true;
     }
 
 
+
+    //Warn user that test will be canceled.
+    public void testIsRunningAlert(final boolean backPressed, final MenuItem menuItem){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Test Running");
+        builder.setMessage("This action will abort the test. Continue?");
+        builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                cancelTest();
+
+                //Force back-press
+                if(backPressed)
+                    onBackPressed();
+
+                //Force menu selection
+                if(!backPressed && menuItem != null)
+                    selectDrawerItem(menuItem);
+
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+                navigationView.setCheckedItem(R.id.nav_calibration);
+
+                dialog.dismiss();
+            }
+        });
+
+        final AlertDialog dialog = builder.create();
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setOnKeyListener(new Dialog.OnKeyListener() {
+
+            @Override
+            public boolean onKey(DialogInterface arg0, int keyCode,
+                                 KeyEvent event) {
+                // TODO Auto-generated method stub
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+                    navigationView.setCheckedItem(R.id.nav_calibration);
+                    dialog.dismiss();
+                }
+                return true;
+            }
+        });
+        dialog.show();
+    }
+
+    public boolean isTestRunning(){
+        return TrainingFragment.running_test;
+    }
+
+    public void cancelTest(){
+        if(TrainingFragment.running_test){
+            TrainingFragment.forceEndTest();
+        }
+        //Toast and allow screen sleep
+        Toast.makeText(getApplicationContext(), "Test Canceled", Toast.LENGTH_LONG).show();
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    }
 
 
 
@@ -173,9 +248,24 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+        }else if(isTestRunning()){
+            testIsRunningAlert(true, null);
+        }else if (fragmentManager.getBackStackEntryCount() > 0) {
+            Log.i("MainActivity", "popping backstack");
+            fragmentManager.popBackStack();
+            if(list_title_stack.size() > 1)
+                setTitle(list_title_stack.get(list_title_stack.size()-1));
+            else{
+                setTitle(getTitle());
+                NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+                navigationView.setCheckedItem(R.id.nav_home);
+            }
+            list_title_stack.remove(list_title_stack.size()-1);
         } else {
             super.onBackPressed();
         }
@@ -227,14 +317,18 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    public static ArrayList<String> list_title_stack = new ArrayList<>();
+
     /** Swaps fragments in the main content view*/
     private void selectDrawerItem(MenuItem menuItem) {
         // Create a new fragment and specify the fragment to show based on nav item clicked
         Fragment fragment = null;
         Class fragmentClass = MainFragment.class;
+        boolean back_stack = true;
         switch(menuItem.getItemId()) {
             case R.id.nav_home:
                 fragmentClass = MainFragment.class;
+                back_stack = false;
                 break;
             case R.id.nav_stats:
                 fragmentClass = StatsFragment.class;
@@ -245,8 +339,8 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_debugging:
                 fragmentClass = DebuggingFragment.class;
                 break;
-            case R.id.nav_training:
-                fragmentClass = TrainingFragment.class;
+            case R.id.nav_calibration:
+                fragmentClass = CalibrationFragment.class;
                 break;
             default:
                 fragmentClass = MainFragment.class;
@@ -258,14 +352,30 @@ public class MainActivity extends AppCompatActivity
             e.printStackTrace();
         }
 
-        // Insert the fragment by replacing any existing fragment
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
 
-        // Highlight the selected item has been done by NavigationView
-        menuItem.setChecked(true);
-        // Set action bar title
-        setTitle(menuItem.getTitle());
+        //See if a test is running before switching fragments.
+        if(!isTestRunning()) {
+            // Insert the fragment by replacing any existing fragment
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            list_title_stack.clear();
+
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            transaction.replace(R.id.content_frame, fragment);
+            if (back_stack) {
+                transaction.addToBackStack(null);
+                list_title_stack.add(menuItem.getTitle() + "");
+            }
+            transaction.commit();
+
+            // Highlight the selected item has been done by NavigationView
+            menuItem.setChecked(true);
+            // Set action bar title
+            setTitle(menuItem.getTitle());
+        }else{
+            //If a test is running, alert user first
+            testIsRunningAlert(false, menuItem);
+        }
         // Close the navigation drawer
         drawer.closeDrawers();
     }

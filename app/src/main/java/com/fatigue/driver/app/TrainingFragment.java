@@ -8,6 +8,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -44,7 +45,7 @@ public class TrainingFragment extends Fragment implements View.OnClickListener {
 
 
 
-        //ID the "duration" edittext and add listener
+        //ID the "duration" and add listener
         edit_duration = (EditText)view.findViewById(R.id.edit_duration);
         getDuration();
         edit_duration.addTextChangedListener(new TextWatcher() {
@@ -62,7 +63,7 @@ public class TrainingFragment extends Fragment implements View.OnClickListener {
 
 
 
-        //ID the "count" edittext and add listener
+        //ID the "count" and add listener
         edit_count = (EditText)view.findViewById(R.id.edit_count);
         getCount();
         edit_count.addTextChangedListener(new TextWatcher() {
@@ -81,7 +82,7 @@ public class TrainingFragment extends Fragment implements View.OnClickListener {
 
 
 
-        //ID the "eye toggle" edittext and add listener
+        //ID the "eye toggle" and add listener
         switch_eyes = (Switch)view.findViewById(R.id.switch_eyes);
         eyes_closed = switch_eyes.isChecked();
         switch_eyes.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -90,9 +91,11 @@ public class TrainingFragment extends Fragment implements View.OnClickListener {
                 if(eyes_closed){
                     edit_duration.setText(duration_default_closed+"");
                     duration = duration_default_closed;
+                    switch_eyes.setText("Eyes are closed");
                 }else{
                     edit_duration.setText(duration_default_open+"");
                     duration = duration_default_open;
+                    switch_eyes.setText("Eyes are open");
                 }
             }
         });
@@ -129,7 +132,7 @@ public class TrainingFragment extends Fragment implements View.OnClickListener {
     int duration = 0;
     int count = 0;
     boolean eyes_closed;
-    Boolean running_test = false;
+    public static Boolean running_test = false;
 
     int duration_default_open = 5;
     int duration_default_closed = 2;
@@ -147,7 +150,7 @@ public class TrainingFragment extends Fragment implements View.OnClickListener {
     }
 
 
-    CountDownTimer timer;
+    public static CountDownTimer timer;
     int timer_length_default = 5;
     //Start the test
     public void beginTest(){
@@ -162,6 +165,9 @@ public class TrainingFragment extends Fragment implements View.OnClickListener {
 
         //Begin updating the countdown textfield
         startTimer(timer_length_default);
+
+        //Prevent screen sleep
+        getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
 
@@ -224,11 +230,19 @@ public class TrainingFragment extends Fragment implements View.OnClickListener {
         count_left.setText("");
 
         enableSettings();
+
+        //Allow screen sleep
+        getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
-    public void makeToast(){
-
+    //Call this when forcing the test to end from another class
+    public static void forceEndTest(){
+        running_test = false;
+        if(timer != null)
+            timer.cancel();
     }
+
+
 
     public void disableSettings(){
         switch_eyes.setEnabled(false);

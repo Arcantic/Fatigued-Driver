@@ -42,15 +42,6 @@
                 android:text=""
                 />
 
-            <Button
-                android:id="@+id/button_start"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_centerInParent="true"
-                style="@style/Widget.AppCompat.Button.Colored"
-                android:text="Start" />
-
             <TextView
                 android:id="@+id/text_training_status"
                 android:gravity="center"
@@ -72,6 +63,15 @@
                 android:text=""
                 android:textColor="@color/colorAccent"
                 />
+
+            <Button
+                android:id="@+id/button_start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerInParent="true"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:text="Start" />
 
         </RelativeLayout>
 
@@ -119,7 +119,7 @@
                 style="@style/TextAppearance.AppCompat.Subhead"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Eyes are closed"
+                android:text="Eyes are open"
                 />
             <View
                 android:layout_width="match_parent"

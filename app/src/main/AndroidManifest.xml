@@ -40,8 +40,10 @@
             android:name="com.fatigue.driver.app.MainActivity"
             android:parentActivityName="com.fatigue.driver.app.Test_MainActivity"
             android:windowSoftInputMode="stateAlwaysHidden"
+            >
+        </activity>
 
-            > </activity>
+
         <activity
             android:name="com.fatigue.driver.app.TestTwo"
             android:parentActivityName="com.fatigue.driver.app.Test_MainActivity"
