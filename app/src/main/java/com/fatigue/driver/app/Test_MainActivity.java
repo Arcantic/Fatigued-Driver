@@ -45,6 +45,8 @@ public class Test_MainActivity extends AppCompatActivity
     private Button btn_test1 = null;
     private Button btn_test2 = null;
     private Button btn_test3 = null;
+    private Button btn_test4 = null;
+    private Button btn_test5 = null;
     //jsnieves:END:init test buttons
 
 
@@ -129,17 +131,15 @@ public class Test_MainActivity extends AppCompatActivity
     //end
 
     private void initView() {
-        //jsnieves:COMMENT:entire method from TGStream
 
         btn_adapter = (Button) findViewById(R.id.btn_adapter);
 
-        //jsnieves:BEGIN:added init test activity buttons
         btn_test1 = (Button) findViewById(R.id.btn_test1);
         btn_test2 = (Button) findViewById(R.id.btn_test2);
         btn_test3 = (Button) findViewById(R.id.btn_test3);
-        //jsnieves:END:added init test activity buttons
+        btn_test4 = (Button) findViewById(R.id.btn_test4);
+        btn_test5 = (Button) findViewById(R.id.btn_test5);
 
-        //jsnieves:COMMENT: btn_adapter is 2nd button on main_view.xml and of our primary and current concern
         //launches BluetoothAdapterDemoActivity
         btn_adapter.setOnClickListener(new View.OnClickListener() {
 
@@ -154,9 +154,8 @@ public class Test_MainActivity extends AppCompatActivity
             }
         });
 
-        //jsnieves;BEGIN:added onClickListeners for test buttons
+        //jsnieves;BEGIN: onClickListeners for test buttons
         btn_test1.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View arg0) {
                 Intent intent = new Intent(Test_MainActivity.this, MainActivity.class);
@@ -167,7 +166,6 @@ public class Test_MainActivity extends AppCompatActivity
         });
 
         btn_test2.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View arg0) {
                 Intent intent = new Intent(Test_MainActivity.this, TestTwo.class);
@@ -177,18 +175,29 @@ public class Test_MainActivity extends AppCompatActivity
             }
         });
 
-
-
-        final SVMTrainingTest svm_test = new SVMTrainingTest();
-        svm_test.setData();
         btn_test3.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View arg0) {
                 Intent intent = new Intent(Test_MainActivity.this, TestThree.class);
 
                 Log.d(TAG, "Starting TestThree Activity");
                 startActivity(intent);
+            }
+        });
+
+        btn_test4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+
+            }
+        });
+
+        btn_test5.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                final SVMTrainingTest svm_test = new SVMTrainingTest();
+                svm_test.setData();
+
                 svm_model model = svm_test.svmTrain();
                 //SAVE "model" data to text file/
                 System.out.println("TEST RESULT: "+model.nr_class);

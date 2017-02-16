@@ -17,7 +17,7 @@
         android:id="@+id/Hello"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"/>
+        android:text=""/>
 
     
     <Button
@@ -25,22 +25,25 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/Hello"
-        android:text="Launch modified BluetoothAdapterDemoActivity"/>
+        android:text="Launch modified BluetoothAdapterDemoActivity"
+        android:textAlignment="viewStart"/>
 
     <Button
         android:id="@+id/btn_test1"
+        style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="match_parent"
         android:layout_height="128dp"
         android:layout_below="@+id/btn_adapter"
-        style="@style/Widget.AppCompat.Button.Colored"
-        android:text="LAUNCH MAIN APP ACTIVITY"/>
+        android:text="LAUNCH MAIN APP ACTIVITY"
+        android:textAlignment="viewStart"/>
 
     <Button
         android:id="@+id/btn_test2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/btn_test1"
-        android:text="Launch Test2 Activity"/>
+        android:text="Launch Test2 Activity - Media Playback"
+        android:textAlignment="viewStart"/>
 
 
     <Button
@@ -48,7 +51,24 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/btn_test2"
-        android:text="Launch Test3 Activity"/>
+        android:text="Launch Test3 Activity - MindWave initialization"
+        android:textAlignment="viewStart"/>
+
+    <Button
+        android:id="@+id/btn_test4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btn_test3"
+        android:text="Launch Test4 Activity"
+        android:textAlignment="viewStart"/>
+
+    <Button
+        android:id="@+id/btn_test5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btn_test4"
+        android:text="Launch SVM Test"
+        android:textAlignment="viewStart"/>
 
 
 </RelativeLayout>
