@@ -291,7 +291,20 @@ public class MindwaveHelperFragment extends android.support.v4.app.Fragment {
 
                             //TODO: SD HERE
 
-
+                            double sd = Util.calcSD(rawRealArray);
+                            double mean = Util.calcMean(rawRealArray);
+                            for(int i =0; i< rawRealArray.length ; i++){
+                                rawRealNormalizedArray[i] = (rawRealArray[i] - mean)/ sd;
+                                rawComplexArray[i] = new Complex(rawRealNormalizedArray[i], rawImaginary);
+                            }
+                            Complex[] fftComplexArrayResults = FFT.fft(rawComplexArray);
+                            //caleb magnitude testing
+                            magnitudeArray = Magnitude.mag(fftComplexArrayResults);
+                            //double normalization[] = Magnitude.norm(magnitudeArray);
+                            //printing output of magnitude array
+                            for (int i = 0; i < magnitudeArray.length; i++) {
+                                System.out.println("MAGNITUDE" + "[" + i + "]: " + magnitudeArray[i]);
+                            }
 
 
                             rawComplexArray = new Complex[512];
