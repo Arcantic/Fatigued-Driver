@@ -69,7 +69,7 @@ public class CalibrationFragment extends Fragment{
             MainActivity.list_title_stack.add("Calibration");
             transaction.commit();
             getActivity().setTitle("Calibration");
-            ((MainActivity)getActivity()).drawDrawerBackButton();
+            //((MainActivity)getActivity()).drawDrawerBackButton();
         } catch (java.lang.InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
