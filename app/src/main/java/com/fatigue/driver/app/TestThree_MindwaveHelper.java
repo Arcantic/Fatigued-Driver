@@ -1,18 +1,15 @@
-package com.fatigue.driver.app; /*
- |  CREATED on 10/27/16.
-*/
+package com.fatigue.driver.app;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Window;
 import android.view.WindowManager;
 
-public class TestThree extends AppCompatActivity {
+public class TestThree_MindwaveHelper extends AppCompatActivity {
 
-    private static final String TAG = TestThree.class.getSimpleName();
+    private static final String TAG = TestThree_MindwaveHelper.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,10 +20,12 @@ public class TestThree extends AppCompatActivity {
 
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
-        Fragment frag = new MindwaveHelperFragment();
+        MindwaveHelperFragment mMindwaveHelperFrag = new MindwaveHelperFragment();
 
-        ft.add(frag,TAG);
+        ft.add(mMindwaveHelperFrag,TAG);
         ft.commit();
+
+        mMindwaveHelperFrag.setRecordingRawData(false);
 
     }
 }
