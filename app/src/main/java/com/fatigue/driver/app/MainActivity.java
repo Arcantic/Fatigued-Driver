@@ -181,10 +181,10 @@ public class MainActivity extends AppCompatActivity
 
 
     //Warn user that test will be canceled.
-    public void testIsRunningAlert(final boolean backPressed, final MenuItem menuItem){
+    public void testIsRunningAlert(final boolean backPressed, final MenuItem menuItem, String mTitle, String mMessage){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Test Running");
-        builder.setMessage("This action will cancel the test. Continue?");
+        builder.setTitle(mTitle);
+        builder.setMessage(mMessage);
         builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 cancelTest();
@@ -216,7 +216,6 @@ public class MainActivity extends AppCompatActivity
             @Override
             public boolean onKey(DialogInterface arg0, int keyCode,
                                  KeyEvent event) {
-                // TODO Auto-generated method stub
                 if (keyCode == KeyEvent.KEYCODE_BACK) {
                     NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
                     navigationView.setCheckedItem(R.id.nav_calibration);
@@ -229,16 +228,26 @@ public class MainActivity extends AppCompatActivity
     }
 
     public boolean isTestRunning(){
-        return TrainingFragment.running_test;
+        if(TrainingFragment.running_test)
+            return true;
+        else if(ResultsFragment.isOpen())
+            return true;
+        return false;
     }
 
     public void cancelTest(){
         if(TrainingFragment.running_test){
-            TrainingFragment.forceEndTest();
+            ((TrainingFragment)getSupportFragmentManager().findFragmentById(R.id.content_frame)).forceEndTest();
+            //Toast and allow screen sleep
+            Toast.makeText(getApplicationContext(), "Test Canceled", Toast.LENGTH_LONG).show();
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
-        //Toast and allow screen sleep
-        Toast.makeText(getApplicationContext(), "Test Canceled", Toast.LENGTH_LONG).show();
-        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        else if(ResultsFragment.isOpen()){
+            ResultsFragment.prepClose();
+            //Toast and allow screen sleep
+            Toast.makeText(getApplicationContext(), "Results Deleted", Toast.LENGTH_LONG).show();
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
     }
 
 
@@ -254,17 +263,23 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         }else if(isTestRunning()){
-            testIsRunningAlert(true, null);
+            if(TrainingFragment.running_test)
+                testIsRunningAlert(true, null, "Test Running", "This action will cancel the test. Continue?");
+            else if(ResultsFragment.isOpen())
+                testIsRunningAlert(true, null, "Delete Results", "This action will delete the test results. Continue?");
         }else if (fragmentManager.getBackStackEntryCount() > 0) {
             Log.i("MainActivity", "popping backstack");
             fragmentManager.popBackStack();
-            if(list_title_stack.size() > 1) {
+            if(list_title_stack.size() > 2){
+                setTitle(list_title_stack.get(list_title_stack.size() - 1));
+            }else if(list_title_stack.size() > 1) {
                 setTitle(list_title_stack.get(list_title_stack.size() - 1));
                 removeDrawerBackButton();
             }else{
                 setTitle(getTitle());
                 NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
                 navigationView.setCheckedItem(R.id.nav_home);
+                removeDrawerBackButton();
             }
             list_title_stack.remove(list_title_stack.size()-1);
         } else {
@@ -405,7 +420,10 @@ public class MainActivity extends AppCompatActivity
             setTitle(menuItem.getTitle());
         }else{
             //If a test is running, alert user first
-            testIsRunningAlert(false, menuItem);
+            if(TrainingFragment.running_test)
+                testIsRunningAlert(false, menuItem, "Test Running", "This action will cancel the test. Continue?");
+            else if(ResultsFragment.isOpen())
+                testIsRunningAlert(false, menuItem, "Delete Results", "This action will delete the test results. Continue?");
         }
         // Close the navigation drawer
         drawer.closeDrawers();

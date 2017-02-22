@@ -3,6 +3,8 @@ package com.fatigue.driver.app;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -30,7 +32,7 @@ import java.util.Calendar;
  * Created by Eric on 11/14/2016.
  */
 
-public class TrainingFragment extends Fragment implements View.OnClickListener {
+public class TrainingFragment extends Fragment {
 
 
     @Override
@@ -42,7 +44,18 @@ public class TrainingFragment extends Fragment implements View.OnClickListener {
 
         //ID the "Start" button and add listener
         button_start = (Button)view.findViewById(R.id.button_start);
-        button_start.setOnClickListener(this);
+        button_start.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if(!running_test) {
+                    beginTest();
+                }else {
+                    endTest(true);
+                    cancelGatherData();
+                    Toast.makeText(getActivity().getApplicationContext(), "Test Canceled", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });;
+
 
         //ID the display texts...
         training_status = (TextView)view.findViewById(R.id.text_training_status);
@@ -145,17 +158,6 @@ public class TrainingFragment extends Fragment implements View.OnClickListener {
     int duration_default_closed = 2;
 
 
-    //Button listener
-    @Override
-    public void onClick(View v) {
-        if(!running_test) {
-            beginTest();
-        }else {
-            endTest(true);
-            Toast.makeText(getActivity().getApplicationContext(), "Test Canceled", Toast.LENGTH_SHORT).show();
-        }
-    }
-
 
     public static CountDownTimer timer;
     int timer_length_default = 5;
@@ -206,6 +208,9 @@ public class TrainingFragment extends Fragment implements View.OnClickListener {
                     }
 
                     startTimer(duration);
+
+                    //Begin to gather data. Later, replace with resumeGatherData() and stopGatherData()
+                    if(!gathering_data) startGatherData();
                 }else{
                     //If the # of trials remaining = 0, then end the test
                     completeTest();
@@ -216,7 +221,10 @@ public class TrainingFragment extends Fragment implements View.OnClickListener {
 
     public void completeTest(){
         Toast.makeText(getActivity().getApplicationContext(), "Test Complete!", Toast.LENGTH_LONG).show();
+        //Stop gathering data
+        finishGatherData();
         endTest(false);
+        openResultsPage();
     }
 
     public void endTest(boolean invalidate){
@@ -243,11 +251,29 @@ public class TrainingFragment extends Fragment implements View.OnClickListener {
     }
 
     //Call this when forcing the test to end from another class
-    public static void forceEndTest(){
+    public void forceEndTest(){
         running_test = false;
         if(timer != null)
             timer.cancel();
+        cancelGatherData();
     }
+
+
+
+    public void openResultsPage(){
+        Fragment fragment = new ResultsFragment();
+
+        // Insert the fragment by replacing any existing fragment
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.content_frame, fragment);
+        transaction.addToBackStack(null);
+        MainActivity.list_title_stack.add("Calibration");
+        transaction.commit();
+        getActivity().setTitle("Calibration");
+        //((MainActivity)getActivity()).drawDrawerBackButton();
+    }
+
 
 
 
@@ -261,6 +287,32 @@ public class TrainingFragment extends Fragment implements View.OnClickListener {
         switch_eyes.setEnabled(true);
         edit_duration.setEnabled(true);
         edit_count.setEnabled(true);
+    }
+
+
+
+
+
+
+    public boolean gathering_data;
+    //The following functions connect to the Adapter classes
+    //to gather data from headset
+    public void startGatherData(){
+        gathering_data = true;
+        //Tell adapter to begin recording data
+        //Call appropriate function
+    }
+
+    public void finishGatherData(){
+        gathering_data = false;
+        //Tell adapter to stop gathering data
+        //Call appropriate function
+    }
+
+    public void cancelGatherData(){
+        gathering_data = false;
+        //Tell the adapter to stop gathering data AND delete the data it gathered (file and memory)
+        //Call appropriate function
     }
 
 }
