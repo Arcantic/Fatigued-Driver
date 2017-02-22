@@ -254,12 +254,10 @@ public class TrainingFragment extends Fragment {
     }
 
     public void completeTest(){
-        Toast.makeText(getActivity().getApplicationContext(), "Test Complete!", Toast.LENGTH_LONG).show();
         //Stop gathering data
         stopGatherTrialData();
-        finishGatherData();
         endTest(false);
-        openResultsPage();
+        finishGatherData();
     }
 
     public void endTest(boolean invalidate){
@@ -297,6 +295,8 @@ public class TrainingFragment extends Fragment {
 
 
     public void openResultsPage(){
+        Toast.makeText(getActivity().getApplicationContext(), "Test Complete!", Toast.LENGTH_LONG).show();
+
         Fragment fragment = new ResultsFragment();
 
         // Insert the fragment by replacing any existing fragment
@@ -350,6 +350,19 @@ public class TrainingFragment extends Fragment {
 
     public void finishGatherData(){
         //Placeholder for now...
+        //Run the training function and notify the user with a Toast
+        runSvmTrain();
+    }
+
+    public boolean running_svm_train;
+    public void runSvmTrain(){
+        running_svm_train = true;
+        Toast.makeText(getActivity().getApplicationContext(), "SVM is Training...", Toast.LENGTH_LONG).show();
+        //HERE//
+        //RUN TRAIN FUNCTIONS IN BACGROUND. WHEN IT IS FINISHED, OPEN THE RESULTS SCREEN
+        //HERE//
+        running_svm_train = false;
+        openResultsPage();
     }
 
     public void cancelGatherData(){
