@@ -104,11 +104,11 @@ public class TrainingFragment extends Fragment {
 
         //ID the "eye toggle" and add listener
         switch_eyes = (Switch)view.findViewById(R.id.switch_eyes);
-        eyes_closed = switch_eyes.isChecked();
+        user_eyes_closed_current = user_eyes_closed_next = switch_eyes.isChecked();
         switch_eyes.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                eyes_closed = isChecked;
-                if(eyes_closed){
+                user_eyes_closed_current = user_eyes_closed_next = isChecked;
+                if(user_eyes_closed_current){
                     edit_duration.setText(duration_default_closed+"");
                     duration = duration_default_closed;
                     switch_eyes.setText("Eyes are closed");
@@ -121,11 +121,28 @@ public class TrainingFragment extends Fragment {
         });
 
 
+        initMindwaveHelper();
 
 
         // Inflate the layout for this fragment
         return view;
     }
+
+
+    private static final String TAG = TestThree_MindwaveHelper.class.getSimpleName();
+    public MindwaveHelperFragment mMindwaveHelperFrag;
+    public void initMindwaveHelper(){
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        mMindwaveHelperFrag = new MindwaveHelperFragment();
+
+        ft.add(mMindwaveHelperFrag,TAG);
+        ft.commit();
+    }
+
+
+
+
 
     public void getDuration(){
         String text = edit_duration.getText().toString();
@@ -151,7 +168,7 @@ public class TrainingFragment extends Fragment {
 
     int duration = 0;
     int count = 0;
-    boolean eyes_closed;
+    boolean user_eyes_closed_current, user_eyes_closed_next;
     public static Boolean running_test = false;
 
     int duration_default_open = 5;
@@ -161,6 +178,7 @@ public class TrainingFragment extends Fragment {
 
     public static CountDownTimer timer;
     int timer_length_default = 5;
+    int timer_length_grace_period = 5;
     //Start the test
     public void beginTest(){
         //Test begins in 5 seconds...
@@ -181,7 +199,7 @@ public class TrainingFragment extends Fragment {
 
 
     //Timer for updating the textfield for countdown
-    public boolean running_test_final;
+    public boolean in_transition_period = true;
     public void startTimer(int length){
         timer = new CountDownTimer(length*1000, 100) {
             //Every *100* millis, onTick is called.
@@ -190,38 +208,65 @@ public class TrainingFragment extends Fragment {
             }
 
             public void onFinish() {
-                //running_test_final is a variable for determining if the test is running-
+                //in_transition_period is a variable for determining if the test is running-
                 //or if the countdown is only for the "test begins in..." phase
-                if(!running_test_final)
-                    running_test_final = true;
+                if(in_transition_period)
+                    in_transition_period = false;
                 else {
                     count--;
                     count_left.setText(count + "");
+                    user_eyes_closed_current = user_eyes_closed_next;
+                    user_eyes_closed_next = getNextCommand();
+                    in_transition_period = true;
                 }
 
-                //If the # of trials remaining > 0, then start another timer and update the text fields
-                if(count > 0){
-                    if(eyes_closed) {
-                        training_status.setText("Eyes Closed...");
-                    }else{
-                        training_status.setText("Eyes Open...");
-                    }
-
+                //If you are not in a grace period...
+                // If the # of trials remaining > 0...
+                //...then start another timer and update the text fields
+                if(!in_transition_period && count > 0){
                     startTimer(duration);
 
                     //Begin to gather data. Later, replace with resumeGatherData() and stopGatherData()
-                    if(!gathering_data) startGatherData();
+                    if(user_eyes_closed_current) {
+                        training_status.setText("Eyes Closed...");
+                        startGatherData(GlobalSettings.EYES_CLOSED);
+                    }else{
+                        training_status.setText("Eyes Open...");
+                        startGatherData(GlobalSettings.EYES_OPEN);
+                    }
+
                 }else{
-                    //If the # of trials remaining = 0, then end the test
-                    completeTest();
+                    if(count > 0){
+                        //Enter transition/grace period
+                        stopGatherData();
+                        training_status.setText("Grace Period - Next Command:" + getNextCommandString());
+                        startTimer(timer_length_grace_period);
+                    }else{
+                        //If the # of trials remaining = 0, then end the test
+                        completeTest();
+                    }
                 }
             }
         }.start();
     }
 
+    public boolean getNextCommand(){
+        //Needs to run code to determine what the next command should be....
+        //right now, will return the base value, eyes_closed_current
+        return user_eyes_closed_current;
+    }
+    public String getNextCommandString(){
+        if(user_eyes_closed_next)
+            return "Eyes Closed";
+        else if(!user_eyes_closed_next)
+            return "Eyes Open";
+        return  "NULL";
+    }
+
     public void completeTest(){
         Toast.makeText(getActivity().getApplicationContext(), "Test Complete!", Toast.LENGTH_LONG).show();
         //Stop gathering data
+        stopGatherData();
         finishGatherData();
         endTest(false);
         openResultsPage();
@@ -233,7 +278,7 @@ public class TrainingFragment extends Fragment {
         //Do something...
 
         running_test = false;
-        running_test_final = false;
+        in_transition_period = true;
         button_start.setText("Start");
 
         if(timer != null)
@@ -253,6 +298,7 @@ public class TrainingFragment extends Fragment {
     //Call this when forcing the test to end from another class
     public void forceEndTest(){
         running_test = false;
+        in_transition_period = true;
         if(timer != null)
             timer.cancel();
         cancelGatherData();
@@ -297,16 +343,23 @@ public class TrainingFragment extends Fragment {
     public boolean gathering_data;
     //The following functions connect to the Adapter classes
     //to gather data from headset
-    public void startGatherData(){
+    public void startGatherData(int eye_status){
         gathering_data = true;
         //Tell adapter to begin recording data
         //Call appropriate function
+        //Need to provide 1/0 eyes open/closed
+        mMindwaveHelperFrag.startRecordingRawData(eye_status);
     }
 
-    public void finishGatherData(){
+    public void stopGatherData(){
         gathering_data = false;
         //Tell adapter to stop gathering data
         //Call appropriate function
+        mMindwaveHelperFrag.stopRecordingRawData();
+    }
+
+    public void finishGatherData(){
+        //Placeholder for now...
     }
 
     public void cancelGatherData(){

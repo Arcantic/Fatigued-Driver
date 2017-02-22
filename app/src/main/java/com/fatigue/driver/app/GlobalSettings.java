@@ -18,6 +18,9 @@ public class GlobalSettings {
     public static int calibrationTotalNumOfTrialsToPerformAlert = 100;
     public static int calibrationTotalNumOfTrialsToPerformFatigue = 100;
 
+    public static int EYES_CLOSED = 1;
+    public static int EYES_OPEN = 0;
+
 
     public GlobalSettings() {
     }
