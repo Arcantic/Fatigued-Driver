@@ -12,6 +12,7 @@ public class Util {
     private static SimpleDateFormat milliTimestampFormat = new SimpleDateFormat("HH;mm;ss;SSS");
     private static SimpleDateFormat milliTimestampLogFormat = new SimpleDateFormat("HH:mm:ss:SSS");
 
+
     public static String currentDateAsString() {
         return dateFormat.format(new Date());
     }
