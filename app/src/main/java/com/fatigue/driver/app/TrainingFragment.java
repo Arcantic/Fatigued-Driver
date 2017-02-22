@@ -111,7 +111,7 @@ public class TrainingFragment extends Fragment {
         });
 
 
-        initMindwaveHelper();
+        //initMindwaveHelper();
 
 
         // Inflate the layout for this fragment
@@ -177,7 +177,7 @@ public class TrainingFragment extends Fragment {
         button_start.setText("Cancel");
         count_left.setText(count+"");
 
-        training_status.setText("Training begins in");
+        training_status.setText(getNextCommandString() + " in...");
         training_status_countdown.setText("5");
 
         //Begin updating the countdown textfield
@@ -229,7 +229,7 @@ public class TrainingFragment extends Fragment {
                     if(count > 0){
                         //Enter transition/grace period
                         stopGatherTrialData();
-                        training_status.setText("Grace Period - Next Command:" + getNextCommandString());
+                        training_status.setText(getNextCommandString() + " in...");
                         startTimer(timer_length_grace_period);
                     }else{
                         //If the # of trials remaining = 0, then end the test
