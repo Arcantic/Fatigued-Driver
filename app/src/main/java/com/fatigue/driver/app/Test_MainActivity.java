@@ -31,13 +31,10 @@ import libsvm.svm_model;
 public class Test_MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    //jsnieves:BEGIN:from TGStream
-    private static final String TAG = Test_MainActivity.class.getSimpleName();
-    //jsnieves:END:from TGStream
 
-    //jsnieves:BEGIN:from BluetoothAdvertisements
+    private static final String TAG = Test_MainActivity.class.getSimpleName();
+
     private BluetoothAdapter mBluetoothAdapter;
-    //jsnieves:End:From BluetoothAdvertisements
     //jsnieves:from TGStream
     private Button btn_adapter = null;
 
@@ -80,9 +77,7 @@ public class Test_MainActivity extends AppCompatActivity
         //See: http://developer.android.com/shareables/training/NavigationDrawer.zip for further customization?
         //END:jsnieves
 
-        //jsnieves:BEGIN:From BluetoothAdvertisements
         setTitle(R.string.title_main);
-
 
         if (savedInstanceState == null) {
 
@@ -122,11 +117,7 @@ public class Test_MainActivity extends AppCompatActivity
             }
         }
 
-        //jsnieves:END:From BluetoothAdvertisements
-
         initView();
-
-
     }
     //end
 
@@ -178,7 +169,7 @@ public class Test_MainActivity extends AppCompatActivity
         btn_test3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                Intent intent = new Intent(Test_MainActivity.this, TestThree.class);
+                Intent intent = new Intent(Test_MainActivity.this, TestThree_MindwaveHelper.class);
 
                 Log.d(TAG, "Starting TestThree Activity");
                 startActivity(intent);
@@ -268,18 +259,13 @@ public class Test_MainActivity extends AppCompatActivity
         return true;
     }
 
-
     private void showErrorText(int messageId) {
-        //jsnieves:BEGIN: Entire method from BluetoothAdvertisements
-
         TextView view = (TextView) findViewById(R.id.error_textview);
         view.setText(getString(messageId));
     }
-    //jsnieves:END: Entire method from BluetoothAdvertisements
-
 
     private void setupFragments() {
-//        //jsnieves:BEGIN: Entire method from BluetoothAdvertisements
+
 //        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 //
 //        ScannerFragment scannerFragment = new ScannerFragment();
@@ -291,7 +277,6 @@ public class Test_MainActivity extends AppCompatActivity
 //        transaction.replace(R.id.advertiser_fragment_container, advertiserFragment);
 //
 //        transaction.commit();
-//        //jsnieves:END: Entire method from BluetoothAdvertisements
     }
 
 }
