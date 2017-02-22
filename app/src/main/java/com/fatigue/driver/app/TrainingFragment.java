@@ -5,11 +5,6 @@ import android.os.CountDownTimer;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -22,11 +17,6 @@ import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import org.w3c.dom.Text;
-
-import java.sql.Time;
-import java.util.Calendar;
 
 /**
  * Created by Eric on 11/14/2016.
@@ -226,19 +216,19 @@ public class TrainingFragment extends Fragment {
                 if(!in_transition_period && count > 0){
                     startTimer(duration);
 
-                    //Begin to gather data. Later, replace with resumeGatherData() and stopGatherData()
+                    //Begin to gather data. Later, replace with resumeGatherData() and stopGatherTrialData()
                     if(user_eyes_closed_current) {
                         training_status.setText("Eyes Closed...");
-                        startGatherData(GlobalSettings.EYES_CLOSED);
+                        startGatherTrialData(GlobalSettings.EYES_CLOSED);
                     }else{
                         training_status.setText("Eyes Open...");
-                        startGatherData(GlobalSettings.EYES_OPEN);
+                        startGatherTrialData(GlobalSettings.EYES_OPEN);
                     }
 
                 }else{
                     if(count > 0){
                         //Enter transition/grace period
-                        stopGatherData();
+                        stopGatherTrialData();
                         training_status.setText("Grace Period - Next Command:" + getNextCommandString());
                         startTimer(timer_length_grace_period);
                     }else{
@@ -266,7 +256,7 @@ public class TrainingFragment extends Fragment {
     public void completeTest(){
         Toast.makeText(getActivity().getApplicationContext(), "Test Complete!", Toast.LENGTH_LONG).show();
         //Stop gathering data
-        stopGatherData();
+        stopGatherTrialData();
         finishGatherData();
         endTest(false);
         openResultsPage();
@@ -343,19 +333,19 @@ public class TrainingFragment extends Fragment {
     public boolean gathering_data;
     //The following functions connect to the Adapter classes
     //to gather data from headset
-    public void startGatherData(int eye_status){
+    public void startGatherTrialData(int eye_status){
         gathering_data = true;
         //Tell adapter to begin recording data
         //Call appropriate function
         //Need to provide 1/0 eyes open/closed
-        mMindwaveHelperFrag.startRecordingRawData(eye_status);
+        //mMindwaveHelperFrag.startRecordingTrialData(eye_status);
     }
 
-    public void stopGatherData(){
+    public void stopGatherTrialData(){
         gathering_data = false;
         //Tell adapter to stop gathering data
         //Call appropriate function
-        mMindwaveHelperFrag.stopRecordingRawData();
+        //mMindwaveHelperFrag.stopRecordingTrialData();
     }
 
     public void finishGatherData(){
