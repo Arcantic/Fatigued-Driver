@@ -149,7 +149,7 @@ public class Test_MainActivity extends AppCompatActivity
         btn_test1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                Intent intent = new Intent(Test_MainActivity.this, MainActivity.class);
+                Intent intent = new Intent(Test_MainActivity.this, LoginActivity.class);
 
                 Log.d(TAG, "Starting MainActivity Activity");
                 startActivity(intent);

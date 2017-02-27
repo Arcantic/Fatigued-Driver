@@ -8,19 +8,22 @@
     android:layout_marginBottom="@dimen/activity_vertical_margin_cards"
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
+    android:background="@color/colorPrimary"
     >
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/text_user_select"
-        style="@style/TextAppearance.AppCompat.Headline"
+        style="@style/TextAppearance.AppCompat.Display2"
+        android:textColor="#ffffff"
         android:text="Select User"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="72dp"
         android:layout_marginBottom="8dp"
         />
 
+    <!--
     <View
         android:id="@+id/divider"
         android:layout_width="match_parent"
@@ -29,12 +32,13 @@
         android:layout_below="@id/text_user_select"
         android:layout_marginBottom="8dp"
         />
+    -->
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/layout_root_users"
-        android:layout_below="@id/divider"
+        android:layout_below="@id/text_user_select"
         android:layout_marginStart="-16dp"
         android:layout_marginEnd="-16dp"
         android:layout_marginBottom="-24dp"
@@ -43,6 +47,7 @@
             <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_users"
             android:scrollbars="vertical"
+            android:overScrollMode="never"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 

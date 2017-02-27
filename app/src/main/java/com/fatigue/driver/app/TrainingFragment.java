@@ -304,7 +304,7 @@ public class TrainingFragment extends Fragment {
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.content_frame, fragment);
         transaction.addToBackStack(null);
-        MainActivity.list_title_stack.add("Calibration");
+        //MainActivity.list_title_stack.add("Calibration");
         transaction.commit();
         getActivity().setTitle("Calibration");
         //((MainActivity)getActivity()).drawDrawerBackButton();

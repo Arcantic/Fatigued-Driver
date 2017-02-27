@@ -35,15 +35,41 @@
 
             > </activity>
 
-        <!--jsnieves:begin:added MainActivity, TestTwo, TestThree-->
+
+
         <activity
             android:name="com.fatigue.driver.app.MainActivity"
-            android:parentActivityName="com.fatigue.driver.app.Test_MainActivity"
             android:windowSoftInputMode="stateAlwaysHidden"
+            android:theme="@style/AppTheme"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            >
+        </activity>
+
+        <activity
+            android:name="com.fatigue.driver.app.LoginActivity"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:theme="@style/AppTheme.NoActionBar"
+            >
+        </activity>
+
+        <activity
+            android:name="com.fatigue.driver.app.TrainingActivity"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:theme="@style/AppTheme"
+            android:parentActivityName="com.fatigue.driver.app.MainActivity"
             >
         </activity>
 
 
+
+
+
+        <!--jsnieves:begin:added MainActivity, TestTwo, TestThree-->
         <activity
             android:name="com.fatigue.driver.app.TestTwo"
             android:parentActivityName="com.fatigue.driver.app.Test_MainActivity"

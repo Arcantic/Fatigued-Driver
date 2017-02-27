@@ -79,12 +79,7 @@ public class MainActivity extends AppCompatActivity
 
         //If a user has been selected, then load the MainFragment.
         //else, load the UserSelect fragment.
-        if(User.isSelected()){
-            loadMainFragment();
-        }
-        else {
-            loadUserSelectFragment();
-        }
+        loadMainFragment();
 
 
         //Check for Bluetooth Connection
@@ -98,7 +93,6 @@ public class MainActivity extends AppCompatActivity
 
     //Load the main fragment...
     public void loadMainFragment(){
-        unlockDrawer();
         setNavigationTitle(User.user_name);
 
         //Replace the content with the Main Fragment
@@ -116,18 +110,6 @@ public class MainActivity extends AppCompatActivity
             fragmentTransaction.replace(R.id.content_frame, fragment);
             fragmentTransaction.commit();
         }
-    }
-
-    //Load the user select fragment...
-    public void loadUserSelectFragment(){
-        lockDrawer();
-        //Replace the content with the UserSelect Fragment
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-        Fragment fragment = new UserSelectFragment();
-        fragmentTransaction.replace(R.id.content_frame, fragment);
-        fragmentTransaction.commit();
     }
 
     public void lockDrawer() {
@@ -259,6 +241,8 @@ public class MainActivity extends AppCompatActivity
     public void onBackPressed() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+        System.out.println("BACK PRESSED");
 
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);

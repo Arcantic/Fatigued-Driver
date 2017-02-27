@@ -28,7 +28,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.MyView
                 public void onClick(View v) {
                     User.selectUser((String)title.getText());//...
                     Toast.makeText(view.getContext(), "Welcome, " + title.getText(), Toast.LENGTH_SHORT).show();
-                    ((MainActivity)view.getContext()).loadMainFragment();
+                    ((LoginActivity)view.getContext()).loadMainActivity();
                 }
             });
         }

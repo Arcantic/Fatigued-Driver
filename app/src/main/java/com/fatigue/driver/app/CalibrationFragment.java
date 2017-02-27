@@ -1,6 +1,7 @@
 package com.fatigue.driver.app;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.design.widget.FloatingActionButton;
@@ -45,7 +46,8 @@ public class CalibrationFragment extends Fragment{
         button_gather_training_data = (Button)view.findViewById(R.id.button_gather_training_data);
         button_gather_training_data.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                openFragment(TrainingFragment.class);
+                //openFragment(TrainingFragment.class);
+                openActivity(TrainingActivity.class);
             }
         });
 
@@ -75,6 +77,12 @@ public class CalibrationFragment extends Fragment{
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
+    }
+
+    public void openActivity(Class actClass){
+        Intent intent = new Intent(getActivity(), actClass);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
 
 
