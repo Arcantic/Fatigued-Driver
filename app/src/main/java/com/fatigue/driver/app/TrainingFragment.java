@@ -1,7 +1,13 @@
 package com.fatigue.driver.app;
 
+import android.media.AudioManager;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.media.ToneGenerator;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -47,7 +53,7 @@ public class TrainingFragment extends Fragment {
         });;
 
 
-        //ID the display texts...
+        //Display texts...
         training_status = (TextView)view.findViewById(R.id.text_training_status);
         training_status_countdown = (TextView)view.findViewById(R.id.text_training_status_countdown);
         count_left = (TextView)view.findViewById(R.id.text_count_left);
@@ -55,29 +61,53 @@ public class TrainingFragment extends Fragment {
 
 
 
-        //ID the "duration" and add listener
-        edit_duration = (EditText)view.findViewById(R.id.edit_duration);
-        getDuration();
-        edit_duration.addTextChangedListener(new TextWatcher() {
-
+        //"durations" and add listener
+        edit_duration_transition = (EditText)view.findViewById(R.id.edit_duration_transition);
+        edit_duration_open = (EditText)view.findViewById(R.id.edit_duration_open);
+        edit_duration_closed = (EditText)view.findViewById(R.id.edit_duration_closed);
+        edit_duration_transition.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
-                String text = edit_duration.getText().toString();
+                String text = edit_duration_transition.getText().toString();
                 if(!text.matches(""))
-                    duration = Integer.parseInt(text);
-                else duration = 0;
+                    duration_transition = Integer.parseInt(text);
+                else duration_transition = 0;
             }
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             public void onTextChanged(CharSequence s, int start, int before, int count) {}
         });
+        edit_duration_open.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable s) {
+                String text = edit_duration_open.getText().toString();
+                if(!text.matches("")) {
+                    duration_open = Integer.parseInt(text);
+                    duration_active = duration_open;
+                }
+                else duration_open = 0;
+            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+        });
+        edit_duration_closed.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable s) {
+                String text = edit_duration_closed.getText().toString();
+                if(!text.matches(""))
+                    duration_closed = Integer.parseInt(text);
+                else duration_closed = 0;
+            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+        });
+        duration_transition = Integer.parseInt(edit_duration_transition.getText().toString());
+        duration_open = Integer.parseInt(edit_duration_open.getText().toString());
+        duration_closed = Integer.parseInt(edit_duration_closed.getText().toString());
 
 
 
 
-        //ID the "count" and add listener
+        //"count" and add listener
         edit_count = (EditText)view.findViewById(R.id.edit_count);
         getCount();
         edit_count.addTextChangedListener(new TextWatcher() {
-
             public void afterTextChanged(Editable s) {
                 String text = edit_count.getText().toString();
                 if(!text.matches(""))
@@ -92,23 +122,37 @@ public class TrainingFragment extends Fragment {
 
 
 
-        //ID the "eye toggle" and add listener
+        //"toggles" and add listener
         switch_eyes = (Switch)view.findViewById(R.id.switch_eyes);
-        user_eyes_closed_current = user_eyes_closed_next = switch_eyes.isChecked();
+        switch_alternate = (Switch)view.findViewById(R.id.switch_alternate);
         switch_eyes.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                user_eyes_closed_current = user_eyes_closed_next = isChecked;
+                user_eyes_closed_current = isChecked;
                 if(user_eyes_closed_current){
-                    edit_duration.setText(duration_default_closed+"");
-                    duration = duration_default_closed;
+                    duration_active = duration_closed;
                     switch_eyes.setText("Eyes are closed");
                 }else{
-                    edit_duration.setText(duration_default_open+"");
-                    duration = duration_default_open;
+                    duration_active = duration_open;
                     switch_eyes.setText("Eyes are open");
                 }
             }
         });
+        switch_alternate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked) {
+                    switch_eyes.setEnabled(false);
+                    switch_eyes.setChecked(false);
+                    duration_active = duration_open;
+                    switch_eyes.setText("Eyes are open");
+                    alternate_eyes = true;
+                }else{
+                    switch_eyes.setEnabled(true);
+                    alternate_eyes = false;
+                }
+            }
+        });
+        user_eyes_closed_current = switch_eyes.isChecked();
+        alternate_eyes = switch_alternate.isChecked();
 
 
         //initMindwaveHelper();
@@ -133,14 +177,6 @@ public class TrainingFragment extends Fragment {
 
 
 
-
-    public void getDuration(){
-        String text = edit_duration.getText().toString();
-        if(!text.matches(""))
-            duration = Integer.parseInt(text);
-        else duration = 0;
-    }
-
     public void getCount(){
         String text = edit_count.getText().toString();
         if(!text.matches(""))
@@ -149,16 +185,16 @@ public class TrainingFragment extends Fragment {
     }
 
     Button button_start;
-    EditText edit_duration;
+    EditText edit_duration_transition, edit_duration_open, edit_duration_closed;
     EditText edit_count;
-    Switch switch_eyes;
+    Switch switch_eyes, switch_alternate;
     TextView training_status;
     TextView count_left;
     TextView training_status_countdown;
 
-    int duration = 0;
+    int duration_open, duration_closed, duration_active, duration_transition = 0;
     int count = 0;
-    boolean user_eyes_closed_current, user_eyes_closed_next;
+    boolean user_eyes_closed_current, alternate_eyes;
     public static Boolean running_test = false;
 
     int duration_default_open = 5;
@@ -166,9 +202,10 @@ public class TrainingFragment extends Fragment {
 
 
 
+
+
     public static CountDownTimer timer;
     int timer_length_default = 5;
-    int timer_length_grace_period = 5;
     //Start the test
     public void beginTest(){
         //Test begins in 5 seconds...
@@ -177,11 +214,11 @@ public class TrainingFragment extends Fragment {
         button_start.setText("Cancel");
         count_left.setText(count+"");
 
-        training_status.setText(getNextCommandString() + " in...");
+        training_status.setText(getCurrentCommandString() + " in...");
         training_status_countdown.setText("5");
 
         //Begin updating the countdown textfield
-        startTimer(timer_length_default);
+        startTimer(duration_transition);
 
         //Prevent screen sleep
         getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -191,7 +228,7 @@ public class TrainingFragment extends Fragment {
     //Timer for updating the textfield for countdown
     public boolean in_transition_period = true;
     public void startTimer(int length){
-        timer = new CountDownTimer(length*1000, 100) {
+        timer = new CountDownTimer(length*1000, 50) {
             //Every *100* millis, onTick is called.
             public void onTick(long millisUntilFinished) {
                 training_status_countdown.setText(Math.ceil(millisUntilFinished / 100)/10 + "");
@@ -200,21 +237,21 @@ public class TrainingFragment extends Fragment {
             public void onFinish() {
                 //in_transition_period is a variable for determining if the test is running-
                 //or if the countdown is only for the "test begins in..." phase
-                if(in_transition_period)
+                if(in_transition_period) {
                     in_transition_period = false;
-                else {
+                }else {
                     count--;
                     count_left.setText(count + "");
-                    user_eyes_closed_current = user_eyes_closed_next;
-                    user_eyes_closed_next = getNextCommand();
                     in_transition_period = true;
+                    user_eyes_closed_current = getNextCommand();
+                    playCompletionSound();
                 }
 
-                //If you are not in a grace period...
+                //If you are not in a transition period...
                 // If the # of trials remaining > 0...
                 //...then start another timer and update the text fields
                 if(!in_transition_period && count > 0){
-                    startTimer(duration);
+                    startTimer(getDuration());
 
                     //Begin to gather data. Later, replace with resumeGatherData() and stopGatherTrialData()
                     if(user_eyes_closed_current) {
@@ -229,8 +266,8 @@ public class TrainingFragment extends Fragment {
                     if(count > 0){
                         //Enter transition/grace period
                         stopGatherTrialData();
-                        training_status.setText(getNextCommandString() + " in...");
-                        startTimer(timer_length_grace_period);
+                        training_status.setText(getCurrentCommandString() + " in...");
+                        startTimer(duration_transition);
                     }else{
                         //If the # of trials remaining = 0, then end the test
                         completeTest();
@@ -240,17 +277,36 @@ public class TrainingFragment extends Fragment {
         }.start();
     }
 
+    public int getDuration(){
+        if(alternate_eyes){
+            if(user_eyes_closed_current)
+                return duration_closed;
+            else
+                return duration_open;
+        }else{
+            return duration_active;
+        }
+    }
+
     public boolean getNextCommand(){
         //Needs to run code to determine what the next command should be....
         //right now, will return the base value, eyes_closed_current
-        return user_eyes_closed_current;
+        if(alternate_eyes)
+            return !user_eyes_closed_current;
+        else
+            return user_eyes_closed_current;
     }
     public String getNextCommandString(){
-        if(user_eyes_closed_next)
+        if(getNextCommand())
             return "Eyes Closed";
-        else if(!user_eyes_closed_next)
+        else
             return "Eyes Open";
-        return  "NULL";
+    }
+    public String getCurrentCommandString(){
+        if(user_eyes_closed_current)
+            return "Eyes Closed";
+        else
+            return "Eyes Open";
     }
 
     public void completeTest(){
@@ -289,6 +345,7 @@ public class TrainingFragment extends Fragment {
         in_transition_period = true;
         if(timer != null)
             timer.cancel();
+        else System.out.println("TIMER REFUSED TO STOP");
         cancelGatherData();
     }
 
@@ -315,14 +372,37 @@ public class TrainingFragment extends Fragment {
 
     public void disableSettings(){
         switch_eyes.setEnabled(false);
-        edit_duration.setEnabled(false);
+        switch_alternate.setEnabled(false);
+        edit_duration_transition.setEnabled(false);
+        edit_duration_open.setEnabled(false);
+        edit_duration_closed.setEnabled(false);
         edit_count.setEnabled(false);
     }
 
     public void enableSettings(){
-        switch_eyes.setEnabled(true);
-        edit_duration.setEnabled(true);
+        if(!switch_alternate.isChecked())
+            switch_eyes.setEnabled(true);
+        switch_alternate.setEnabled(true);
+        edit_duration_transition.setEnabled(true);
+        edit_duration_open.setEnabled(true);
+        edit_duration_closed.setEnabled(true);
         edit_count.setEnabled(true);
+
+        user_eyes_closed_current = switch_eyes.isChecked();
+    }
+
+
+
+    public void playCompletionSound(){
+        try {
+            //Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+            //Ringtone r = RingtoneManager.getRingtone(getActivity().getApplicationContext(), notification);
+            //r.play();
+            final ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
+            tg.startTone(ToneGenerator.TONE_PROP_BEEP);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 

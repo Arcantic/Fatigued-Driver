@@ -246,12 +246,16 @@ public class MainActivity extends AppCompatActivity
 
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        }else if(isTestRunning()){
+        }
+        /*
+        else if(isTestRunning()){
             if(TrainingFragment.running_test)
                 testIsRunningAlert(true, null, "Test Running", "This action will cancel the test. Continue?");
             else if(ResultsFragment.isOpen())
                 testIsRunningAlert(true, null, "Delete Results", "This action will delete the test results. Continue?");
-        }else if (fragmentManager.getBackStackEntryCount() > 0) {
+        }
+        */
+        else if (fragmentManager.getBackStackEntryCount() > 0) {
             Log.i("MainActivity", "popping backstack");
             fragmentManager.popBackStack();
             if(list_title_stack.size() > 2){
@@ -404,10 +408,12 @@ public class MainActivity extends AppCompatActivity
             setTitle(menuItem.getTitle());
         }else{
             //If a test is running, alert user first
+            /*
             if(TrainingFragment.running_test)
                 testIsRunningAlert(false, menuItem, "Test Running", "This action will cancel the test. Continue?");
             else if(ResultsFragment.isOpen())
                 testIsRunningAlert(false, menuItem, "Delete Results", "This action will delete the test results. Continue?");
+            */
         }
         // Close the navigation drawer
         drawer.closeDrawers();

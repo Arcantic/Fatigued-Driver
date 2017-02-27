@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -54,15 +55,6 @@ public class Test_MainActivity extends AppCompatActivity
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace this with a DriverF action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -197,6 +189,30 @@ public class Test_MainActivity extends AppCompatActivity
 
         //jsnieves:END:added onClickListeners for test buttons
 
+        startTimer();
+    }
+
+
+    boolean color = false;
+    public void startTimer(){
+        new CountDownTimer(500, 50) {
+            //Every *100* millis, onTick is called.
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            public void onFinish() {
+                if(color) {
+                    btn_test1.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                    color = false;
+                    startTimer();
+                }else{
+                    btn_test1.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    color = true;
+                    startTimer();
+                }
+            }
+        }.start();
     }
 
     @Override
