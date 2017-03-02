@@ -46,7 +46,7 @@
                 style="@style/TextAppearance.AppCompat.Display1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="No Test Running"
+                android:text="Training Not Running"
                 />
 
             <TextView

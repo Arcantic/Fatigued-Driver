@@ -43,9 +43,9 @@ public class TrainingActivity extends AppCompatActivity implements NavigationVie
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (isTestRunning()) {
             if (TrainingFragment.running_test)
-                testIsRunningAlert(true, null, "Test Running", "This action will cancel the test. Continue?");
+                testIsRunningAlert(true, null, "Training Running", "This action will cancel the training. Continue?");
             else if (ResultsFragment.isOpen())
-                testIsRunningAlert(true, null, "Delete Results", "This action will delete the test results. Continue?");
+                testIsRunningAlert(true, null, "Delete Results", "This action will delete the training results. Continue?");
         } else if (fragmentManager.getBackStackEntryCount() > 0) {
             fragmentManager.popBackStack();
         }else {
@@ -106,7 +106,7 @@ public class TrainingActivity extends AppCompatActivity implements NavigationVie
         if(TrainingFragment.running_test){
             ((TrainingFragment)getSupportFragmentManager().findFragmentById(R.id.content_frame)).forceEndTest();
             //Toast and allow screen sleep
-            Toast.makeText(getApplicationContext(), "Test Canceled", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "Training Canceled", Toast.LENGTH_LONG).show();
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
         else if(ResultsFragment.isOpen()){
@@ -126,10 +126,10 @@ public class TrainingActivity extends AppCompatActivity implements NavigationVie
                 FragmentManager fm = getSupportFragmentManager();
                 if (fm.getBackStackEntryCount() > 0) {
                     if (ResultsFragment.isOpen())
-                        testIsRunningAlert(true, null, "Delete Results", "This action will delete the test results. Continue?");
+                        testIsRunningAlert(true, null, "Delete Results", "This action will delete the training results. Continue?");
                 }else{
                     if (TrainingFragment.running_test)
-                        testIsRunningAlert(true, null, "Test Running", "This action will cancel the test. Continue?");
+                        testIsRunningAlert(true, null, "Training Running", "This action will cancel the training. Continue?");
                     else NavUtils.navigateUpFromSameTask(this);
                 }
                 return true;

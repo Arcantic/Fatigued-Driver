@@ -38,7 +38,7 @@ public class TrainingFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_training, container, false);
 
 
-        //ID the "Start" button and add listener
+        //ID the "Start" button and add listener-
         button_start = (Button)view.findViewById(R.id.button_start);
         button_start.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -47,7 +47,7 @@ public class TrainingFragment extends Fragment {
                 }else {
                     endTest(true);
                     cancelGatherData();
-                    Toast.makeText(getActivity().getApplicationContext(), "Test Canceled", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity().getApplicationContext(), "Training Canceled", Toast.LENGTH_SHORT).show();
                 }
             }
         });;
@@ -328,7 +328,7 @@ public class TrainingFragment extends Fragment {
         if(timer != null)
             timer.cancel();
 
-        training_status.setText("No Test Running");
+        training_status.setText("Training Not Running");
         training_status_countdown.setText("");
         getCount();
         count_left.setText("");
@@ -352,7 +352,7 @@ public class TrainingFragment extends Fragment {
 
 
     public void openResultsPage(){
-        Toast.makeText(getActivity().getApplicationContext(), "Test Complete!", Toast.LENGTH_LONG).show();
+        Toast.makeText(getActivity().getApplicationContext(), "Training Complete!", Toast.LENGTH_LONG).show();
 
         Fragment fragment = new ResultsFragment();
 
