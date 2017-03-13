@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/text_user_select"
         style="@style/TextAppearance.AppCompat.Headline"
-        android:text="Select Calibration Mode"
+        android:text="Select Operating Mode"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="8dp"
@@ -37,6 +37,24 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/divider"
         style="@style/Widget.AppCompat.Button.Colored"
-        android:text="Gather Training Data" />
+        android:text="Record Training Data" />
+
+    <Button
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/button_evaluation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/button_gather_training_data"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:text="Perform Evaluation" />
+
+    <Button
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/button_select_model"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/button_evaluation"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:text="Select Training Model" />
 
 </RelativeLayout>

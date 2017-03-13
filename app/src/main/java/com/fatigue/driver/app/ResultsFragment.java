@@ -55,7 +55,7 @@ public class ResultsFragment extends Fragment{
         button_save.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //Save Results
-                actionAlert(true, "Save Results", "Would you like to save the test results?");
+                actionAlert(true, "Save Results", "Would you like to save the training results?");
             }
         });
 
@@ -63,7 +63,7 @@ public class ResultsFragment extends Fragment{
         button_delete.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //Delete Results
-                actionAlert(false,"Delete Results", "This action will delete the test results. Continue?");
+                actionAlert(false,"Delete Results", "This action will delete the training results. Continue?");
             }
         });
 

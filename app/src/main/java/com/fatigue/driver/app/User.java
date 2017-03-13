@@ -1,6 +1,9 @@
 package com.fatigue.driver.app;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -73,6 +76,16 @@ public class User {
         if(user_name != null)
             return true;
         else return false;
+    }
+
+    //Log the user out - return to login screen.
+    public static void logout(Activity mActivity){
+        Toast.makeText(mActivity.getApplicationContext(), user_name+" Logged Out", Toast.LENGTH_SHORT).show();
+        user_name = null;
+        Intent intent = new Intent(mActivity, LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        mActivity.startActivity(intent);
+        mActivity.finish();
     }
 
 }

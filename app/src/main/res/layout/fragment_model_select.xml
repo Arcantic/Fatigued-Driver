@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/text_test_complete"
         style="@style/TextAppearance.AppCompat.Headline"
-        android:text="Training Complete"
+        android:text="Select Model"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="8dp"
@@ -27,6 +27,18 @@
         android:layout_height="1dp"
         android:background="@android:color/darker_gray"
         android:layout_below="@id/text_test_complete"
+        android:layout_marginBottom="8dp"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/text_note"
+        style="@style/TextAppearance.AppCompat.Body1"
+        android:text="This will be where models can be changed out for others. It will also allow one to use all users' training models."
+        android:layout_below="@id/text_test_complete"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
         android:layout_marginBottom="8dp"
         />
 
@@ -47,24 +59,5 @@
             android:layout_height="match_parent"/>
 
     </RelativeLayout>
-
-    <Button
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/button_save_results"
-        android:layout_width="144dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        style="@style/Widget.AppCompat.Button.Colored"
-        android:text="Save Results" />
-
-    <Button
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/button_delete_results"
-        android:layout_width="144dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        style="@style/Widget.AppCompat.Button.Colored"
-        android:text="Delete Results" />
 
 </RelativeLayout>

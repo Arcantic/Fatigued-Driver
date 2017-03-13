@@ -51,11 +51,19 @@ public class CalibrationFragment extends Fragment{
             }
         });
 
+        button_select_model = (Button)view.findViewById(R.id.button_select_model);
+        button_select_model.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                //openFragment(TrainingFragment.class);
+                openActivity(ModelSelectActivity.class);
+            }
+        });
+
         // Inflate the layout for this fragment
         return view;
     }
 
-    Button button_gather_training_data;
+    Button button_gather_training_data, button_select_model;
 
 
     public void openFragment(Class fragmentClass){
