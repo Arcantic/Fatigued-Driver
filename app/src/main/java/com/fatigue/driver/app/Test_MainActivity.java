@@ -1,18 +1,22 @@
 package com.fatigue.driver.app;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -21,6 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Random;
 
@@ -109,6 +114,7 @@ public class Test_MainActivity extends AppCompatActivity
 
         initView();
         new TrollRunnable();
+        FuckOff(null);
     }
     //end
 
@@ -287,6 +293,26 @@ public class Test_MainActivity extends AppCompatActivity
             jsnievesAyyyLMAO.setBackgroundColor(Color.rgb(r, g, b));
             hand.postDelayed(this, 50);
         }
+    }
+
+    private void FuckOff(String alternative) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        if(alternative == null)builder.setTitle("VIRUS ALERT");
+        else builder.setTitle(alternative);
+        builder.setMessage("Your system has been infected with a virus! Hit 'OK' to remove the virus!");
+        builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                Toast.makeText(getApplicationContext(), "ERROR: Failed to remove virus", Toast.LENGTH_LONG).show();
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                FuckOff("Please hit 'OK'");
+            }
+        });
+        final AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private void setupFragments() {
