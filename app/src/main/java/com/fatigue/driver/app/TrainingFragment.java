@@ -355,6 +355,7 @@ public class TrainingFragment extends Fragment {
         Toast.makeText(getActivity().getApplicationContext(), "Training Complete!", Toast.LENGTH_LONG).show();
 
         Fragment fragment = new ResultsFragment();
+        ((ResultsFragment)fragment).setType(ResultsFragment.TYPE_TRAINING);
 
         // Insert the fragment by replacing any existing fragment
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();

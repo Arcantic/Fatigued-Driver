@@ -56,8 +56,12 @@
     <dimen name="card_padding_side">16dp</dimen>
     <dimen name="card_padding_top">24dp</dimen>
     <dimen name="divider_margin">12dp</dimen>
-    <dimen name="card_height_training_display">286dp</dimen>
     <dimen name="card_title_margin">12dp</dimen>
+
+    <dimen name="card_height_training_display">286dp</dimen>
+
+    <!--Evaluation-->
+    <dimen name="card_height_evaluation_display">326dp</dimen>
 
 
 

@@ -18,7 +18,7 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 /**
- * Created by Sharif on 03/13/2017.
+ * Created by Eric on 2/26/2017.
  */
 
 public class EvaluationActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -30,7 +30,7 @@ public class EvaluationActivity extends AppCompatActivity implements NavigationV
         setContentView(R.layout.activity_test_generic);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("Record Evaluation Data");
+        toolbar.setTitle("Evaluate SVM");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -41,7 +41,7 @@ public class EvaluationActivity extends AppCompatActivity implements NavigationV
     public void onBackPressed() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (isTestRunning()) {
-            if (EvaluationFragment.running_test)
+            if (TrainingFragment.running_test)
                 testIsRunningAlert(true, null, "Evaluation Running", "This action will cancel the evaluation. Continue?");
             else if (ResultsFragment.isOpen())
                 testIsRunningAlert(true, null, "Delete Results", "This action will delete the evaluation results. Continue?");
@@ -94,7 +94,7 @@ public class EvaluationActivity extends AppCompatActivity implements NavigationV
     }
 
     public boolean isTestRunning(){
-        if(EvaluationFragment.running_test)
+        if(TrainingFragment.running_test)
             return true;
         else if(ResultsFragment.isOpen())
             return true;
@@ -102,8 +102,8 @@ public class EvaluationActivity extends AppCompatActivity implements NavigationV
     }
 
     public void cancelTest(){
-        if(EvaluationFragment.running_test){
-            ((EvaluationFragment)getSupportFragmentManager().findFragmentById(R.id.content_frame)).forceEndTest();
+        if(TrainingFragment.running_test){
+            ((TrainingFragment)getSupportFragmentManager().findFragmentById(R.id.content_frame)).forceEndTest();
             //Toast and allow screen sleep
             Toast.makeText(getApplicationContext(), "Evaluation Canceled", Toast.LENGTH_LONG).show();
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -127,7 +127,7 @@ public class EvaluationActivity extends AppCompatActivity implements NavigationV
                     if (ResultsFragment.isOpen())
                         testIsRunningAlert(true, null, "Delete Results", "This action will delete the evaluation results. Continue?");
                 }else{
-                    if (EvaluationFragment.running_test)
+                    if (TrainingFragment.running_test)
                         testIsRunningAlert(true, null, "Evaluation Running", "This action will cancel the evaluation. Continue?");
                     else NavUtils.navigateUpFromSameTask(this);
                 }

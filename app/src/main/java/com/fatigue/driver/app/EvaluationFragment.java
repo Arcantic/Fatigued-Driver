@@ -14,14 +14,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Random;
 
 /**
- * Created by Sharif on 03/13/2017.
+ * Created by Eric on 11/14/2016.
  */
 
 public class EvaluationFragment extends Fragment {
@@ -53,6 +55,8 @@ public class EvaluationFragment extends Fragment {
         evaluation_status = (TextView)view.findViewById(R.id.text_evaluation_status);
         evaluation_status_countdown = (TextView)view.findViewById(R.id.text_evaluation_status_countdown);
         count_left = (TextView)view.findViewById(R.id.text_count_left);
+        evaluation_prev_command = (TextView)view.findViewById(R.id.text_evaluation_prev_command);
+        evaluation_prev_classification = (TextView)view.findViewById(R.id.text_evaluation_prev_classification);
 
 
 
@@ -116,28 +120,12 @@ public class EvaluationFragment extends Fragment {
 
 
 
-
-
-
         //initMindwaveHelper();
 
 
         // Inflate the layout for this fragment
         return view;
     }
-
-
-    private static final String TAG = TestThree_MindwaveHelper.class.getSimpleName();
-    public MindwaveHelperFragment mMindwaveHelperFrag;
-    public void initMindwaveHelper(){
-        FragmentManager fm = getActivity().getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-        mMindwaveHelperFrag = new MindwaveHelperFragment();
-
-        ft.add(mMindwaveHelperFrag,TAG);
-        ft.commit();
-    }
-
 
 
 
@@ -151,9 +139,10 @@ public class EvaluationFragment extends Fragment {
     Button button_start;
     EditText edit_duration_transition, edit_duration_open, edit_duration_closed;
     EditText edit_count;
-    TextView evaluation_status;
     TextView count_left;
+    TextView evaluation_status;
     TextView evaluation_status_countdown;
+    TextView evaluation_prev_command, evaluation_prev_classification;
 
     int duration_open, duration_closed, duration_active, duration_transition = 0;
     int count = 0;
@@ -177,17 +166,9 @@ public class EvaluationFragment extends Fragment {
         button_start.setText("Cancel");
         count_left.setText(count+"");
 
-        int r = new Random().nextInt(1);
-        if(r == INT_EYES_CLOSED)
-            user_eyes_closed_current = true;
-        else user_eyes_closed_current = false;
-
-        int duration = getDuration();
-
+        generateNextCommand();
         evaluation_status.setText(getCurrentCommandString() + " in...");
         evaluation_status_countdown.setText("5");
-
-
 
         //Begin updating the countdown textfield
         startTimer(duration_transition);
@@ -215,8 +196,14 @@ public class EvaluationFragment extends Fragment {
                     count--;
                     count_left.setText(count + "");
                     in_transition_period = true;
-                    user_eyes_closed_current = getNextCommand();
+
+                    evaluation_prev_command.setText("Last Command: " + getCurrentCommandString());
+                    evaluation_prev_classification.setText("Last Classification: " + "N/A");
+
+                    generateNextCommand();
+                    user_eyes_closed_current = getCurrentCommand();
                     playCompletionSound();
+
                 }
 
                 //If you are not in a transition period...
@@ -249,41 +236,29 @@ public class EvaluationFragment extends Fragment {
         }.start();
     }
 
-
-
-
-
-     //int r = new Random().nextInt(1);
-
-
-    public int INT_EYES_OPEN = 0, INT_EYES_CLOSED = 1;
-    public boolean INT_EYES_OPEN = true;
-    public int getDuration() {
-        if (INT_EYES_OPEN) {
-            INT_EYES_OPEN = true;
-
+    public int getDuration(){
+        if(getCurrentCommand() == BOOLEAN_EYES_CLOSED){
+            return duration_closed;
+        }else{
             return duration_open;
-
-        } else return duration_closed;
+        }
     }
 
+    public boolean BOOLEAN_EYES_OPEN = false;
+    public boolean BOOLEAN_EYES_CLOSED = true;
 
-    public boolean getNextCommand(){
-        //Needs to run code to determine what the next command should be....
-        //right now, will return the base value, eyes_closed_current
-        if(INT_EYES_CLOSED)
-            return !user_eyes_closed_current;
+    public void generateNextCommand(){
+        int r = new Random().nextInt(2);
+        if(r==0)
+            user_eyes_closed_current =  BOOLEAN_EYES_CLOSED;
         else
-            return user_eyes_closed_current;
+            user_eyes_closed_current =  BOOLEAN_EYES_OPEN;
     }
-    public String getNextCommandString(){
-        if(getNextCommand())
-            return "Eyes Closed";
-        else
-            return "Eyes Open";
+    public boolean getCurrentCommand(){
+        return user_eyes_closed_current;
     }
     public String getCurrentCommandString(){
-        if(user_eyes_closed_current)
+        if(getCurrentCommand() == BOOLEAN_EYES_CLOSED)
             return "Eyes Closed";
         else
             return "Eyes Open";
@@ -295,8 +270,6 @@ public class EvaluationFragment extends Fragment {
         endTest(false);
         finishGatherData();
     }
-
-
 
     public void endTest(boolean invalidate){
         //If Invalidaded, delete test
@@ -337,6 +310,7 @@ public class EvaluationFragment extends Fragment {
         Toast.makeText(getActivity().getApplicationContext(), "Evaluation Complete!", Toast.LENGTH_LONG).show();
 
         Fragment fragment = new ResultsFragment();
+        ((ResultsFragment)fragment).setType(ResultsFragment.TYPE_EVALUATION);
 
         // Insert the fragment by replacing any existing fragment
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
@@ -405,18 +379,18 @@ public class EvaluationFragment extends Fragment {
 
     public void finishGatherData(){
         //Placeholder for now...
-        //Run the evalaution function and notify the user with a Toast
-        runSvmTrain();
+        //Run the evaluation function and notify the user with a Toast
+        runSvmEval();
     }
 
-    public boolean running_svm_train;
-    public void runSvmTrain(){
-        running_svm_train = true;
+    public boolean running_svm_eval;
+    public void runSvmEval(){
+        running_svm_eval = true;
         Toast.makeText(getActivity().getApplicationContext(), "SVM is Evaluating...", Toast.LENGTH_LONG).show();
         //HERE//
-        //RUN TRAIN FUNCTIONS IN BACGROUND. WHEN IT IS FINISHED, OPEN THE RESULTS SCREEN
+        //RUN EVAL FUNCTIONS IN BACGROUND. WHEN IT IS FINISHED, OPEN THE RESULTS SCREEN
         //HERE//
-        running_svm_train = false;
+        running_svm_eval = false;
         openResultsPage();
     }
 

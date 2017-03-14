@@ -376,6 +376,9 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_calibration:
                 fragmentClass = CalibrationFragment.class;
                 break;
+            case R.id.nav_logout:
+                logoutUser();
+                break;
             default:
                 fragmentClass = MainFragment.class;
         }
@@ -417,6 +420,11 @@ public class MainActivity extends AppCompatActivity
         }
         // Close the navigation drawer
         drawer.closeDrawers();
+    }
+
+
+    public void logoutUser(){
+        User.logout(this);
     }
 
 

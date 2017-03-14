@@ -66,6 +66,14 @@
         </activity>
 
         <activity
+            android:name="com.fatigue.driver.app.EvaluationActivity"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:theme="@style/AppTheme"
+            android:parentActivityName="com.fatigue.driver.app.MainActivity"
+            >
+        </activity>
+
+        <activity
             android:name="com.fatigue.driver.app.ModelSelectActivity"
             android:windowSoftInputMode="stateAlwaysHidden"
             android:theme="@style/AppTheme"

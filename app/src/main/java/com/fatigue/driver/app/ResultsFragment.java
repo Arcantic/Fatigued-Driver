@@ -41,6 +41,14 @@ import java.util.Calendar;
  */
 
 public class ResultsFragment extends Fragment{
+
+
+    public static int TYPE_TRAINING = 0, TYPE_EVALUATION = 1;
+    public int type;
+    public void setType(int type){
+        this.type = type;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -50,12 +58,21 @@ public class ResultsFragment extends Fragment{
         //The fragment is open.
         is_open = true;
 
+        text_title = (TextView)view.findViewById(R.id.text_test_complete);
+        if(type == TYPE_TRAINING)
+            text_title.setText("Training Complete");
+        if(type == TYPE_EVALUATION)
+            text_title.setText("Evaluation Complete");
+
         //Add listener to each button
         button_save = (Button)view.findViewById(R.id.button_save_results);
         button_save.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //Save Results
-                actionAlert(true, "Save Results", "Would you like to save the training results?");
+                if(type == TYPE_TRAINING)
+                    actionAlert(true, "Save Results", "Would you like to save the training results?");
+                if(type == TYPE_EVALUATION)
+                    actionAlert(true, "Save Results", "Would you like to save the evaluation results?");
             }
         });
 
@@ -63,7 +80,10 @@ public class ResultsFragment extends Fragment{
         button_delete.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //Delete Results
-                actionAlert(false,"Delete Results", "This action will delete the training results. Continue?");
+                if(type == TYPE_TRAINING)
+                    actionAlert(false,"Delete Results", "This action will delete the training results. Continue?");
+                if(type == TYPE_EVALUATION)
+                    actionAlert(false,"Delete Results", "This action will delete the evaluation results. Continue?");
             }
         });
 
@@ -73,6 +93,8 @@ public class ResultsFragment extends Fragment{
 
 
     public Button button_save, button_delete;
+    public TextView text_title;
+
     public static boolean is_open;
     public static boolean isOpen(){
         return is_open;

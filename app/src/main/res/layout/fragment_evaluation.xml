@@ -15,7 +15,7 @@
         android:layout_gravity="center"
         android:layout_width="match_parent"
         android:background="@color/colorWhite"
-        android:layout_height="@dimen/card_height_training_display"
+        android:layout_height="@dimen/card_height_evaluation_display"
         card_view:cardUseCompatPadding="true"
         card_view:cardElevation="@dimen/card_elevation_rest"
         card_view:cardCornerRadius="@dimen/card_corners"
@@ -52,13 +52,34 @@
             <TextView
                 android:id="@+id/text_evaluation_status_countdown"
                 android:gravity="center"
-                android:layout_above="@+id/button_start"
+                android:layout_above="@+id/text_evaluation_prev_command"
                 style="@style/TextAppearance.AppCompat.Display2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="48dp"
                 android:text=""
                 android:textColor="@color/colorAccent"
+                android:layout_marginBottom="24dp"
+                />
+
+            <TextView
+                android:id="@+id/text_evaluation_prev_command"
+                android:gravity="center"
+                android:layout_above="@+id/text_evaluation_prev_classification"
+                style="@style/TextAppearance.AppCompat.Subhead"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Previous Command Here"
+                />
+
+            <TextView
+                android:id="@+id/text_evaluation_prev_classification"
+                android:gravity="center"
+                android:layout_above="@+id/button_start"
+                style="@style/TextAppearance.AppCompat.Subhead"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                android:text="Classification Accuracy Here"
                 />
 
             <Button
@@ -115,27 +136,13 @@
 
 
 
-                    />
-
-
-                <View
-                    android:layout_width="match_parent"
-                    android:id="@+id/divider_switch_eyes"
-                    android:layout_below="@+id/switch_eyes"
-                    android:layout_marginTop="@dimen/divider_margin"
-                    android:layout_marginBottom="@dimen/divider_margin"
-                    android:layout_height="1dp"
-                    android:background="?android:attr/dividerVertical" />
-
-
-
 
                 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                     android:orientation="vertical"
                     android:id="@+id/layout_rel1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/divider_switch_eyes"
+                    android:layout_below="@+id/text_settings_title"
                     >
                     <!--Texts-->
                     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
