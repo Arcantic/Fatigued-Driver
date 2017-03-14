@@ -1,35 +1,14 @@
 package com.fatigue.driver.app;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.CountDownTimer;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.EditText;
-import android.widget.Switch;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import org.w3c.dom.Text;
-
-import java.sql.Time;
-import java.util.Calendar;
 
 /**
  * Created by Eric on 11/14/2016.
@@ -51,6 +30,14 @@ public class CalibrationFragment extends Fragment{
             }
         });
 
+        button_evaluation = (Button)view.findViewById(R.id.button_evaluation);
+        button_evaluation.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                //openFragment(TrainingFragment.class);
+                openActivity(EvaluationActivity.class);
+            }
+        });
+
         button_select_model = (Button)view.findViewById(R.id.button_select_model);
         button_select_model.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -63,7 +50,7 @@ public class CalibrationFragment extends Fragment{
         return view;
     }
 
-    Button button_gather_training_data, button_select_model;
+    Button button_gather_training_data, button_evaluation, button_select_model;
 
 
     public void openFragment(Class fragmentClass){
