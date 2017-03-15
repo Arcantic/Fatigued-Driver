@@ -34,6 +34,7 @@ import android.widget.Toast;
 import org.w3c.dom.Text;
 
 import java.sql.Time;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 /**
@@ -47,6 +48,11 @@ public class ResultsFragment extends Fragment{
     public int type;
     public void setType(int type){
         this.type = type;
+    }
+
+    public ArrayList<Boolean> is_classification_correct_list = new ArrayList<Boolean>();
+    public void setClassificationList(ArrayList<Boolean> classifications){
+        this.is_classification_correct_list = classifications;
     }
 
     @Override
@@ -87,8 +93,24 @@ public class ResultsFragment extends Fragment{
             }
         });
 
+        //Calculate the classification accuracy
+        calcClassificationAccuracy();
+
         // Inflate the layout for this fragment
         return view;
+    }
+
+    public float classification_accuracy;
+    public void calcClassificationAccuracy(){
+        int num_correct = 0;
+        for(int i = 0; i < is_classification_correct_list.size(); i++){
+            if(is_classification_correct_list.get(i) == true)
+                num_correct++;
+        }
+
+        classification_accuracy = (num_correct/is_classification_correct_list.size())*100;
+        System.out.println("Classification Accuracy: " + classification_accuracy + "%");
+        Toast.makeText(getActivity().getApplicationContext(), "Classification Accuracy: " + classification_accuracy + "%", Toast.LENGTH_LONG).show();
     }
 
 

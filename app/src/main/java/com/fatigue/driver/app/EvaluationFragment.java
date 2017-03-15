@@ -20,7 +20,13 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+
+import libsvm.svm;
+import libsvm.svm_model;
+import libsvm.svm_node;
 
 /**
  * Created by Eric on 11/14/2016.
@@ -122,6 +128,7 @@ public class EvaluationFragment extends Fragment {
 
         //initMindwaveHelper();
 
+        initEval();
 
         // Inflate the layout for this fragment
         return view;
@@ -161,6 +168,8 @@ public class EvaluationFragment extends Fragment {
     //Start the test
     public void beginTest(){
         //Test begins in 5 seconds...
+        clearClassList();
+
         running_test = true;
         disableSettings();
         button_start.setText("Cancel");
@@ -185,6 +194,8 @@ public class EvaluationFragment extends Fragment {
             //Every *100* millis, onTick is called.
             public void onTick(long millisUntilFinished) {
                 evaluation_status_countdown.setText(Math.ceil(millisUntilFinished / 100)/10 + "");
+
+                //In addition to gathering data, we need to evaluate every second...
             }
 
             public void onFinish() {
@@ -197,8 +208,8 @@ public class EvaluationFragment extends Fragment {
                     count_left.setText(count + "");
                     in_transition_period = true;
 
-                    evaluation_prev_command.setText("Last Command: " + getCurrentCommandString());
-                    evaluation_prev_classification.setText("Last Classification: " + "N/A");
+                    //evaluation_prev_command.setText("Last Command: " + getCurrentCommandString());
+                    //evaluation_prev_classification.setText("Last Classification: " + "N/A");
 
                     generateNextCommand();
                     user_eyes_closed_current = getCurrentCommand();
@@ -211,6 +222,7 @@ public class EvaluationFragment extends Fragment {
                 //...then start another timer and update the text fields
                 if(!in_transition_period && count > 0){
                     startTimer(getDuration());
+                    startEvaluationTimer();
 
                     //Begin to gather data. Later, replace with resumeGatherData() and stopGatherTrialData()
                     if(user_eyes_closed_current) {
@@ -246,6 +258,8 @@ public class EvaluationFragment extends Fragment {
 
     public boolean BOOLEAN_EYES_OPEN = false;
     public boolean BOOLEAN_EYES_CLOSED = true;
+    public int INT_EYES_OPEN = 0;
+    public int INT_EYES_CLOSED = 1;
 
     public void generateNextCommand(){
         int r = new Random().nextInt(2);
@@ -311,6 +325,7 @@ public class EvaluationFragment extends Fragment {
 
         Fragment fragment = new ResultsFragment();
         ((ResultsFragment)fragment).setType(ResultsFragment.TYPE_EVALUATION);
+        ((ResultsFragment)fragment).setClassificationList(is_classification_correct_list);
 
         // Insert the fragment by replacing any existing fragment
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
@@ -357,6 +372,108 @@ public class EvaluationFragment extends Fragment {
 
 
 
+    public svm_model training_model;
+    public ArrayList<Boolean> is_classification_correct_list = new ArrayList<Boolean>();
+
+    //Initiate everything for evaluation...
+    public void initEval(){
+        loadTrainingModel();
+        clearClassList();
+    }
+
+    public void clearClassList(){
+        is_classification_correct_list = new ArrayList();
+    }
+
+    //Load the training model to memory
+    public void loadTrainingModel(){
+        //TODO Load training model and save it to training_model
+        training_model = new svm_model();
+    }
+
+    //This timer runs the evaluation every second.
+    public void startEvaluationTimer(){
+        timer = new CountDownTimer(1000, 50) {
+            //Every *100* millis, onTick is called.
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            public void onFinish() {
+                //Run evaluation on finish.
+                //Need to load our features first
+                double[] data_features = loadFeatures();
+
+                double eval_results = 0;
+                //TODO eval_results = evaluate(data_features, training_model);
+
+                String res_actual, res_class;
+                res_actual = getCurrentCommandString();
+
+                if(eval_results == INT_EYES_OPEN)
+                    res_class = "Eyes Open";
+                else if (eval_results == INT_EYES_CLOSED)
+                    res_class = "Eyes Closed";
+                else res_class = "UNKNOWN";
+
+                System.out.println("Actual Results: " + res_actual + ", Eval Classification: " + res_class);
+
+                //Update the screen with the results...
+                evaluation_prev_command.setText("Last Command: " + res_actual);
+                evaluation_prev_classification.setText("Last Classification: " + res_class);
+
+                //Record the results, so that classification accuracy can be calculated in the end.
+                if(eval_results == INT_EYES_CLOSED && user_eyes_closed_current) {
+                    //If the results say eyes are closed, and they are, then it is correct
+                    is_classification_correct_list.add(true);
+                }else if(eval_results == INT_EYES_OPEN && !user_eyes_closed_current) {
+                    //If the results say eyes are open, and they are, then it is correct
+                    is_classification_correct_list.add(true);
+                }else is_classification_correct_list.add(false);
+            }
+        }.start();
+    }
+
+    //Load our data's features (after preprocessing!)
+    //Equivalent to the raw data after it has been normalized, etc.
+    public double[] loadFeatures(){
+        double[] data_features = {0,0,0,0,0};
+        //TODO Load feature data into data_features...
+        return data_features;
+    }
+
+
+    //Need to provide evaluation with the features and the model (pre-loaded)
+    //This code was copy-pasted from online... aka incorrect
+    //TODO write this code correctly
+    public double evaluate(double[] features, svm_model model)
+    {
+        svm_node[] nodes = new svm_node[features.length-1];
+        for (int i = 1; i < features.length; i++)
+        {
+            svm_node node = new svm_node();
+            node.index = i;
+            node.value = features[i];
+
+            nodes[i-1] = node;
+        }
+
+        int totalClasses = 2;
+        int[] labels = new int[totalClasses];
+        svm.svm_get_labels(model,labels);
+
+        double[] prob_estimates = new double[totalClasses];
+        double v = svm.svm_predict_probability(model, nodes, prob_estimates);
+
+        for (int i = 0; i < totalClasses; i++){
+            System.out.print("(" + labels[i] + ":" + prob_estimates[i] + ")");
+        }
+        System.out.println("(Actual:" + features[0] + " Prediction:" + v + ")");
+
+        return v;
+    }
+
+
 
 
     public boolean gathering_data;
@@ -386,9 +503,8 @@ public class EvaluationFragment extends Fragment {
     public boolean running_svm_eval;
     public void runSvmEval(){
         running_svm_eval = true;
-        Toast.makeText(getActivity().getApplicationContext(), "SVM is Evaluating...", Toast.LENGTH_LONG).show();
         //HERE//
-        //RUN EVAL FUNCTIONS IN BACGROUND. WHEN IT IS FINISHED, OPEN THE RESULTS SCREEN
+        //RUN EVAL FUNCTIONS IN BACKGROUND. WHEN IT IS FINISHED, OPEN THE RESULTS SCREEN
         //HERE//
         running_svm_eval = false;
         openResultsPage();
