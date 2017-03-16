@@ -13,7 +13,7 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/widener_crest"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
@@ -33,7 +33,7 @@
             android:name="com.fatigue.driver.app.BluetoothAdapterDemoActivity"
             android:parentActivityName="com.fatigue.driver.app.Test_MainActivity"
 
-            > </activity>
+            > </activity>z
 
 
 

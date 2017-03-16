@@ -20,6 +20,10 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -389,8 +393,16 @@ public class EvaluationFragment extends Fragment {
 
     //Load the training model to memory
     public void loadTrainingModel(){
-        //TODO Load training model and save it to training_model
-        training_model = new svm_model();
+        //TODO NEED TO CORRECT FILE NAME/LOCATION
+        try {
+            FileReader fIn = new FileReader(GlobalSettings.svmTraingDataLogFileName);
+            BufferedReader bufferedReader = new BufferedReader(fIn);
+            svm_model model = svm.svm_load_model(bufferedReader);
+            training_model = model;
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(getActivity().getApplicationContext(), "Failed to load model file. Have you set up training data?", Toast.LENGTH_LONG).show();
+        }
     }
 
     //This timer runs the evaluation every second.
