@@ -299,6 +299,8 @@ public class EvaluationFragment extends Fragment {
 
         evaluation_status.setText("Evaluation Not Running");
         evaluation_status_countdown.setText("");
+        evaluation_prev_command.setText("");
+        evaluation_prev_classification.setText("");
         getCount();
         count_left.setText("");
 

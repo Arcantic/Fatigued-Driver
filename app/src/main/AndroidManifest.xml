@@ -51,6 +51,13 @@
         </activity>
 
         <activity
+            android:name="com.fatigue.driver.app.IntroActivity"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:theme="@style/AppTheme.NoActionBar"
+            >
+        </activity>
+
+        <activity
             android:name="com.fatigue.driver.app.LoginActivity"
             android:windowSoftInputMode="stateAlwaysHidden"
             android:theme="@style/AppTheme.NoActionBar"
@@ -92,7 +99,7 @@
 
             > </activity>
         <activity
-            android:name="com.fatigue.driver.app.TestThree"
+            android:name="com.fatigue.driver.app.TestFour"
             android:parentActivityName="com.fatigue.driver.app.Test_MainActivity"
 
             > </activity>

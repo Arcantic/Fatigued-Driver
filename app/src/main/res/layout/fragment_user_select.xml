@@ -15,24 +15,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/text_user_select"
-        style="@style/TextAppearance.AppCompat.Display2"
-        android:textColor="#ffffff"
+        style="@style/TextAppearance.AppCompat.Display1"
+        android:textColor="@color/colorWhite"
         android:text="Select User"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="72dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginTop="48dp"
         />
 
-    <!--
-    <View
-        android:id="@+id/divider"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/darker_gray"
-        android:layout_below="@id/text_user_select"
-        android:layout_marginBottom="8dp"
-        />
-    -->
+
 
     <RelativeLayout
         android:layout_width="match_parent"

@@ -370,9 +370,6 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_settings:
                 fragmentClass = SettingsFragment.class;
                 break;
-            case R.id.nav_debugging:
-                fragmentClass = DebuggingFragment.class;
-                break;
             case R.id.nav_calibration:
                 fragmentClass = CalibrationFragment.class;
                 break;
