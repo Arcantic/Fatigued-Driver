@@ -6,6 +6,9 @@ public class GlobalSettings {
     public static final int COLLECTION_INTERVAL_DURATION_ALERT_IN_SECONDS = 5;
     public static final int COLLECTION_INTERVAL_DURATION_FATIGUE_IN_SECONDS = 3;
 
+    public static final int NUMBER_OF_RAW_PACKETS_TO_CONSUME_FOR_EACH_TRIAL_ALERT = 5;
+    public static final int NUMBER_OF_RAW_PACKETS_TO_CONSUME_FOR_EACH_TRIAL_FATIGUE = 3;
+
     public static String appRootFolderName = "DriverFatigue";
     public static String appLogFileName = "DriverFatigueApp.log";
     public static String rawFolderName = "RawData";
@@ -23,15 +26,15 @@ public class GlobalSettings {
     public static boolean isDebug = true;
     public static boolean isDebugVerbose = true;
 
-    public static boolean isRecordingRawData = true;//Link to LinkDetectedHandler variables
+    public static boolean isRecordingRawData = true; //Link to LinkDetectedHandler variables
     public static boolean isRecordingRawNormData = true;
     public static boolean isCalcFFT = true;
     public static boolean isRecordingFFT = true;
     public static boolean isRecordingMagnitudeArray = true;
     public static boolean isRecordingMagnitudeAveragedArray = true;
     public static boolean isCalcMagnitude = true;
-    public static boolean isRecordingRawComplexArray=true;
-    public static boolean isCalcTrialFeatures=true;
+    public static boolean isRecordingRawComplexArray = true;
+    public static boolean isCalcTrialFeatures = true;
 
     public static boolean isLogAllData = true;
     public static boolean isLogData = true;
@@ -42,33 +45,31 @@ public class GlobalSettings {
     public static boolean isRecordNoData = false;
     public static boolean isEvaluatingRealtimeData = false;
 
-
     public static int samplingSizeInterval = 512;
 
     public static int alertTrialCollectionIntervalDuration = 5;
     public static int fatigueTrialCollectionIntervalDuration = 3;
 
-    public static int alertDelayTimeBetweenTrialCollections= 5;
+    public static int alertDelayTimeBetweenTrialCollections = 5;
     public static int fatigueDelayTimeBetweenTrialCollections = 5;
 
     public static int calibrationNumOfTrialsToPerformTotal = 6; //TODO temp value
-    public static int calibrationNumOfTrialsToPerformAlert = 3;//TODO temp value
-    public static int calibrationNumOfTrialsToPerformFatigue = 3;//TODO temp value
-    public static int calibrationNumOfTrialsToPerformAlertOrFatigue = 3;//TODO temp value
+    public static int calibrationNumOfTrialsToPerformAlert = 3; //TODO temp value
+    public static int calibrationNumOfTrialsToPerformFatigue = 3; //TODO temp value
+    public static int calibrationNumOfTrialsToPerformAlertOrFatigue = 3; //TODO temp value
 
     public static int numOfFeatures = 7; //TODO smarter implementation of this
 
     public static final int EYES_CLOSED = 1;
     public static final int EYES_OPEN = 0;
 
-    public GlobalSettings() {
-    }
+    public GlobalSettings() {}
 
     public static String getAppRootFolderName() {
         return appRootFolderName;
     }
 
-    public static void setAppRootFolderName(String s){
+    public static void setAppRootFolderName(String s) {
         appRootFolderName = s;
     }
 
@@ -76,6 +77,5 @@ public class GlobalSettings {
         return (double) (samplingSizeInterval / 512);
     }
 
-    public static void setAlertConfiguration(){
-    }
+    public static void setAlertConfiguration() {}
 }
