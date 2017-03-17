@@ -1,13 +1,9 @@
 package com.fatigue.driver.app;
 
 import android.media.AudioManager;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
 import android.media.ToneGenerator;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -24,18 +20,30 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+import libsvm.svm;
+import libsvm.svm_model;
+import libsvm.svm_node;
+
 /**
  * Created by Eric on 11/14/2016.
  */
 
-public class TrainingFragment extends Fragment {
+public class EvaluationFragment extends Fragment {
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_training, container, false);
+        View view = inflater.inflate(R.layout.fragment_evaluation, container, false);
 
 
         //ID the "Start" button and add listener-
@@ -47,16 +55,18 @@ public class TrainingFragment extends Fragment {
                 }else {
                     endTest(true);
                     cancelGatherData();
-                    Toast.makeText(getActivity().getApplicationContext(), "Training Canceled", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity().getApplicationContext(), "Evaluation Canceled", Toast.LENGTH_SHORT).show();
                 }
             }
         });;
 
 
         //Display texts...
-        training_status = (TextView)view.findViewById(R.id.text_training_status);
-        training_status_countdown = (TextView)view.findViewById(R.id.text_training_status_countdown);
+        evaluation_status = (TextView)view.findViewById(R.id.text_evaluation_status);
+        evaluation_status_countdown = (TextView)view.findViewById(R.id.text_evaluation_status_countdown);
         count_left = (TextView)view.findViewById(R.id.text_count_left);
+        evaluation_prev_command = (TextView)view.findViewById(R.id.text_evaluation_prev_command);
+        evaluation_prev_classification = (TextView)view.findViewById(R.id.text_evaluation_prev_classification);
 
 
 
@@ -120,60 +130,13 @@ public class TrainingFragment extends Fragment {
 
 
 
-
-
-        //"toggles" and add listener
-        switch_eyes = (Switch)view.findViewById(R.id.switch_eyes);
-        switch_alternate = (Switch)view.findViewById(R.id.switch_alternate);
-        switch_eyes.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                user_eyes_closed_current = isChecked;
-                if(user_eyes_closed_current){
-                    duration_active = duration_closed;
-                    switch_eyes.setText("Eyes are closed");
-                }else{
-                    duration_active = duration_open;
-                    switch_eyes.setText("Eyes are open");
-                }
-            }
-        });
-        switch_alternate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked) {
-                    switch_eyes.setEnabled(false);
-                    switch_eyes.setChecked(false);
-                    duration_active = duration_open;
-                    switch_eyes.setText("Eyes are open");
-                    alternate_eyes = true;
-                }else{
-                    switch_eyes.setEnabled(true);
-                    alternate_eyes = false;
-                }
-            }
-        });
-        user_eyes_closed_current = switch_eyes.isChecked();
-        alternate_eyes = switch_alternate.isChecked();
-
-
         //initMindwaveHelper();
 
+        initEval();
 
         // Inflate the layout for this fragment
         return view;
     }
-
-
-    private static final String TAG = TestThree_MindwaveHelper.class.getSimpleName();
-    public MindwaveHelperFragment mMindwaveHelperFrag;
-    public void initMindwaveHelper(){
-        FragmentManager fm = getActivity().getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-        mMindwaveHelperFrag = new MindwaveHelperFragment();
-
-        ft.add(mMindwaveHelperFrag,TAG);
-        ft.commit();
-    }
-
 
 
 
@@ -187,14 +150,14 @@ public class TrainingFragment extends Fragment {
     Button button_start;
     EditText edit_duration_transition, edit_duration_open, edit_duration_closed;
     EditText edit_count;
-    Switch switch_eyes, switch_alternate;
-    TextView training_status;
     TextView count_left;
-    TextView training_status_countdown;
+    TextView evaluation_status;
+    TextView evaluation_status_countdown;
+    TextView evaluation_prev_command, evaluation_prev_classification;
 
     int duration_open, duration_closed, duration_active, duration_transition = 0;
     int count = 0;
-    boolean user_eyes_closed_current, alternate_eyes;
+    boolean user_eyes_closed_current;
     public static Boolean running_test = false;
 
     int duration_default_open = 5;
@@ -209,13 +172,16 @@ public class TrainingFragment extends Fragment {
     //Start the test
     public void beginTest(){
         //Test begins in 5 seconds...
+        clearClassList();
+
         running_test = true;
         disableSettings();
         button_start.setText("Cancel");
         count_left.setText(count+"");
 
-        training_status.setText(getCurrentCommandString() + " in...");
-        training_status_countdown.setText("5");
+        generateNextCommand();
+        evaluation_status.setText(getCurrentCommandString() + " in...");
+        evaluation_status_countdown.setText("5");
 
         //Begin updating the countdown textfield
         startTimer(duration_transition);
@@ -231,7 +197,9 @@ public class TrainingFragment extends Fragment {
         timer = new CountDownTimer(length*1000, 50) {
             //Every *100* millis, onTick is called.
             public void onTick(long millisUntilFinished) {
-                training_status_countdown.setText(Math.ceil(millisUntilFinished / 100)/10 + "");
+                evaluation_status_countdown.setText(Math.ceil(millisUntilFinished / 100)/10 + "");
+
+                //In addition to gathering data, we need to evaluate every second...
             }
 
             public void onFinish() {
@@ -243,8 +211,14 @@ public class TrainingFragment extends Fragment {
                     count--;
                     count_left.setText(count + "");
                     in_transition_period = true;
-                    user_eyes_closed_current = getNextCommand();
+
+                    //evaluation_prev_command.setText("Last Command: " + getCurrentCommandString());
+                    //evaluation_prev_classification.setText("Last Classification: " + "N/A");
+
+                    generateNextCommand();
+                    user_eyes_closed_current = getCurrentCommand();
                     playCompletionSound();
+
                 }
 
                 //If you are not in a transition period...
@@ -252,13 +226,14 @@ public class TrainingFragment extends Fragment {
                 //...then start another timer and update the text fields
                 if(!in_transition_period && count > 0){
                     startTimer(getDuration());
+                    startEvaluationTimer();
 
                     //Begin to gather data. Later, replace with resumeGatherData() and stopGatherTrialData()
                     if(user_eyes_closed_current) {
-                        training_status.setText("Eyes Closed...");
+                        evaluation_status.setText("Eyes Closed...");
                         startGatherTrialData(GlobalSettings.EYES_CLOSED);
                     }else{
-                        training_status.setText("Eyes Open...");
+                        evaluation_status.setText("Eyes Open...");
                         startGatherTrialData(GlobalSettings.EYES_OPEN);
                     }
 
@@ -266,7 +241,7 @@ public class TrainingFragment extends Fragment {
                     if(count > 0){
                         //Enter transition/grace period
                         stopGatherTrialData();
-                        training_status.setText(getCurrentCommandString() + " in...");
+                        evaluation_status.setText(getCurrentCommandString() + " in...");
                         startTimer(duration_transition);
                     }else{
                         //If the # of trials remaining = 0, then end the test
@@ -278,32 +253,30 @@ public class TrainingFragment extends Fragment {
     }
 
     public int getDuration(){
-        if(alternate_eyes){
-            if(user_eyes_closed_current)
-                return duration_closed;
-            else
-                return duration_open;
+        if(getCurrentCommand() == BOOLEAN_EYES_CLOSED){
+            return duration_closed;
         }else{
-            return duration_active;
+            return duration_open;
         }
     }
 
-    public boolean getNextCommand(){
-        //Needs to run code to determine what the next command should be....
-        //right now, will return the base value, eyes_closed_current
-        if(alternate_eyes)
-            return !user_eyes_closed_current;
+    public boolean BOOLEAN_EYES_OPEN = false;
+    public boolean BOOLEAN_EYES_CLOSED = true;
+    public int INT_EYES_OPEN = 0;
+    public int INT_EYES_CLOSED = 1;
+
+    public void generateNextCommand(){
+        int r = new Random().nextInt(2);
+        if(r==0)
+            user_eyes_closed_current =  BOOLEAN_EYES_CLOSED;
         else
-            return user_eyes_closed_current;
+            user_eyes_closed_current =  BOOLEAN_EYES_OPEN;
     }
-    public String getNextCommandString(){
-        if(getNextCommand())
-            return "Eyes Closed";
-        else
-            return "Eyes Open";
+    public boolean getCurrentCommand(){
+        return user_eyes_closed_current;
     }
     public String getCurrentCommandString(){
-        if(user_eyes_closed_current)
+        if(getCurrentCommand() == BOOLEAN_EYES_CLOSED)
             return "Eyes Closed";
         else
             return "Eyes Open";
@@ -328,8 +301,10 @@ public class TrainingFragment extends Fragment {
         if(timer != null)
             timer.cancel();
 
-        training_status.setText("Training Not Running");
-        training_status_countdown.setText("");
+        evaluation_status.setText("Evaluation Not Running");
+        evaluation_status_countdown.setText("");
+        evaluation_prev_command.setText("");
+        evaluation_prev_classification.setText("");
         getCount();
         count_left.setText("");
 
@@ -352,10 +327,11 @@ public class TrainingFragment extends Fragment {
 
 
     public void openResultsPage(){
-        Toast.makeText(getActivity().getApplicationContext(), "Training Complete!", Toast.LENGTH_LONG).show();
+        Toast.makeText(getActivity().getApplicationContext(), "Evaluation Complete!", Toast.LENGTH_LONG).show();
 
         Fragment fragment = new ResultsFragment();
-        ((ResultsFragment)fragment).setType(ResultsFragment.TYPE_TRAINING);
+        ((ResultsFragment)fragment).setType(ResultsFragment.TYPE_EVALUATION);
+        ((ResultsFragment)fragment).setClassificationList(is_classification_correct_list);
 
         // Insert the fragment by replacing any existing fragment
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
@@ -372,8 +348,6 @@ public class TrainingFragment extends Fragment {
 
 
     public void disableSettings(){
-        switch_eyes.setEnabled(false);
-        switch_alternate.setEnabled(false);
         edit_duration_transition.setEnabled(false);
         edit_duration_open.setEnabled(false);
         edit_duration_closed.setEnabled(false);
@@ -381,15 +355,10 @@ public class TrainingFragment extends Fragment {
     }
 
     public void enableSettings(){
-        if(!switch_alternate.isChecked())
-            switch_eyes.setEnabled(true);
-        switch_alternate.setEnabled(true);
         edit_duration_transition.setEnabled(true);
         edit_duration_open.setEnabled(true);
         edit_duration_closed.setEnabled(true);
         edit_count.setEnabled(true);
-
-        user_eyes_closed_current = switch_eyes.isChecked();
     }
 
 
@@ -407,6 +376,116 @@ public class TrainingFragment extends Fragment {
     }
 
 
+
+
+    public svm_model training_model;
+    public ArrayList<Boolean> is_classification_correct_list = new ArrayList<Boolean>();
+
+    //Initiate everything for evaluation...
+    public void initEval(){
+        loadTrainingModel();
+        clearClassList();
+    }
+
+    public void clearClassList(){
+        is_classification_correct_list = new ArrayList();
+    }
+
+    //Load the training model to memory
+    public void loadTrainingModel(){
+        //TODO NEED TO CORRECT FILE NAME/LOCATION
+        try {
+            FileReader fIn = new FileReader(GlobalSettings.svmTraingDataLogFileName);
+            BufferedReader bufferedReader = new BufferedReader(fIn);
+            svm_model model = svm.svm_load_model(bufferedReader);
+            training_model = model;
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(getActivity().getApplicationContext(), "Failed to load model file. Have you set up training data?", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    //This timer runs the evaluation every second.
+    public void startEvaluationTimer(){
+        timer = new CountDownTimer(1000, 50) {
+            //Every *100* millis, onTick is called.
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            public void onFinish() {
+                //Run evaluation on finish.
+                //Need to load our features first
+                double[] data_features = loadFeatures();
+
+                double eval_results = 0;
+                //TODO eval_results = evaluate(data_features, training_model);
+
+                String res_actual, res_class;
+                res_actual = getCurrentCommandString();
+
+                if(eval_results == INT_EYES_OPEN)
+                    res_class = "Eyes Open";
+                else if (eval_results == INT_EYES_CLOSED)
+                    res_class = "Eyes Closed";
+                else res_class = "UNKNOWN";
+
+                System.out.println("Actual Results: " + res_actual + ", Eval Classification: " + res_class);
+
+                //Update the screen with the results...
+                evaluation_prev_command.setText("Last Command: " + res_actual);
+                evaluation_prev_classification.setText("Last Classification: " + res_class);
+
+                //Record the results, so that classification accuracy can be calculated in the end.
+                if(eval_results == INT_EYES_CLOSED && user_eyes_closed_current) {
+                    //If the results say eyes are closed, and they are, then it is correct
+                    is_classification_correct_list.add(true);
+                }else if(eval_results == INT_EYES_OPEN && !user_eyes_closed_current) {
+                    //If the results say eyes are open, and they are, then it is correct
+                    is_classification_correct_list.add(true);
+                }else is_classification_correct_list.add(false);
+            }
+        }.start();
+    }
+
+    //Load our data's features (after preprocessing!)
+    //Equivalent to the raw data after it has been normalized, etc.
+    public double[] loadFeatures(){
+        double[] data_features = {0,0,0,0,0};
+        //TODO Load feature data into data_features...
+        return data_features;
+    }
+
+
+    //Need to provide evaluation with the features and the model (pre-loaded)
+    //This code was copy-pasted from online... aka incorrect
+    //TODO write this code correctly
+    public double evaluate(double[] features, svm_model model)
+    {
+        svm_node[] nodes = new svm_node[features.length-1];
+        for (int i = 1; i < features.length; i++)
+        {
+            svm_node node = new svm_node();
+            node.index = i;
+            node.value = features[i];
+
+            nodes[i-1] = node;
+        }
+
+        int totalClasses = 2;
+        int[] labels = new int[totalClasses];
+        svm.svm_get_labels(model,labels);
+
+        double[] prob_estimates = new double[totalClasses];
+        double v = svm.svm_predict_probability(model, nodes, prob_estimates);
+
+        for (int i = 0; i < totalClasses; i++){
+            System.out.print("(" + labels[i] + ":" + prob_estimates[i] + ")");
+        }
+        System.out.println("(Actual:" + features[0] + " Prediction:" + v + ")");
+
+        return v;
+    }
 
 
 
@@ -431,18 +510,17 @@ public class TrainingFragment extends Fragment {
 
     public void finishGatherData(){
         //Placeholder for now...
-        //Run the training function and notify the user with a Toast
-        runSvmTrain();
+        //Run the evaluation function and notify the user with a Toast
+        runSvmEval();
     }
 
-    public boolean running_svm_train;
-    public void runSvmTrain(){
-        running_svm_train = true;
-        Toast.makeText(getActivity().getApplicationContext(), "SVM is Training...", Toast.LENGTH_LONG).show();
+    public boolean running_svm_eval;
+    public void runSvmEval(){
+        running_svm_eval = true;
         //HERE//
-        //RUN TRAIN FUNCTIONS IN BACGROUND. WHEN IT IS FINISHED, OPEN THE RESULTS SCREEN
+        //RUN EVAL FUNCTIONS IN BACKGROUND. WHEN IT IS FINISHED, OPEN THE RESULTS SCREEN
         //HERE//
-        running_svm_train = false;
+        running_svm_eval = false;
         openResultsPage();
     }
 

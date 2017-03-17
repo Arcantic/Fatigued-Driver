@@ -1,6 +1,7 @@
 package com.fatigue.driver.app;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.design.widget.FloatingActionButton;
@@ -45,7 +46,24 @@ public class CalibrationFragment extends Fragment{
         button_gather_training_data = (Button)view.findViewById(R.id.button_gather_training_data);
         button_gather_training_data.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                openFragment(TrainingFragment.class);
+                //openFragment(TrainingFragment.class);
+                openActivity(TrainingActivity.class);
+            }
+        });
+
+        button_evaluation = (Button)view.findViewById(R.id.button_evaluation);
+        button_evaluation.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                //Literally, just uncomment and you're good
+                openActivity(EvaluationActivity.class);
+                //Toast.makeText(getActivity().getApplicationContext(), "Evaluation not ready...", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        button_select_model = (Button)view.findViewById(R.id.button_select_model);
+        button_select_model.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                openActivity(ModelSelectActivity.class);
             }
         });
 
@@ -53,7 +71,7 @@ public class CalibrationFragment extends Fragment{
         return view;
     }
 
-    Button button_gather_training_data;
+    Button button_gather_training_data, button_evaluation, button_select_model;
 
 
     public void openFragment(Class fragmentClass){
@@ -75,6 +93,12 @@ public class CalibrationFragment extends Fragment{
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
+    }
+
+    public void openActivity(Class actClass){
+        Intent intent = new Intent(getActivity(), actClass);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
 
 

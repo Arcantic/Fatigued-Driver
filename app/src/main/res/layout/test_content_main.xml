@@ -30,12 +30,15 @@
 
     <Button
         android:id="@+id/btn_test1"
-        style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="match_parent"
-        android:layout_height="128dp"
+        android:layout_height="196dp"
+        android:textStyle="bold"
         android:layout_below="@+id/btn_adapter"
+        style="@style/Widget.AppCompat.Button.Colored"
         android:text="LAUNCH MAIN APP ACTIVITY"
-        android:textAlignment="viewStart"/>
+        android:textAlignment="center"
+        android:textSize="32dp"
+        />
 
     <Button
         android:id="@+id/btn_test2"
@@ -45,20 +48,19 @@
         android:text="Launch Test2 Activity - Media Playback"
         android:textAlignment="viewStart"/>
 
-
     <Button
-        android:id="@+id/btn_test3"
+        android:id="@+id/btn_mindwave_init"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/btn_test2"
-        android:text="Launch Test3 Activity - MindWave initialization"
+        android:text="Launch:\nMindWave Initialization\nLink Detect Message Handler\nLog Creator\nLog Collector\nSVM Data Parser"
         android:textAlignment="viewStart"/>
 
     <Button
         android:id="@+id/btn_test4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/btn_test3"
+        android:layout_below="@+id/btn_mindwave_init"
         android:text="Launch Test4 Activity"
         android:textAlignment="viewStart"/>
 

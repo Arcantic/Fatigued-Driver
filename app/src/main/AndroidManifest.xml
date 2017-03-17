@@ -13,7 +13,7 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/widener_crest"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
@@ -33,24 +33,73 @@
             android:name="com.fatigue.driver.app.BluetoothAdapterDemoActivity"
             android:parentActivityName="com.fatigue.driver.app.Test_MainActivity"
 
-            > </activity>
+            > </activity>z
 
-        <!--jsnieves:begin:added MainActivity, TestTwo, TestThree-->
+
+
         <activity
             android:name="com.fatigue.driver.app.MainActivity"
-            android:parentActivityName="com.fatigue.driver.app.Test_MainActivity"
             android:windowSoftInputMode="stateAlwaysHidden"
+            android:theme="@style/AppTheme"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            >
+        </activity>
+
+        <activity
+            android:name="com.fatigue.driver.app.IntroActivity"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:theme="@style/AppTheme.NoActionBar"
+            >
+        </activity>
+
+        <activity
+            android:name="com.fatigue.driver.app.LoginActivity"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:theme="@style/AppTheme.NoActionBar"
+            >
+        </activity>
+
+        <activity
+            android:name="com.fatigue.driver.app.TrainingActivity"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:theme="@style/AppTheme"
+            android:parentActivityName="com.fatigue.driver.app.MainActivity"
+            >
+        </activity>
+
+        <activity
+            android:name="com.fatigue.driver.app.EvaluationActivity"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:theme="@style/AppTheme"
+            android:parentActivityName="com.fatigue.driver.app.MainActivity"
+            >
+        </activity>
+
+        <activity
+            android:name="com.fatigue.driver.app.ModelSelectActivity"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:theme="@style/AppTheme"
+            android:parentActivityName="com.fatigue.driver.app.MainActivity"
             >
         </activity>
 
 
+
+
+
+        <!--jsnieves:begin:added MainActivity, TestTwo, TestThree-->
         <activity
             android:name="com.fatigue.driver.app.TestTwo"
             android:parentActivityName="com.fatigue.driver.app.Test_MainActivity"
 
             > </activity>
         <activity
-            android:name="com.fatigue.driver.app.TestThree"
+            android:name="com.fatigue.driver.app.TestFour"
             android:parentActivityName="com.fatigue.driver.app.Test_MainActivity"
 
             > </activity>

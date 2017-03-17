@@ -34,6 +34,7 @@ import android.widget.Toast;
 import org.w3c.dom.Text;
 
 import java.sql.Time;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 /**
@@ -41,6 +42,19 @@ import java.util.Calendar;
  */
 
 public class ResultsFragment extends Fragment{
+
+
+    public static int TYPE_TRAINING = 0, TYPE_EVALUATION = 1;
+    public int type;
+    public void setType(int type){
+        this.type = type;
+    }
+
+    public ArrayList<Boolean> is_classification_correct_list = new ArrayList<Boolean>();
+    public void setClassificationList(ArrayList<Boolean> classifications){
+        this.is_classification_correct_list = classifications;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -50,12 +64,21 @@ public class ResultsFragment extends Fragment{
         //The fragment is open.
         is_open = true;
 
+        text_title = (TextView)view.findViewById(R.id.text_test_complete);
+        if(type == TYPE_TRAINING)
+            text_title.setText("Training Complete");
+        if(type == TYPE_EVALUATION)
+            text_title.setText("Evaluation Complete");
+
         //Add listener to each button
         button_save = (Button)view.findViewById(R.id.button_save_results);
         button_save.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //Save Results
-                actionAlert(true, "Save Results", "Would you like to save the test results?");
+                if(type == TYPE_TRAINING)
+                    actionAlert(true, "Save Results", "Would you like to save the training results?");
+                if(type == TYPE_EVALUATION)
+                    actionAlert(true, "Save Results", "Would you like to save the evaluation results?");
             }
         });
 
@@ -63,16 +86,37 @@ public class ResultsFragment extends Fragment{
         button_delete.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //Delete Results
-                actionAlert(false,"Delete Results", "This action will delete the test results. Continue?");
+                if(type == TYPE_TRAINING)
+                    actionAlert(false,"Delete Results", "This action will delete the training results. Continue?");
+                if(type == TYPE_EVALUATION)
+                    actionAlert(false,"Delete Results", "This action will delete the evaluation results. Continue?");
             }
         });
+
+        //Calculate the classification accuracy
+        calcClassificationAccuracy();
 
         // Inflate the layout for this fragment
         return view;
     }
 
+    public float classification_accuracy;
+    public void calcClassificationAccuracy(){
+        int num_correct = 0;
+        for(int i = 0; i < is_classification_correct_list.size(); i++){
+            if(is_classification_correct_list.get(i) == true)
+                num_correct++;
+        }
+
+        classification_accuracy = (num_correct/is_classification_correct_list.size())*100;
+        System.out.println("Classification Accuracy: " + classification_accuracy + "%");
+        Toast.makeText(getActivity().getApplicationContext(), "Classification Accuracy: " + classification_accuracy + "%", Toast.LENGTH_LONG).show();
+    }
+
 
     public Button button_save, button_delete;
+    public TextView text_title;
+
     public static boolean is_open;
     public static boolean isOpen(){
         return is_open;

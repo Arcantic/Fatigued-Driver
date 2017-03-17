@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Fatigue Alert</string>
+    <string name="app_name">Drowsiness Alert System</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -28,10 +28,11 @@
     <string name="nav_settings">Settings</string>
     <string name="nav_debugging">Debugging</string>
     <string name="nav_calibration">Calibration</string>
+    <string name="nav_logout">Logout</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
 
-    <string name="title_main">Driver Fatigue</string>
+    <string name="title_main">Drowsiness Alert System</string>
     <string name="title_settings">Settings</string>
 
     <!--Main Screen-->

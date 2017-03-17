@@ -35,7 +35,7 @@ public class NewUserDialog extends DialogFragment {
 
                         User.newUser(username, getActivity());
                         Toast.makeText(getActivity().getApplicationContext(), "New User Created", Toast.LENGTH_SHORT).show();
-                        ((MainActivity)getActivity()).loadMainFragment();
+                        ((LoginActivity)getActivity()).loadMainActivity();
                     }
                 });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

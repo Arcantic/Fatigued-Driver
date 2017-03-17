@@ -79,12 +79,7 @@ public class MainActivity extends AppCompatActivity
 
         //If a user has been selected, then load the MainFragment.
         //else, load the UserSelect fragment.
-        if(User.isSelected()){
-            loadMainFragment();
-        }
-        else {
-            loadUserSelectFragment();
-        }
+        loadMainFragment();
 
 
         //Check for Bluetooth Connection
@@ -98,7 +93,6 @@ public class MainActivity extends AppCompatActivity
 
     //Load the main fragment...
     public void loadMainFragment(){
-        unlockDrawer();
         setNavigationTitle(User.user_name);
 
         //Replace the content with the Main Fragment
@@ -116,18 +110,6 @@ public class MainActivity extends AppCompatActivity
             fragmentTransaction.replace(R.id.content_frame, fragment);
             fragmentTransaction.commit();
         }
-    }
-
-    //Load the user select fragment...
-    public void loadUserSelectFragment(){
-        lockDrawer();
-        //Replace the content with the UserSelect Fragment
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-        Fragment fragment = new UserSelectFragment();
-        fragmentTransaction.replace(R.id.content_frame, fragment);
-        fragmentTransaction.commit();
     }
 
     public void lockDrawer() {
@@ -260,14 +242,20 @@ public class MainActivity extends AppCompatActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
+        System.out.println("BACK PRESSED");
+
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        }else if(isTestRunning()){
+        }
+        /*
+        else if(isTestRunning()){
             if(TrainingFragment.running_test)
                 testIsRunningAlert(true, null, "Test Running", "This action will cancel the test. Continue?");
             else if(ResultsFragment.isOpen())
                 testIsRunningAlert(true, null, "Delete Results", "This action will delete the test results. Continue?");
-        }else if (fragmentManager.getBackStackEntryCount() > 0) {
+        }
+        */
+        else if (fragmentManager.getBackStackEntryCount() > 0) {
             Log.i("MainActivity", "popping backstack");
             fragmentManager.popBackStack();
             if(list_title_stack.size() > 2){
@@ -382,11 +370,11 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_settings:
                 fragmentClass = SettingsFragment.class;
                 break;
-            case R.id.nav_debugging:
-                fragmentClass = DebuggingFragment.class;
-                break;
             case R.id.nav_calibration:
                 fragmentClass = CalibrationFragment.class;
+                break;
+            case R.id.nav_logout:
+                logoutUser();
                 break;
             default:
                 fragmentClass = MainFragment.class;
@@ -420,13 +408,20 @@ public class MainActivity extends AppCompatActivity
             setTitle(menuItem.getTitle());
         }else{
             //If a test is running, alert user first
+            /*
             if(TrainingFragment.running_test)
                 testIsRunningAlert(false, menuItem, "Test Running", "This action will cancel the test. Continue?");
             else if(ResultsFragment.isOpen())
                 testIsRunningAlert(false, menuItem, "Delete Results", "This action will delete the test results. Continue?");
+            */
         }
         // Close the navigation drawer
         drawer.closeDrawers();
+    }
+
+
+    public void logoutUser(){
+        User.logout(this);
     }
 
 
