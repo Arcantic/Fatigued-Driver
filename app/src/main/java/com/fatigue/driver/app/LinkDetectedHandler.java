@@ -318,7 +318,7 @@ public class LinkDetectedHandler extends Handler {
                         numOfActualFatigueTrialsCollected++;
                         logAppEvent("ACTUAL Fatigue trial [# " + numOfActualFatigueTrialsCollected + "] " + "COMPLETED\n");
 
-                        if ((numOfActualAlertTrialsCollected== numOfActualFatigueTrialsCollected) && (numOfActualFatigueTrialsCollected == GlobalSettings.calibrationNumOfTrialsToPerformAlertOrFatigue)) {
+                        if ((numOfActualAlertTrialsCollected == numOfActualFatigueTrialsCollected) && (numOfActualFatigueTrialsCollected == GlobalSettings.calibrationNumOfTrialsToPerformAlertOrFatigue)) {
                             //jsnieves:COMMENT: All trials should completed here
 
                             //jsnieves:COMMENT: Normalize between 0 and 1
@@ -485,14 +485,17 @@ public class LinkDetectedHandler extends Handler {
                     double[][] trainingDataset;// = new double[GlobalSettings.calibrationNumOfTrialsToPerformAlertOrFatigue * 2][GlobalSettings.numOfFeatures + 1];
                     trainingDataset = svmFeatAvgGroupedNorm2DArray;
 
-                    svm_model model = SVMTrainer.createModel(trainingDataset);
+                    //svm_model model = SVMTrainer.createModel(trainingDataset); //TEMP TODO uncomment
+
                     String modelFileName = GlobalSettings.svmModelFileName;//SVM_MODEL.txt as of now
                     File modelLogFile = new File(currentUserTrainingDir.getPath(), modelFileName);
                     String modelLogFileString = modelLogFile.toString();
 
                     //try just building string here
                     //jsnieves:COMMENT:save model to file
-                    svm.svm_save_model(modelLogFileString, model);
+
+                    //svm.svm_save_model(modelLogFileString, model); //TEMP TODO uncomment
+
                     //copy to Evaluation folder too?
 
                     logAppEvent("SVM model file Created!");

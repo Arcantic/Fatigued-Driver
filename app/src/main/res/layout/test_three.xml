@@ -1,7 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-</LinearLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="100">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Start"
+                android:id="@+id/btn_start"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="..."
+                android:id="@+id/tv_instruction"
+
+                android:layout_alignParentEnd="true"
+                android:layout_weight="25"
+                android:lines="1"
+                android:maxLength="35"
+                android:ellipsize="end"
+                android:paddingStart="5dp"
+                android:ems="10"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Timer:  "
+                android:id="@+id/tv_timerLabel"
+                android:layout_alignBaseline="@+id/btn_start"
+                android:layout_alignBottom="@+id/btn_start"
+                android:layout_toEndOf="@+id/btn_start"
+                android:layout_weight="0"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="timer!!"
+                android:id="@+id/tv_timerCountdown"
+                android:layout_above="@+id/tv_timerLabel"
+                android:layout_centerHorizontal="true"
+                android:layout_weight="25"
+                android:lines="1"
+                android:ems="5"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="100">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Eval"
+                android:id="@+id/btn_eval"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/wave_layout"
+            android:layout_width="fill_parent"
+            android:layout_height="25dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+
+
+            android:orientation="vertical" >
+            <!--jsnieves:temp:comment out... android:background="@xml/sharp"-->
+
+        </LinearLayout>
+
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/scrollViewLog"
+            android:layout_weight="25"
+            android:fillViewport="true">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:id="@+id/tv_log"
+                android:text="Start of Log:\n"/>
+        </ScrollView>
+
+    </LinearLayout>
+
+</RelativeLayout>
