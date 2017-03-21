@@ -14,92 +14,51 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.neurosky.connection.DataType.MindDataType;
-import com.neurosky.connection.EEGPower;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 
 import libsvm.svm;
 import libsvm.svm_model;
 
+
 public class LinkDetectedHandler extends Handler {
     private static final String TAG = LinkDetectedHandler.class.getSimpleName();
 
     Context context;
-
-    private File appDir;
-    private File usersDir;
-    private File currentUserDir; //User.user_name;
-    private File currentUserTrainingDir;
-    private File currentUserTestingDir;
-    private File currentUserEvaluationDir;
-    private File currentUserRawDir;
-    private File currentUserRawDirTimestamped;
-
-    private File appLogFile;
-    private File rawLogFile;
-    private File magLogFile;
-    private File magAvgLogFile;
-    private File rawNormLogFile;
-    private File rawComplexLogFile;
-    private File fftComplexLogFile;
-    private File bandPwrFeaturesLogFile;
-    private File bandPwrFeaturesAvgLogFile;
-    private File svmTrainingDataLogFile;
-
-    private BufferedOutputStream appLogBufferedOutputStream;
-    private BufferedOutputStream rawBufferedOutputStream;
-    private BufferedOutputStream magnitudeBufferedOutputStream;
-    private BufferedOutputStream rawNormBufferedOutputStream;
-    private BufferedOutputStream magnitudeIntervalCollectionAveragedBOS;
-    private BufferedOutputStream rawComplexBufferedOutputStream;
-    private BufferedOutputStream fftComplexArrayResultsBufferedOutputStream;
-    private BufferedOutputStream bandPwrFeaturesAvgLogFileNameBufferedOutputStream;
-    private BufferedOutputStream bandPwrFeaturesLogFileNameBufferedOutputStream;
-    private BufferedOutputStream svmTrainingDataBufferedOutputStream;
-
     int count;
     int trialBuilderNumOfSinglePacketInstancesConsumedCounter;
     int totalNumOfSinglePacketInstancesObservedCounter;
-
     int numOfSimulatedTrialsObservedCounter; //simulated
     int numOfActualTrialsCollectedGivenCurrentClassifierCounter;
     int totalNumOfAllTrialsCounter;
-
     int numOfActualAlertTrialsCollected;
     int numOfActualFatigueTrialsCollected;
-
     double[] rawDataDoublesArray;
     double[] rawNormalizedArray = new double[GlobalSettings.samplingSizeInterval];
-
     Complex[] rawComplexArray = new Complex[GlobalSettings.samplingSizeInterval]; //GlobalSettings.samplingSizeInterval set to 512 (at least for now)
     Complex[] fftComplexArrayResults;
-
+    Complex[] complexLogArray;
+    double[] doubleLogArray;
     double[][] magnitude2DArraySingleTrialAlert = new double[(int)GlobalSettings.COLLECTION_INTERVAL_DURATION_ALERT_IN_SECONDS][GlobalSettings.samplingSizeInterval];
     double[][] magnitude2DArraySingleTrialFatigue = new double[(int)GlobalSettings.COLLECTION_INTERVAL_DURATION_FATIGUE_IN_SECONDS][GlobalSettings.samplingSizeInterval];
     double[] magnitudesArray = new double[GlobalSettings.samplingSizeInterval];
     double[] magnitudesCollectedOverTimeForASingleTrialAveragedArray = new double[GlobalSettings.samplingSizeInterval];
-
     double[] featureValuesOfSingleTrialArray;
     double[][] featuresPriorToNormalization2DArrayAlert = new double[GlobalSettings.calibrationNumOfTrialsToPerformAlert][GlobalSettings.numOfFeatures];
     double[][] featuresPriorToNormalization2DArrayFatigue = new double[GlobalSettings.calibrationNumOfTrialsToPerformFatigue][GlobalSettings.numOfFeatures];
     double[][] featuresNormalized2DArrayAlert= new double[GlobalSettings.calibrationNumOfTrialsToPerformAlert][GlobalSettings.numOfFeatures];
     double[][] featuresNormalized2DArrayFatigued= new double[GlobalSettings.calibrationNumOfTrialsToPerformFatigue][GlobalSettings.numOfFeatures];
-
     double[][] featuresNormalizedWithClassifierAtIndexZero2DArrayAlert=new double[featuresNormalized2DArrayAlert.length][GlobalSettings.numOfFeatures+1];
     double[][] featuresNormalizedWithClassifierAtIndexZero2DArrayFatigued =new double[featuresNormalized2DArrayFatigued.length][GlobalSettings.numOfFeatures+1];
-
-    //double[][] featuresPriorToNormalization2DArray = new double[GlobalSettings.calibrationNumOfTrialsToPerformAlertOrFatigue][GlobalSettings.numOfFeatures];
-    //double[][] featuresAvgGroupedNorm2DArray= new double[GlobalSettings.calibrationNumOfTrialsToPerformTotal][GlobalSettings.numOfFeatures];
-    //double[][] allFeaturesAvgGroupedNorm2DArray= new double[GlobalSettings.calibrationNumOfTrialsToPerformTotal *2][GlobalSettings.numOfFeatures+1];
-
     boolean isRawDataLoggingEnabled;
     boolean isProcessedRawDataLoggingEnabled;
     boolean isProcessedRawDataToBeTransformedAsTrainingData;
-
     boolean isRecordingRawNormData; //TODO cleanup unused variables
     boolean isCalcFFT;
     boolean isCalcMagnitude;
@@ -113,15 +72,55 @@ public class LinkDetectedHandler extends Handler {
     boolean isAllDataLoggingRequested;
     boolean isLogAndRecordSimulatedTrainingData;
     boolean isRecordNoData;
-
     boolean isTrialCollectionSimulated;
     boolean isTrialEyesClosed;
     boolean isTrialEyesOpenAlert;
-
+    boolean isProcessedRawDataToBeTransformedAsFeaturesForEval;
+    boolean isProcessedRawDataToBeTransformedAsFeaturesForContinuousEval;
+    boolean isEvalEyesOpenAlert;
+    svm_model loadedEvalModel;
     boolean isConnected;
-
     TextView logOut;
     ScrollView sv_Log;
+    SVMEvaluator svmEvaluator;
+    double[] evalFeatures=new double[GlobalSettings.numOfFeatures];
+    double[] evalFeaturesWithClassifierAtIndexZero=new double[GlobalSettings.numOfFeatures+1];
+    private File appDir;
+    private File usersDir;
+    private File currentUserDir; //User.user_name;
+
+    //double[][] featuresPriorToNormalization2DArray = new double[GlobalSettings.calibrationNumOfTrialsToPerformAlertOrFatigue][GlobalSettings.numOfFeatures];
+    //double[][] featuresAvgGroupedNorm2DArray= new double[GlobalSettings.calibrationNumOfTrialsToPerformTotal][GlobalSettings.numOfFeatures];
+    //double[][] allFeaturesAvgGroupedNorm2DArray= new double[GlobalSettings.calibrationNumOfTrialsToPerformTotal *2][GlobalSettings.numOfFeatures+1];
+    private File currentUserTrainingDir;
+    private File currentUserTestingDir;
+    private File currentUserEvaluationDir;
+    private File currentUserRawDir;
+    private File currentUserRawDirTimestamped;
+    private File appLogFile;
+    private File rawLogFile;
+    private File magLogFile;
+    private File magAvgLogFile;
+    private File rawNormLogFile;
+    private File rawComplexLogFile;
+    private File fftComplexLogFile;
+    private File bandPwrFeaturesLogFile;
+    private File bandPwrFeaturesAvgLogFile;
+    private File svmTrainingDataLogFile;
+    private BufferedOutputStream appLogBufferedOutputStream;
+    private BufferedOutputStream rawBufferedOutputStream;
+    private BufferedOutputStream magnitudeBufferedOutputStream;
+    private BufferedOutputStream rawNormBufferedOutputStream;
+    private BufferedOutputStream magnitudeIntervalCollectionAveragedBOS;
+    private BufferedOutputStream rawComplexBufferedOutputStream;
+    private BufferedOutputStream fftComplexArrayResultsBufferedOutputStream;
+    private BufferedOutputStream bandPwrFeaturesAvgLogFileNameBufferedOutputStream;
+    private BufferedOutputStream bandPwrFeaturesLogFileNameBufferedOutputStream;
+    private BufferedOutputStream svmTrainingDataBufferedOutputStream;
+    private StringBuilder rawNormalizedStringBuilder = new StringBuilder();
+    private StringBuilder rawComplexStringbuilder = new StringBuilder();
+    private StringBuilder fftStringBuilder = new StringBuilder();
+    private StringBuilder magnitudesStringBuilder = new StringBuilder();
     private LinearLayout wave_layout;
     private DrawWaveView waveView;
 
@@ -210,7 +209,7 @@ public class LinkDetectedHandler extends Handler {
                 break;
 
             case MindDataType.CODE_EEGPOWER:
-                EEGPower power = (EEGPower) msg.obj;
+                //EEGPower power = (EEGPower) msg.obj; //TODO if using, make global declaration
 
                 //if (power.isValidate()) {    //}
                 //TODO perhaps store power.delta to a value (as it is in constant flux)
@@ -246,10 +245,10 @@ public class LinkDetectedHandler extends Handler {
 
             //Log results?
             if (isProcessedRawDataLoggingEnabled) {
-                logPacket(rawNormalizedArray, rawNormBufferedOutputStream);
-                logPacket(rawComplexArray, rawComplexBufferedOutputStream);
-                logPacket(fftComplexArrayResults, fftComplexArrayResultsBufferedOutputStream);
-                logPacket(magnitudesArray, magnitudeBufferedOutputStream);
+                logPacket(rawNormalizedArray, rawNormBufferedOutputStream, rawNormalizedStringBuilder);
+                logPacket(rawComplexArray, rawComplexBufferedOutputStream, rawComplexStringbuilder);
+                logPacket(fftComplexArrayResults, fftComplexArrayResultsBufferedOutputStream, fftStringBuilder);
+                logPacket(magnitudesArray, magnitudeBufferedOutputStream, magnitudesStringBuilder);
             }
 
             totalNumOfSinglePacketInstancesObservedCounter++; //jsnieves:COMMENT: 1 second of data
@@ -257,7 +256,22 @@ public class LinkDetectedHandler extends Handler {
         }
 
         //if(isAppLoggingEvents){} !!!!!! (jsnieves:COMMENT)
-        if (isProcessedRawDataToBeTransformedAsTrainingData) {
+
+        if(isProcessedRawDataToBeTransformedAsFeaturesForEval && loadedEvalModel!=null){
+
+            evalFeaturesWithClassifierAtIndexZero[0] = isEvalEyesOpenAlert ? GlobalSettings.EYES_OPEN : GlobalSettings.EYES_CLOSED;
+            evalFeatures = Util.groupMagnitudesBandwidth(magnitudesArray);
+            System.arraycopy(evalFeatures, 0, evalFeaturesWithClassifierAtIndexZero, 1, evalFeaturesWithClassifierAtIndexZero.length-1);
+
+            if(loadedEvalModel!=null) {
+                svmEvaluator.evaluate(evalFeaturesWithClassifierAtIndexZero, loadedEvalModel);
+            }
+
+            if(!isProcessedRawDataToBeTransformedAsFeaturesForContinuousEval){
+                isProcessedRawDataToBeTransformedAsFeaturesForEval=false; //wait for next eval instance to be fired
+            }
+
+        } else if (isProcessedRawDataToBeTransformedAsTrainingData) {
 
             if (trialBuilderNumOfSinglePacketInstancesConsumedCounter < (isTrialEyesOpenAlert ? GlobalSettings.NUMBER_OF_RAW_PACKETS_TO_CONSUME_FOR_EACH_TRIAL_ALERT : GlobalSettings.NUMBER_OF_RAW_PACKETS_TO_CONSUME_FOR_EACH_TRIAL_FATIGUE)) {
                 //jsnieves:COMMENT: continue collection
@@ -265,10 +279,10 @@ public class LinkDetectedHandler extends Handler {
 
                 if (isTrialEyesOpenAlert) {
                     magnitude2DArraySingleTrialAlert[trialBuilderNumOfSinglePacketInstancesConsumedCounter] = magnitudesArray; //rename ! to single trial Collector or something similar
-                    System.out.println("Alert magnitudesArray test printout index 0: " + magnitudesArray[0]);
+                    //System.out.println("Alert magnitudesArray test printout index 0: " + magnitudesArray[0]);
                 } else {
                     magnitude2DArraySingleTrialFatigue[trialBuilderNumOfSinglePacketInstancesConsumedCounter] = magnitudesArray; //rename ! to single trial Collector or something similar
-                    System.out.println("Fatigue magnitudesArray test printout index 0: " + magnitudesArray[0]);
+                    //System.out.println("Fatigue magnitudesArray test printout index 0: " + magnitudesArray[0]);
                 }
 
                 trialBuilderNumOfSinglePacketInstancesConsumedCounter++;
@@ -298,7 +312,7 @@ public class LinkDetectedHandler extends Handler {
                 if (isTrialCollectionSimulated) {
                     //Process but drop single trial
                     numOfSimulatedTrialsObservedCounter++;
-                    logAppEvent("<Features Calculated>\n");
+                    logAppEvent("<Features Calculated>");
                     logAppEvent("SIMULATED trial creation [# " + numOfSimulatedTrialsObservedCounter + "]\n");
 
                 } else {
@@ -321,9 +335,13 @@ public class LinkDetectedHandler extends Handler {
                         if ((numOfActualAlertTrialsCollected == numOfActualFatigueTrialsCollected) && (numOfActualFatigueTrialsCollected == GlobalSettings.calibrationNumOfTrialsToPerformAlertOrFatigue)) {
                             //jsnieves:COMMENT: All trials should completed here
 
-                            //jsnieves:COMMENT: Normalize between 0 and 1
+                            //jsnieves:COMMENT: Normalize between 0 and 1 //TODO TEMP features not normalized
+
                             featuresNormalized2DArrayAlert = Util.normalizeFeaturesWithBound(featuresPriorToNormalization2DArrayAlert);
                             featuresNormalized2DArrayFatigued = Util.normalizeFeaturesWithBound(featuresPriorToNormalization2DArrayFatigue);
+
+                            featuresNormalized2DArrayAlert = featuresPriorToNormalization2DArrayAlert;
+                            featuresNormalized2DArrayFatigued = featuresPriorToNormalization2DArrayFatigue;
 
                             //jsnieves:COMMENT: Conform Array to svm standard
                             for (int i = 0; i < featuresNormalizedWithClassifierAtIndexZero2DArrayAlert.length; i++) {
@@ -398,27 +416,26 @@ public class LinkDetectedHandler extends Handler {
 
     //TODO:elim method
 
-    public synchronized void logPacket ( final Object array, final BufferedOutputStream bos){
+    public synchronized void logPacket ( final Object array, final BufferedOutputStream bos, final StringBuilder stringBuilder){
         //jsnieves:COMMENT:array is either double[] or Complex[]
         //TODO: //jsnieves:COMMENT: modular method (accepts all Obj types, implement try catch and delete above method)
         if(bos!=null){
             new Thread(new Runnable() {
 
-                double[] doubleArray;
-                StringBuilder stringBuilder = new StringBuilder();
+                //StringBuilder stringBuilder = new StringBuilder();
 
                 public void run() {
 
                     stringBuilder.append("# [" + Util.currentDateAsString() + "] (" + Util.currentMilliTimestampLogAsString() + ") # " + bos.toString() + "\r\n"); // \n
                     try {
                         if (array instanceof Complex[]) {
-                            Complex[] complexArray = (Complex[]) array;
-                            for (Complex c : complexArray) {
+                            complexLogArray = (Complex[]) array;
+                            for (Complex c : complexLogArray) {
                                 stringBuilder.append(c.re() + "\r\n");
                             }
                         } else if (array instanceof double[]) {
-                            doubleArray = (double[]) array;
-                            for (double d : doubleArray) {
+                            doubleLogArray = (double[]) array;
+                            for (double d : doubleLogArray) {
                                 stringBuilder.append(d + "\r\n");
                             }
                         } else {
@@ -485,16 +502,21 @@ public class LinkDetectedHandler extends Handler {
                     double[][] trainingDataset;// = new double[GlobalSettings.calibrationNumOfTrialsToPerformAlertOrFatigue * 2][GlobalSettings.numOfFeatures + 1];
                     trainingDataset = svmFeatAvgGroupedNorm2DArray;
 
-                    //svm_model model = SVMTrainer.createModel(trainingDataset); //TEMP TODO uncomment
+                    svm_model model = SVMTrainer.createModel(trainingDataset); //TEMP TODO uncomment
 
                     String modelFileName = GlobalSettings.svmModelFileName;//SVM_MODEL.txt as of now
                     File modelLogFile = new File(currentUserTrainingDir.getPath(), modelFileName);
                     String modelLogFileString = modelLogFile.toString();
 
+
+                    File modelLogFileEvalCopy = new File(currentUserEvaluationDir.getPath(), modelFileName);
+
                     //try just building string here
                     //jsnieves:COMMENT:save model to file
 
-                    //svm.svm_save_model(modelLogFileString, model); //TEMP TODO uncomment
+                    svm.svm_save_model(modelLogFileString, model); //TEMP TODO uncomment
+                    svm.svm_save_model(modelLogFileEvalCopy.toString(), model); //TEMP TODO uncomment
+
 
                     //copy to Evaluation folder too?
 
@@ -611,7 +633,7 @@ public class LinkDetectedHandler extends Handler {
 
         final String time = Util.currentMinuteTimestampAsString();
 
-        String tempUserName = "User1"; //TODO: create/call method getCurrentUserName() or similar here
+        String tempUserName = "User2"; //TODO: create/call method getCurrentUserName() or similar here
         String currentUserName = tempUserName; //TODO: properly assign
 
         String appLogFileName = GlobalSettings.appLogFileName;
@@ -730,6 +752,7 @@ public class LinkDetectedHandler extends Handler {
 
         //if(!isTrialCurrentlyInProgress){}//TODO keep
         count=0;
+        logAppEvent("ACTUAL trial instance fired off");
         isTrialCollectionSimulated = false;
         trialBuilderNumOfSinglePacketInstancesConsumedCounter = 0;
         isTrialEyesOpenAlert = eyesOpen;
@@ -747,6 +770,67 @@ public class LinkDetectedHandler extends Handler {
         numOfActualAlertTrialsCollected=0;
         numOfActualFatigueTrialsCollected=0;
 
+        //isTrialEyesOpenAlert= eyesOpen;
+        //isTrialCollectionSimulated=true;
+        //numOfSimulatedTrialsObservedCounter = 0;
+    }
+
+    public void fireContinuousEvalTesting (boolean eyesOpen) {
+        //To measure app detection response time
+
+        isProcessedRawDataToBeTransformedAsFeaturesForEval=true;
+        isProcessedRawDataToBeTransformedAsFeaturesForContinuousEval=true;
+
+    }
+
+    public void stopEvalTesting (boolean eyesOpen) {
+
+        isProcessedRawDataToBeTransformedAsFeaturesForEval=false;
+
+        isTrialCollectionSimulated=true; //? TODO check
+
+    }
+
+    public void fireEvalTestingInstance (boolean eyesOpen) {
+
+        isEvalEyesOpenAlert=eyesOpen;
+
+        count=0;
+        isProcessedRawDataToBeTransformedAsFeaturesForEval=true;
+        isProcessedRawDataToBeTransformedAsFeaturesForContinuousEval=true; //TODO remove
+
+    }
+
+    public void fireEvalInitializer () {
+
+//TODO fix below
+
+        evalFeatures = new double[magnitudesArray.length+1];
+
+        svmEvaluator = new SVMEvaluator();
+
+        try {
+
+            //FileReader fIn = new FileReader(GlobalSettings.svmModelFileName);
+            //BufferedReader bufferedReader = new BufferedReader(fIn);
+
+
+            BufferedReader bufferedReaderInputModel = new BufferedReader(new FileReader(currentUserEvaluationDir.getPath() +File.separator+ GlobalSettings.svmModelFileName));
+            //        svm_model loadedEvalModel = svm.svm_load_model(currentUserEvaluationDir.getPath() + GlobalSettings.svmModelFileName);
+            loadedEvalModel = svm.svm_load_model(bufferedReaderInputModel);
+
+
+        } catch (IOException ex){
+            ex.printStackTrace();
+            showToast("FILE NOT FOUND", Toast.LENGTH_SHORT);
+        }
+
+/*
+        numOfActualTrialsCollectedGivenCurrentClassifierCounter = 0; //ensure we are gathering data from here on out and not just averaging (i.e. -- e.g. the last 3 seconds of baseline with 1 second where the user was following instructions)
+        trialBuilderNumOfSinglePacketInstancesConsumedCounter = 0;
+        numOfActualAlertTrialsCollected=0;
+        numOfActualFatigueTrialsCollected=0;
+*/
         //isTrialEyesOpenAlert= eyesOpen;
         //isTrialCollectionSimulated=true;
         //numOfSimulatedTrialsObservedCounter = 0;
