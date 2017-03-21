@@ -38,7 +38,7 @@ public class MindwaveHelperFragment extends android.support.v4.app.Fragment {
     private BluetoothAdapter mBluetoothAdapter;
     private TgStreamReader tgStreamReader;
     private TgStreamHandler callback;
-    private LinkDetectedHandler LinkDetectedHandler;
+    private LinkDetectedHandler linkDetectedHandler =null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,9 +51,16 @@ public class MindwaveHelperFragment extends android.support.v4.app.Fragment {
         Activity parentActivity = getActivity();
         System.out.println(parentActivity.toString());
         //this.initLogCreate();
-        LinkDetectedHandler = new LinkDetectedHandler(getContext());
+        linkDetectedHandler = new LinkDetectedHandler(getContext());
         this.initConnection();
         //System.out.println("##initConnection##");
+
+
+    }
+
+
+    public LinkDetectedHandler getLinkDetectedHandler(){
+        return this.linkDetectedHandler;
     }
 
     public boolean initConnection() {
@@ -75,7 +82,7 @@ public class MindwaveHelperFragment extends android.support.v4.app.Fragment {
                 Toast.makeText(getActivity(), "Bluetooth enabled.", Toast.LENGTH_LONG).show(); //finish();
             }
 
-            //LinkDetectedHandler = this.initLinkDetectedHandler();
+            //linkDetectedHandler = this.initLinkDetectedHandler();
             callback = this.initCallback();
 
             // Example of constructor public TgStreamReader(BluetoothAdapter ba, TgStreamHandler tgStreamHandler)
@@ -129,8 +136,12 @@ public class MindwaveHelperFragment extends android.support.v4.app.Fragment {
                         break;
 
                     case ConnectionStates.STATE_CONNECTED:
-                        tgStreamReader.start();
+                        tgStreamReader.start(); //remove
+                        linkDetectedHandler.isConnected = true;
+                        //final Activity activity = getActivity();
+                        //activity.findViewById(R.id.btn_start).setEnabled(true);
                         showToast("Connected", Toast.LENGTH_SHORT);
+
                         break;
 
                     case ConnectionStates.STATE_WORKING:
@@ -139,7 +150,12 @@ public class MindwaveHelperFragment extends android.support.v4.app.Fragment {
                         //You can change the save path by calling setRecordStreamFilePath(String filePath) before startRecordRawData
 
                         //jsnieves:COMMENT:needed anymore??
+
+
+                        //3.13.17
                         tgStreamReader.startRecordRawData();
+
+
                         //??
 
                         if (GlobalSettings.isDebugVerbose) showToast("STATE_WORKING", Toast.LENGTH_SHORT);
@@ -169,7 +185,11 @@ public class MindwaveHelperFragment extends android.support.v4.app.Fragment {
 
                     case ConnectionStates.STATE_GET_DATA_TIME_OUT:
                         //(9) demo of recording raw data, exception handling
+
+
                         tgStreamReader.stopRecordRawData();
+
+
                         showToast("Get data time out!", Toast.LENGTH_SHORT);
                         break;
 
@@ -186,10 +206,10 @@ public class MindwaveHelperFragment extends android.support.v4.app.Fragment {
                         break;
                 }
 
-                Message msg = LinkDetectedHandler.obtainMessage();
+                Message msg = linkDetectedHandler.obtainMessage();
                 msg.what = MSG_UPDATE_STATE;
                 msg.arg1 = connectionStates;
-                LinkDetectedHandler.sendMessage(msg);
+                linkDetectedHandler.sendMessage(msg);
             }
 
             @Override
@@ -202,10 +222,10 @@ public class MindwaveHelperFragment extends android.support.v4.app.Fragment {
             public void onChecksumFail(byte[] payload, int length, int checksum) {
                 // You can handle the bad packets here.
                 badPacketCount++;
-                Message msg = LinkDetectedHandler.obtainMessage();
+                Message msg = linkDetectedHandler.obtainMessage();
                 msg.what = MSG_UPDATE_BAD_PACKET;
                 msg.arg1 = badPacketCount;
-                LinkDetectedHandler.sendMessage(msg);
+                linkDetectedHandler.sendMessage(msg);
             }
 
             @Override
@@ -213,11 +233,11 @@ public class MindwaveHelperFragment extends android.support.v4.app.Fragment {
                 // You can handle the received data here
                 // You can feed the raw data to algo sdk here if necessary.
 
-                Message msg = LinkDetectedHandler.obtainMessage();
+                Message msg = linkDetectedHandler.obtainMessage();
                 msg.what = datatype;
                 msg.arg1 = data;
                 msg.obj = obj;
-                LinkDetectedHandler.sendMessage(msg);
+                linkDetectedHandler.sendMessage(msg);
 
                 //Log.i(TAG,"onDataReceived");
             }
@@ -259,23 +279,6 @@ public class MindwaveHelperFragment extends android.support.v4.app.Fragment {
     }
 
 
-    public double[] normalizeRawArray(final double[] rawArray){
-
-        double[] normArray = new double[rawArray.length];
-
-        double sd = Util.calcSD(rawArray);
-        double mean = Util.calcMean(rawArray);
-        for(int i =0; i< rawArray.length ; i++){
-            normArray[i] = (rawArray[i] - mean)/ sd;
-            //rawComplexArray[i] = new Complex(rawRealNormalizedArray[i], rawImaginary);
-        }
-
-        return normArray;
-    }
-
-
-
-
     public Complex[] makeComplexArray(final double[] rawNormArray){
         Complex[] complexArray=new Complex[rawNormArray.length];
 
@@ -287,16 +290,6 @@ public class MindwaveHelperFragment extends android.support.v4.app.Fragment {
 
         return complexArray;
     }
-
-
-    public void parseMagnitudeArray(){
-
-        //divide by bands here
-        //log
-        //average
-        //log
-    }
-
 
     public void startRecordAll(){
         //isRecording = true;
@@ -319,17 +312,29 @@ public class MindwaveHelperFragment extends android.support.v4.app.Fragment {
         //  isRecording = false;
     }
 
-
+//!! fixed potential NullPointer if user pressed back too quick after launching this Fragment
     public void showToast(final String msg, final int timeStyle) {
-        getActivity().runOnUiThread(new Runnable() {
+        try {
+            final Activity activity = getActivity();
+
+            activity.runOnUiThread(new Runnable() {
+                public void run() {
+                    Toast.makeText(activity, msg, timeStyle).show();
+                }
+            });
+        } catch (Exception e) {
+        }
+
+
+        //above code replaces below
+        /*
+        try{getActivity().runOnUiThread(new Runnable() {
             public void run() {Toast.makeText(getActivity(), msg, timeStyle).show();
             }
-        });
+        });} catch (Exception e){}*/
+
+
     }
-
 }
-
-
-
 
 
