@@ -28,20 +28,17 @@
             </intent-filter>
         </activity>
 
-        <!--jsnieves:BEGIN:from OpenGL assignment-->
         <activity
             android:name="com.fatigue.driver.app.BluetoothAdapterDemoActivity"
             android:parentActivityName="com.fatigue.driver.app.Test_MainActivity"
 
-            > </activity>z
-
-
+            > </activity>
 
         <activity
             android:name="com.fatigue.driver.app.MainActivity"
-            android:windowSoftInputMode="stateAlwaysHidden"
+            android:launchMode="singleTop"
             android:theme="@style/AppTheme"
-            android:launchMode="singleTop">
+            android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -52,74 +49,52 @@
 
         <activity
             android:name="com.fatigue.driver.app.IntroActivity"
-            android:windowSoftInputMode="stateAlwaysHidden"
             android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden"
             >
         </activity>
 
         <activity
             android:name="com.fatigue.driver.app.LoginActivity"
-            android:windowSoftInputMode="stateAlwaysHidden"
             android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden"
             >
         </activity>
 
         <activity
             android:name="com.fatigue.driver.app.TrainingActivity"
-            android:windowSoftInputMode="stateAlwaysHidden"
-            android:theme="@style/AppTheme"
             android:parentActivityName="com.fatigue.driver.app.MainActivity"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="stateAlwaysHidden"
             >
         </activity>
 
         <activity
             android:name="com.fatigue.driver.app.EvaluationActivity"
-            android:windowSoftInputMode="stateAlwaysHidden"
-            android:theme="@style/AppTheme"
             android:parentActivityName="com.fatigue.driver.app.MainActivity"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="stateAlwaysHidden"
             >
         </activity>
 
         <activity
             android:name="com.fatigue.driver.app.ModelSelectActivity"
-            android:windowSoftInputMode="stateAlwaysHidden"
-            android:theme="@style/AppTheme"
             android:parentActivityName="com.fatigue.driver.app.MainActivity"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="stateAlwaysHidden"
             >
         </activity>
 
-
-
-
-
-        <!--jsnieves:begin:added MainActivity, TestTwo, TestThree-->
         <activity
             android:name="com.fatigue.driver.app.TestTwo"
             android:parentActivityName="com.fatigue.driver.app.Test_MainActivity"
 
             > </activity>
         <activity
-            android:name="com.fatigue.driver.app.TestFour"
+            android:name=".TestThree_MindwaveHelper"
             android:parentActivityName="com.fatigue.driver.app.Test_MainActivity"
 
             > </activity>
-        <!--TODO: rename all com.example.nieves.*-->
-        <!--jsnieves:end:added MainActivity, TestTwo, TestThree-->
-        <!--jsnieves: from above: android:screenOrientation="landscape"-->
-        <!--jsnieves:END:from OpenGL assignment-->
-
-        <!--jsnieves:BEGIN:from BluetoothAdvertisements-->
-        <!-- Service to handle BLE Advertising - Using a service allows advertising to continue
-        when the app is no longer on screen in a reliable manner. -->
-
-        <!--TODO-->
-        <!--service
-            android:name=".AdvertiserService"
-            android:enabled="true"
-            android:exported="false" >
-        </service-->
-
-        <!--jsnieves:END:from BluetoothAdvertisements-->
 
     </application>
 
