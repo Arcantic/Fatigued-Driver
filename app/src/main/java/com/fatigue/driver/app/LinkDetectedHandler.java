@@ -340,8 +340,8 @@ public class LinkDetectedHandler extends Handler {
                             featuresNormalized2DArrayAlert = Util.normalizeFeaturesWithBound(featuresPriorToNormalization2DArrayAlert);
                             featuresNormalized2DArrayFatigued = Util.normalizeFeaturesWithBound(featuresPriorToNormalization2DArrayFatigue);
 
-                            featuresNormalized2DArrayAlert = featuresPriorToNormalization2DArrayAlert;
-                            featuresNormalized2DArrayFatigued = featuresPriorToNormalization2DArrayFatigue;
+                            //featuresNormalized2DArrayAlert = featuresPriorToNormalization2DArrayAlert; //TODO normalization
+                            //featuresNormalized2DArrayFatigued = featuresPriorToNormalization2DArrayFatigue;
 
                             //jsnieves:COMMENT: Conform Array to svm standard
                             for (int i = 0; i < featuresNormalizedWithClassifierAtIndexZero2DArrayAlert.length; i++) {
