@@ -29,6 +29,9 @@ public class User {
 
     public static void selectUser(String user_name){
         User.user_name = user_name;
+
+        //Update the Global variable
+        GlobalSettings.userName = user_name;
     }
 
     public static ArrayList loadUserList(Context context) {
@@ -67,7 +70,7 @@ public class User {
             e.printStackTrace();
         }
 
-        User.user_name = user_name;
+        selectUser(user_name);
     }
 
 

@@ -395,7 +395,7 @@ public class EvaluationFragment extends Fragment {
     public void loadTrainingModel(){
         //TODO NEED TO CORRECT FILE NAME/LOCATION
         try {
-            FileReader fIn = new FileReader(GlobalSettings.svmTraingDataLogFileName);
+            FileReader fIn = new FileReader(GlobalSettings.svmTrainingDataLogFileName);
             BufferedReader bufferedReader = new BufferedReader(fIn);
             svm_model model = svm.svm_load_model(bufferedReader);
             training_model = model;

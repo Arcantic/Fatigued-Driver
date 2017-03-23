@@ -23,6 +23,8 @@ public class GlobalSettings {
     public static String svmTrainingDataLogFileName = "svm_train.txt"; //TEMP remove extension
     public static String svmModelFileName = "SVM_MODEL.txt"; //TEMP remove extension
 
+    public static String userName = "UNKNOWN";
+
     public static boolean isDebug = true;
     public static boolean isDebugVerbose = true;
 
@@ -48,15 +50,15 @@ public class GlobalSettings {
     public static int samplingSizeInterval = 512;
 
     public static int alertTrialCollectionIntervalDuration = 5;
-    public static int fatigueTrialCollectionIntervalDuration = 3;
+    public static int fatigueTrialCollectionIntervalDuration = 2;
 
-    public static int alertDelayTimeBetweenTrialCollections = 5;
-    public static int fatigueDelayTimeBetweenTrialCollections = 5;
+    public static int alertDelayTimeBetweenTrialCollections = 1;
+    public static int fatigueDelayTimeBetweenTrialCollections = 1;
 
-    public static int calibrationNumOfTrialsToPerformTotal = 6; //TODO temp value
-    public static int calibrationNumOfTrialsToPerformAlert = 3; //TODO temp value
-    public static int calibrationNumOfTrialsToPerformFatigue = 3; //TODO temp value
-    public static int calibrationNumOfTrialsToPerformAlertOrFatigue = 3; //TODO temp value
+    public static int calibrationNumOfTrialsToPerformTotal = 200; //TODO temp value
+    public static int calibrationNumOfTrialsToPerformAlert = 100; //TODO temp value
+    public static int calibrationNumOfTrialsToPerformFatigue = 100; //TODO temp value
+    public static int calibrationNumOfTrialsToPerformAlertOrFatigue = 100; //TODO temp value
 
     public static int numOfFeatures = 7; //TODO smarter implementation of this
 

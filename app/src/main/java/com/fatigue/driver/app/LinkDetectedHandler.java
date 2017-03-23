@@ -633,7 +633,7 @@ public class LinkDetectedHandler extends Handler {
 
         final String time = Util.currentMinuteTimestampAsString();
 
-        String tempUserName = "User2"; //TODO: create/call method getCurrentUserName() or similar here
+        String tempUserName = "User1"; //TODO: create/call method getCurrentUserName() or similar here
         String currentUserName = tempUserName; //TODO: properly assign
 
         String appLogFileName = GlobalSettings.appLogFileName;
@@ -733,7 +733,7 @@ public class LinkDetectedHandler extends Handler {
 
     public void logAppEvent ( final String msg){
         System.out.println(msg);
-        logOut.append("\r\n" + "["+Util.currentMilliTimestampLogAsString() + "] " + msg);
+        //logOut.append("\r\n" + "["+Util.currentMilliTimestampLogAsString() + "] " + msg);
         focusOnView();
 
         //TODO have this save to a log file
