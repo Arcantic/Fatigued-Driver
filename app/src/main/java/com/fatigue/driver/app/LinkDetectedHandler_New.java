@@ -628,9 +628,6 @@ public class LinkDetectedHandler_New extends Handler {
 
         final String time = Util.currentMinuteTimestampAsString();
 
-        String tempUserName = "User1"; //TODO: create/call method getCurrentUserName() or similar here
-        String currentUserName = tempUserName; //TODO: properly assign
-
         String appLogFileName = GlobalSettings.appLogFileName;
         String rawFileName = time + "_" + GlobalSettings.rawLogFileName;
         String rawNormFileName = time + "_" + GlobalSettings.rawNormLogFileName;
@@ -650,7 +647,7 @@ public class LinkDetectedHandler_New extends Handler {
 
             usersDir = new File(appDir + File.separator + "Users");
             //Util.deleteDir(usersDir); //temporary purge every time app is started
-            currentUserDir = new File(usersDir + File.separator + tempUserName); // + File.separator +folderDate
+            currentUserDir = new File(usersDir + File.separator + GlobalSettings.userName); // + File.separator +folderDate
 
             currentUserTrainingDir = new File(currentUserDir + File.separator + "Training");
             currentUserTestingDir = new File(currentUserDir + File.separator + "Testing");
