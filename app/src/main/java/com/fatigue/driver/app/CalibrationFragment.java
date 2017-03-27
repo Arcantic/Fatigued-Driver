@@ -47,7 +47,7 @@ public class CalibrationFragment extends Fragment{
         button_gather_training_data.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //openFragment(TrainingFragment.class);
-                openActivity(TrainingActivity.class);
+                openActivity(TrainingActivity_New.class);
             }
         });
 

@@ -52,13 +52,30 @@ public class GlobalSettings {
     public static int alertTrialCollectionIntervalDuration = 5;
     public static int fatigueTrialCollectionIntervalDuration = 2;
 
+    //Set these the same...
     public static int alertDelayTimeBetweenTrialCollections = 1;
     public static int fatigueDelayTimeBetweenTrialCollections = 1;
 
-    public static int calibrationNumOfTrialsToPerformTotal = 200; //TODO temp value
-    public static int calibrationNumOfTrialsToPerformAlert = 100; //TODO temp value
-    public static int calibrationNumOfTrialsToPerformFatigue = 100; //TODO temp value
-    public static int calibrationNumOfTrialsToPerformAlertOrFatigue = 100; //TODO temp value
+    public static int calibrationNumOfTrialsToPerformTotal = 100; //TODO temp value
+    //Set these the same... (above/2)
+    public static int calibrationNumOfTrialsToPerformAlert = 50; //TODO temp value
+    public static int calibrationNumOfTrialsToPerformFatigue = 50; //TODO temp value
+    public static int calibrationNumOfTrialsToPerformAlertOrFatigue = 50; //TODO temp value
+
+    public static void setTrialCount(int count){
+        calibrationNumOfTrialsToPerformTotal = count;
+        calibrationNumOfTrialsToPerformAlert = calibrationNumOfTrialsToPerformFatigue
+                = calibrationNumOfTrialsToPerformAlertOrFatigue = count/2;
+    }
+    public static void setTransitionDuration(int dur){
+        alertDelayTimeBetweenTrialCollections = fatigueDelayTimeBetweenTrialCollections = dur;
+    }
+    public static void setAlertDuration(int dur){
+        alertTrialCollectionIntervalDuration = dur;
+    }
+    public static void setFatigueDuration(int dur){
+        fatigueTrialCollectionIntervalDuration = dur;
+    }
 
     public static int numOfFeatures = 7; //TODO smarter implementation of this
 

@@ -70,6 +70,14 @@
         </activity>
 
         <activity
+            android:name="com.fatigue.driver.app.TrainingActivity_New"
+            android:parentActivityName="com.fatigue.driver.app.MainActivity"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            >
+        </activity>
+
+        <activity
             android:name="com.fatigue.driver.app.EvaluationActivity"
             android:parentActivityName="com.fatigue.driver.app.MainActivity"
             android:theme="@style/AppTheme"

@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="@dimen/activity_vertical_margin_cards"
+    android:layout_marginLeft="@dimen/activity_horizontal_margin_cards"
+    android:layout_marginRight="@dimen/activity_horizontal_margin_cards"
+    >
+
+    <!--"Display"-->
+    <android.support.v7.widget.CardView
+        android:id="@+id/card_display"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:background="@color/colorWhite"
+        android:layout_height="@dimen/card_height_training_display"
+        card_view:cardUseCompatPadding="true"
+        card_view:cardElevation="@dimen/card_elevation_rest"
+        card_view:cardCornerRadius="@dimen/card_corners"
+        android:layout_alignParentStart="true">
+
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/card_padding_side"
+            android:paddingTop="@dimen/card_padding_top"
+            >
+
+            <TextView
+                android:id="@+id/text_count_left"
+                android:gravity="end"
+                style="@style/TextAppearance.AppCompat.Caption"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="16dp"
+                android:text=""
+                />
+
+            <TextView
+                android:id="@+id/text_training_status"
+                android:gravity="center"
+                android:layout_above="@+id/text_training_status_countdown"
+                style="@style/TextAppearance.AppCompat.Display1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Training Not Running"
+                />
+
+            <TextView
+                android:id="@+id/text_training_status_countdown"
+                android:gravity="center"
+                android:layout_above="@+id/button_start"
+                style="@style/TextAppearance.AppCompat.Display2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="48dp"
+                android:text=""
+                android:textColor="@color/colorAccent"
+                />
+
+            <Button
+                android:id="@+id/button_start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerInParent="true"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:text="Start" />
+
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
+
+
+
+
+    <!--Settings-->
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/card_display"
+        android:overScrollMode="never"
+        android:scrollbars="none"
+        >
+        <android.support.v7.widget.CardView
+            android:id="@+id/card_settings"
+            android:layout_width="match_parent"
+            android:background="@color/colorWhite"
+            android:layout_height="wrap_content"
+            card_view:cardUseCompatPadding="true"
+            card_view:cardElevation="@dimen/card_elevation_rest"
+            card_view:cardCornerRadius="@dimen/card_corners">
+
+            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="@dimen/card_padding_side"
+                android:paddingTop="@dimen/card_padding_top"
+                >
+
+                <!--Settings-->
+                <TextView
+                    android:id="@+id/text_settings_title"
+                    style="@style/TextAppearance.AppCompat.Headline"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/card_title_margin"
+                    android:text="Settings"
+                    />
+
+
+
+
+                <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:orientation="vertical"
+                    android:id="@+id/layout_rel1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/text_settings_title"
+                    >
+                    <!--Texts-->
+                    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:orientation="horizontal"
+                        android:id="@+id/layout_lin1_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:weightSum="1"
+                        >
+                        <!--Trial Count-->
+                        <TextView
+                            android:id="@+id/text_count"
+                            style="@style/TextAppearance.AppCompat.Subhead"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="Trial Count"
+                            android:layout_weight="0.5"
+                            />
+                        <!--Trial Duration-->
+                        <TextView
+                            android:id="@+id/text_duration_transition"
+                            style="@style/TextAppearance.AppCompat.Subhead"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="Transition Duration"
+                            android:layout_weight="0.5"
+                            />
+
+                    </LinearLayout>
+
+
+                    <!--Hints-->
+                    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:orientation="horizontal"
+                        android:id="@+id/layout_lin1_3"
+                        android:layout_below="@+id/layout_lin1_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:weightSum="1"
+                        >
+                        <!--Trial Count-->
+                        <TextView
+                            android:id="@+id/text_hint_cnt"
+                            style="@style/TextAppearance.AppCompat.Caption"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="Number"
+                            android:layout_weight="0.5"
+                            />
+                        <!--Trial Duration-->
+                        <TextView
+                            android:id="@+id/text_hint_dur_transition"
+                            style="@style/TextAppearance.AppCompat.Caption"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="Seconds"
+                            android:layout_weight="0.5"
+                            />
+
+                    </LinearLayout>
+
+
+                    <!--Inputs-->
+                    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:orientation="horizontal"
+                        android:id="@+id/layout_lin1_2"
+                        android:layout_below="@+id/layout_lin1_3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="-4dp"
+                        android:weightSum="1"
+                        >
+                        <!--Trial Count-->
+                        <EditText
+                            android:id="@+id/edit_count"
+                            style="@style/TextAppearance.AppCompat.Subhead"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:inputType="number"
+                            android:text="100"
+                            android:hint="Number"
+                            android:layout_weight="0.33"
+                            android:imeOptions="actionDone"
+                            />
+
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_weight="0.17"
+                            android:layout_marginRight="-4dp"
+                            />
+
+                        <!--Trial Duration-->
+                        <EditText
+                            android:id="@+id/edit_duration_transition"
+                            style="@style/TextAppearance.AppCompat.Subhead"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:inputType="number"
+                            android:text="5"
+                            android:hint="Seconds"
+                            android:layout_weight="0.33"
+                            android:imeOptions="actionDone"
+                            />
+
+                    </LinearLayout>
+                </RelativeLayout>
+
+
+
+
+                <View
+                    android:layout_width="match_parent"
+                    android:id="@+id/divider_texts"
+                    android:layout_below="@+id/layout_rel1"
+                    android:layout_marginTop="@dimen/divider_margin"
+                    android:layout_marginBottom="@dimen/divider_margin"
+                    android:layout_height="1dp"
+                    android:background="?android:attr/dividerVertical" />
+
+
+
+                <!-- LIST #2 -->
+
+                <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:orientation="vertical"
+                    android:id="@+id/layout_rel2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/divider_texts"
+                    >
+                    <!--Texts-->
+                    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:orientation="horizontal"
+                        android:id="@+id/layout_lin2_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:weightSum="1"
+                        >
+                        <!--Trial Duration-->
+                        <TextView
+                            android:id="@+id/text_duration_open"
+                            style="@style/TextAppearance.AppCompat.Subhead"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="Eyes Open Duration"
+                            android:layout_weight="0.5"
+                            />
+                        <!--Trial Count-->
+                        <TextView
+                            android:id="@+id/text_duration_closed"
+                            style="@style/TextAppearance.AppCompat.Subhead"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="Eyes Closed Duration"
+                            android:layout_weight="0.5"
+                            />
+
+                    </LinearLayout>
+
+
+                    <!--Hints-->
+                    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:orientation="horizontal"
+                        android:id="@+id/layout_lin2_3"
+                        android:layout_below="@+id/layout_lin2_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:weightSum="1"
+                        >
+                        <!--Trial Duration-->
+                        <TextView
+                            android:id="@+id/text_hint_dur_open"
+                            style="@style/TextAppearance.AppCompat.Caption"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="Seconds"
+                            android:layout_weight="0.5"
+                            />
+                        <!--Trial Count-->
+                        <TextView
+                            android:id="@+id/text_hint_dur_closed"
+                            style="@style/TextAppearance.AppCompat.Caption"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="Seconds"
+                            android:layout_weight="0.5"
+                            />
+
+                    </LinearLayout>
+
+
+                    <!--Inputs-->
+                    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:orientation="horizontal"
+                        android:id="@+id/layout_lin2_2"
+                        android:layout_below="@+id/layout_lin2_3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="-4dp"
+                        android:weightSum="1"
+                        >
+                        <!--Trial Duration-->
+                        <EditText
+                            android:id="@+id/edit_duration_open"
+                            style="@style/TextAppearance.AppCompat.Subhead"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:inputType="number"
+                            android:text="5"
+                            android:hint="Seconds"
+                            android:layout_weight="0.33"
+                            android:imeOptions="actionDone"
+                            />
+
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_weight="0.17"
+                            android:layout_marginRight="-4dp"
+                            />
+
+                        <!--Trial Count-->
+                        <EditText
+                            android:id="@+id/edit_duration_closed"
+                            style="@style/TextAppearance.AppCompat.Subhead"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:inputType="number"
+                            android:text="2"
+                            android:hint="Seconds"
+                            android:layout_weight="0.33"
+                            android:imeOptions="actionDone"
+                            />
+
+                    </LinearLayout>
+                </RelativeLayout>
+
+
+
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
+    </ScrollView>
+
+</RelativeLayout>
