@@ -111,8 +111,6 @@ public class Test_MainActivity extends AppCompatActivity
         }
 
         initView();
-        new TrollRunnable();
-        FuckOff(null);
     }
     //end
 
@@ -191,31 +189,6 @@ public class Test_MainActivity extends AppCompatActivity
         });
 
         //jsnieves:END:added onClickListeners for test buttons
-
-        startTimer();
-    }
-
-
-    boolean color = false;
-    public void startTimer(){
-        new CountDownTimer(500, 50) {
-            //Every *100* millis, onTick is called.
-            public void onTick(long millisUntilFinished) {
-
-            }
-
-            public void onFinish() {
-                if(color) {
-                    btn_test1.setBackgroundColor(getResources().getColor(R.color.colorAccent));
-                    color = false;
-                    startTimer();
-                }else{
-                    btn_test1.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                    color = true;
-                    startTimer();
-                }
-            }
-        }.start();
     }
 
     @Override
@@ -272,45 +245,6 @@ public class Test_MainActivity extends AppCompatActivity
     private void showErrorText(int messageId) {
         TextView view = (TextView) findViewById(R.id.error_textview);
         view.setText(getString(messageId));
-    }
-
-    private class TrollRunnable implements Runnable {
-        View jsnievesAyyyLMAO = findViewById(R.id.btn_mindwave_init);
-        Random rand = new Random();
-        Handler hand = new Handler();
-        int r, g, b;
-
-        public TrollRunnable() {
-            run();
-        }
-
-        public void run() {
-            r = rand.nextInt(255);
-            g = rand.nextInt(255);
-            b = rand.nextInt(255);
-            jsnievesAyyyLMAO.setBackgroundColor(Color.rgb(r, g, b));
-            hand.postDelayed(this, 50);
-        }
-    }
-
-    private void FuckOff(String alternative) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        if(alternative == null)builder.setTitle("VIRUS ALERT");
-        else builder.setTitle(alternative);
-        builder.setMessage("Your system has been infected with a virus! Hit 'OK' to remove the virus!");
-        builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                Toast.makeText(getApplicationContext(), "ERROR: Failed to remove virus", Toast.LENGTH_LONG).show();
-                dialog.dismiss();
-            }
-        });
-        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                FuckOff("Please hit 'OK'");
-            }
-        });
-        final AlertDialog dialog = builder.create();
-        dialog.show();
     }
 
     private void setupFragments() {

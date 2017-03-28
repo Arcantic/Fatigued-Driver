@@ -61,6 +61,8 @@
             >
         </activity>
 
+
+
         <activity
             android:name="com.fatigue.driver.app.TrainingActivity"
             android:parentActivityName="com.fatigue.driver.app.MainActivity"
@@ -77,6 +79,8 @@
             >
         </activity>
 
+
+
         <activity
             android:name="com.fatigue.driver.app.EvaluationActivity"
             android:parentActivityName="com.fatigue.driver.app.MainActivity"
@@ -84,6 +88,16 @@
             android:windowSoftInputMode="stateAlwaysHidden"
             >
         </activity>
+
+        <activity
+            android:name="com.fatigue.driver.app.EvaluationActivity_New"
+            android:parentActivityName="com.fatigue.driver.app.MainActivity"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            >
+        </activity>
+
+
 
         <activity
             android:name="com.fatigue.driver.app.ModelSelectActivity"

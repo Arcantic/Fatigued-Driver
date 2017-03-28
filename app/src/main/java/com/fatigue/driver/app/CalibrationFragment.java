@@ -55,7 +55,7 @@ public class CalibrationFragment extends Fragment{
         button_evaluation.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //Literally, just uncomment and you're good
-                openActivity(EvaluationActivity.class);
+                openActivity(EvaluationActivity_New.class);
                 //Toast.makeText(getActivity().getApplicationContext(), "Evaluation not ready...", Toast.LENGTH_LONG).show();
             }
         });

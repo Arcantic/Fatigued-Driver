@@ -45,6 +45,10 @@ public class TrainingActivity_New extends AppCompatActivity implements Navigatio
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        loadFragment();
+    }
+
+    public void loadFragment(){
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         Fragment fragment = new TrainingFragment_New();
@@ -111,11 +115,6 @@ public class TrainingActivity_New extends AppCompatActivity implements Navigatio
     }
 
 
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        return false;
-    }
-
     //Warn user that test will be canceled.
     public void testIsRunningAlert(final boolean backPressed, final MenuItem menuItem, String mTitle, String mMessage){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -155,5 +154,10 @@ public class TrainingActivity_New extends AppCompatActivity implements Navigatio
             }
         });
         dialog.show();
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        return false;
     }
 }

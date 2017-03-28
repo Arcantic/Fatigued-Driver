@@ -1,23 +1,16 @@
 package com.fatigue.driver.app;
 
-import android.app.Dialog;
-import android.content.DialogInterface;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.NavUtils;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -26,13 +19,22 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Random;
+
+import libsvm.svm;
+import libsvm.svm_model;
+import libsvm.svm_node;
 
 /**
- * Created by Eric on 3/27/2017.
+ * Created by Eric on 11/14/2016.
  */
 
-public class TrainingFragment_New extends Fragment {
+public class EvaluationFragment_New extends Fragment {
     private static final String TAG = TrainingActivity_New.class.getSimpleName();
     Button btn_startPauseResume;
 
@@ -44,12 +46,13 @@ public class TrainingFragment_New extends Fragment {
     boolean isStartOfTransitionPeriod = false;
 
     Handler hand = new Handler();
-    TrainingFragment_New.TimerRunnable tRunnable;
+    EvaluationFragment_New.TimerRunnable tRunnable;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_training_new, container, false);
+        View view = inflater.inflate(R.layout.fragment_evaluation_new, container, false);
+
 
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         FragmentTransaction ft = fragmentManager.beginTransaction();
@@ -78,6 +81,11 @@ public class TrainingFragment_New extends Fragment {
 
         initView(view);
 
+        //initMindwaveHelper();
+
+        //initEval();
+
+        // Inflate the layout for this fragment
         return view;
     }
 
@@ -85,8 +93,8 @@ public class TrainingFragment_New extends Fragment {
         hand = new Handler();
 
         btn_startPauseResume = (Button) view.findViewById(R.id.button_start);
-        tv_timer = (TextView) view.findViewById(R.id.text_training_status_countdown);
-        tv_instruction = (TextView) view.findViewById(R.id.text_training_status);
+        tv_timer = (TextView) view.findViewById(R.id.text_evaluation_status_countdown);
+        tv_instruction = (TextView) view.findViewById(R.id.text_evaluation_status);
 
         initOtherViews(view);
 
@@ -96,10 +104,9 @@ public class TrainingFragment_New extends Fragment {
             public void onClick(View arg0) {
                 if(!isTrialInProgress && linkDH.isConnected){
                     tv_timer.setText("0.0");
-                    roundUpCount();
 
-                    linkDH.fireTrialCollectorInitializer();
-                    tRunnable = new TimerRunnable();
+                    linkDH.fireEvalInitializer();
+                    tRunnable = new EvaluationFragment_New.TimerRunnable();
                     isTrialInProgress=true;
 
                     hand.post(tRunnable);
@@ -115,39 +122,37 @@ public class TrainingFragment_New extends Fragment {
         });
     }
 
+
     public void cancelTest(){
         hand.removeCallbacks(tRunnable);
         hand = new Handler();
-        deleteTrainingResults();
+        deleteEvalResults();
 
         isTrialInProgress = false;
         isStartOfTransitionPeriod = false;
 
         btn_startPauseResume.setText("Start");
-        tv_instruction.setText("Training Not Running");
+        tv_instruction.setText("Evaluation Not Running");
         tv_timer.setText("");
         count_left.setText("");
         enableSettings();
-        Toast.makeText(getActivity().getApplicationContext(), "Training Canceled", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity().getApplicationContext(), "Evaluation Canceled", Toast.LENGTH_SHORT).show();
     }
 
-    //Round up the count to an even number
-    public void roundUpCount(){
-        String text = edit_count.getText().toString();
-        int c = Integer.parseInt(text);
-        if(c%2!=0) {
-            c += 1;
-            edit_count.setText(String.valueOf(c));
-        }
-        GlobalSettings.setTrialCount(c);
-    }
+
 
     EditText edit_duration_transition, edit_duration_open, edit_duration_closed;
     EditText edit_count;
     TextView count_left;
+    TextView evaluation_prev_command, evaluation_prev_classification;
 
     public void initOtherViews(View view){
+        //Display texts...
         count_left = (TextView)view.findViewById(R.id.text_count_left);
+        evaluation_prev_command = (TextView)view.findViewById(R.id.text_evaluation_prev_command);
+        evaluation_prev_classification = (TextView)view.findViewById(R.id.text_evaluation_prev_classification);
+
+
 
         //"durations" and add listener
         edit_duration_transition = (EditText)view.findViewById(R.id.edit_duration_transition);
@@ -205,6 +210,7 @@ public class TrainingFragment_New extends Fragment {
 
 
 
+
         //Init those changes...
         String text = edit_duration_transition.getText().toString();
         int c = Integer.parseInt(text);
@@ -225,6 +231,8 @@ public class TrainingFragment_New extends Fragment {
         tv_timer.setText("");
     }
 
+
+
     public void disableSettings(){
         edit_duration_transition.setEnabled(false);
         edit_duration_open.setEnabled(false);
@@ -239,7 +247,7 @@ public class TrainingFragment_New extends Fragment {
         edit_count.setEnabled(true);
     }
 
-    public void deleteTrainingResults(){
+    public void deleteEvalResults(){
 
     }
 
@@ -273,44 +281,23 @@ public class TrainingFragment_New extends Fragment {
                 isStartOfTransitionPeriod = !isStartOfTransitionPeriod; //flip
 
                 if (isStartOfTransitionPeriod) {
-                    if (counter < GlobalSettings.calibrationNumOfTrialsToPerformAlert) {
+                    //Generate the next command (random)
+                    generateNextCommand();
+                    if (counter < GlobalSettings.calibrationNumOfTrialsToPerformAlertOrFatigue * 2) {
                         tv_timer.setText((String.valueOf(formatter.format(GlobalSettings.alertDelayTimeBetweenTrialCollections))));
-                        tv_instruction.setText("Open eyes in...");
-
+                        tv_instruction.setText(getNextCommandPrep());
                         playCompletionSound();
-
-                    } else if (counter == GlobalSettings.calibrationNumOfTrialsToPerformAlert) {
-                        tv_timer.setText((String.valueOf(formatter.format(GlobalSettings.fatigueDelayTimeBetweenTrialCollections))));
-                        tv_instruction.setText("Close eyes in...");
-
-                        playCompletionSound();
-
-                    } else if (counter < GlobalSettings.calibrationNumOfTrialsToPerformAlertOrFatigue * 2) {
-                        tv_timer.setText((String.valueOf(formatter.format(GlobalSettings.fatigueDelayTimeBetweenTrialCollections))));
-                        tv_instruction.setText("Close eyes in...");
-
-                        playCompletionSound();
-
                     } else {
                         tv_instruction.setText("Finished");
                     }
-
                     count_left.setText(String.valueOf(GlobalSettings.calibrationNumOfTrialsToPerformTotal - counter));
                 } else {
-
                     counter++;
 
-                    if (counter <= GlobalSettings.calibrationNumOfTrialsToPerformAlertOrFatigue) {
-                        //
-                        tv_timer.setText((String.valueOf(formatter.format((double) GlobalSettings.alertTrialCollectionIntervalDuration))));
-                        linkDH.fireTrialCollectorInstance(true);//eyesOpen collect
-                        tv_instruction.setText("Open eyes");
-
-                    } else if (counter <= GlobalSettings.calibrationNumOfTrialsToPerformAlertOrFatigue * 2) {
-                        tv_timer.setText((String.valueOf(formatter.format((double) GlobalSettings.fatigueTrialCollectionIntervalDuration))));
-                        linkDH.fireTrialCollectorInstance(false);//eyesClosed
-                        tv_instruction.setText("Close eyes");
-
+                    if (counter <= GlobalSettings.calibrationNumOfTrialsToPerformAlertOrFatigue * 2) {
+                        tv_timer.setText((String.valueOf(formatter.format((double) getNextCommandDuration()))));
+                        linkDH.fireEvalTestingInstance(getNextCommandBoolean());
+                        tv_instruction.setText(getNextCommandActive());
                     } else {
                         tv_instruction.setText("Finished");
                     }
@@ -324,4 +311,58 @@ public class TrainingFragment_New extends Fragment {
             }
         }
     }
+
+
+
+
+    public boolean next_command;
+    public boolean BOOLEAN_EYES_CLOSED = false, BOOLEAN_EYES_OPEN = true;
+    public void generateNextCommand(){
+        int r = new Random().nextInt(2);
+        if(r==0)
+            next_command = BOOLEAN_EYES_CLOSED;
+        else
+            next_command = BOOLEAN_EYES_OPEN;
+    }
+    public boolean getNextCommandBoolean(){
+        return next_command;
+    }
+    public String getNextCommandPrep(){
+        if(next_command == BOOLEAN_EYES_OPEN)
+            return "Open eyes in...";
+        else return "Close eyes in...";
+    }
+    public String getNextCommandActive(){
+        if(next_command == BOOLEAN_EYES_OPEN)
+            return "Open eyes";
+        else return "Close eyes";
+    }
+    public int getNextCommandDuration(){
+        if(next_command == BOOLEAN_EYES_OPEN)
+            return GlobalSettings.alertTrialCollectionIntervalDuration;
+        else return GlobalSettings.fatigueTrialCollectionIntervalDuration;
+    }
+
+
+
+
+    public void openResultsPage(){
+        Toast.makeText(getActivity().getApplicationContext(), "Evaluation Complete!", Toast.LENGTH_LONG).show();
+
+        Fragment fragment = new ResultsFragment();
+        ((ResultsFragment)fragment).setType(ResultsFragment.TYPE_EVALUATION);
+        //((ResultsFragment)fragment).setClassificationList(is_classification_correct_list);
+
+        // Insert the fragment by replacing any existing fragment
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.content_frame, fragment);
+        transaction.addToBackStack(null);
+        //MainActivity.list_title_stack.add("Calibration");
+        transaction.commit();
+        getActivity().setTitle("Calibration");
+        //((MainActivity)getActivity()).drawDrawerBackButton();
+    }
+
+
 }

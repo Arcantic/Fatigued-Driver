@@ -21,7 +21,7 @@ import android.widget.Toast;
  * Created by Eric on 2/26/2017.
  */
 
-public class EvaluationActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class EvaluationActivity_New extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
 
     @Override
@@ -37,11 +37,46 @@ public class EvaluationActivity extends AppCompatActivity implements NavigationV
         loadFragment();
     }
 
+    //Load the user select fragment...
+    public void loadFragment(){
+        //Replace the content with the UserSelect Fragment
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        Fragment fragment = new EvaluationFragment_New();
+        fragmentTransaction.replace(R.id.content_frame, fragment);
+        fragmentTransaction.commit();
+    }
+
+    public boolean isEvaluationRunning(){
+        if(EvaluationFragment_New.isTrialInProgress)
+            return true;
+        else if(ResultsFragment.isOpen())
+            return true;
+        return false;
+    }
+
+    public void cancelTest(){
+        if(EvaluationFragment_New.isTrialInProgress){
+            ((EvaluationFragment_New)getSupportFragmentManager().findFragmentById(R.id.content_frame)).cancelTest();
+            //Toast and allow screen sleep
+            Toast.makeText(getApplicationContext(), "Evaluation Canceled", Toast.LENGTH_LONG).show();
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
+        else if(ResultsFragment.isOpen()){
+            ResultsFragment.prepClose();
+            //Toast and allow screen sleep
+            Toast.makeText(getApplicationContext(), "Results Deleted", Toast.LENGTH_LONG).show();
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
+    }
+
+
     @Override
     public void onBackPressed() {
         FragmentManager fragmentManager = getSupportFragmentManager();
-        if (isTestRunning()) {
-            if (EvaluationFragment.running_test)
+        if (isEvaluationRunning()) {
+            if (EvaluationFragment_New.isTrialInProgress)
                 testIsRunningAlert(true, null, "Evaluation Running", "This action will cancel the evaluation. Continue?");
             else if (ResultsFragment.isOpen())
                 testIsRunningAlert(true, null, "Delete Results", "This action will delete the evaluation results. Continue?");
@@ -51,6 +86,27 @@ public class EvaluationActivity extends AppCompatActivity implements NavigationV
             super.onBackPressed();
         }
     }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                FragmentManager fm = getSupportFragmentManager();
+                if (fm.getBackStackEntryCount() > 0) {
+                    if (ResultsFragment.isOpen())
+                        testIsRunningAlert(true, null, "Delete Results", "This action will delete the evaluation results. Continue?");
+                }else{
+                    if (EvaluationFragment_New.isTrialInProgress)
+                        testIsRunningAlert(true, null, "Evaluation Running", "This action will cancel the evaluation. Continue?");
+                    else NavUtils.navigateUpFromSameTask(this);
+                }
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
 
     //Warn user that test will be canceled.
     public void testIsRunningAlert(final boolean backPressed, final MenuItem menuItem, String mTitle, String mMessage){
@@ -92,62 +148,6 @@ public class EvaluationActivity extends AppCompatActivity implements NavigationV
         });
         dialog.show();
     }
-
-    public boolean isTestRunning(){
-        if(EvaluationFragment.running_test)
-            return true;
-        else if(ResultsFragment.isOpen())
-            return true;
-        return false;
-    }
-
-    public void cancelTest(){
-        if(EvaluationFragment.running_test){
-            ((EvaluationFragment)getSupportFragmentManager().findFragmentById(R.id.content_frame)).forceEndTest();
-            //Toast and allow screen sleep
-            Toast.makeText(getApplicationContext(), "Evaluation Canceled", Toast.LENGTH_LONG).show();
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        }
-        else if(ResultsFragment.isOpen()){
-            ResultsFragment.prepClose();
-            //Toast and allow screen sleep
-            Toast.makeText(getApplicationContext(), "Results Deleted", Toast.LENGTH_LONG).show();
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        }
-    }
-
-
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                FragmentManager fm = getSupportFragmentManager();
-                if (fm.getBackStackEntryCount() > 0) {
-                    if (ResultsFragment.isOpen())
-                        testIsRunningAlert(true, null, "Delete Results", "This action will delete the evaluation results. Continue?");
-                }else{
-                    if (EvaluationFragment.running_test)
-                        testIsRunningAlert(true, null, "Evaluation Running", "This action will cancel the evaluation. Continue?");
-                    else NavUtils.navigateUpFromSameTask(this);
-                }
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    //Load the user select fragment...
-    public void loadFragment(){
-        //Replace the content with the UserSelect Fragment
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-        Fragment fragment = new EvaluationFragment();
-        fragmentTransaction.replace(R.id.content_frame, fragment);
-        fragmentTransaction.commit();
-    }
-
 
 
     @Override
