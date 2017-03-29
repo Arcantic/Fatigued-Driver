@@ -88,6 +88,15 @@ public class LinkDetectedHandler_New extends Handler {
     private File usersDir;
     private File currentUserDir; //User.user_name;
 
+    public void updateTrialCount(){
+        featuresPriorToNormalization2DArrayAlert = new double[GlobalSettings.calibrationNumOfTrialsToPerformAlert][GlobalSettings.numOfFeatures];
+        featuresPriorToNormalization2DArrayFatigue = new double[GlobalSettings.calibrationNumOfTrialsToPerformFatigue][GlobalSettings.numOfFeatures];
+        featuresNormalized2DArrayAlert= new double[GlobalSettings.calibrationNumOfTrialsToPerformAlert][GlobalSettings.numOfFeatures];
+        featuresNormalized2DArrayFatigued= new double[GlobalSettings.calibrationNumOfTrialsToPerformFatigue][GlobalSettings.numOfFeatures];
+        featuresNormalizedWithClassifierAtIndexZero2DArrayAlert=new double[featuresNormalized2DArrayAlert.length][GlobalSettings.numOfFeatures+1];
+        featuresNormalizedWithClassifierAtIndexZero2DArrayFatigued =new double[featuresNormalized2DArrayFatigued.length][GlobalSettings.numOfFeatures+1];
+    }
+
     //double[][] featuresPriorToNormalization2DArray = new double[GlobalSettings.calibrationNumOfTrialsToPerformAlertOrFatigue][GlobalSettings.numOfFeatures];
     //double[][] featuresAvgGroupedNorm2DArray= new double[GlobalSettings.calibrationNumOfTrialsToPerformTotal][GlobalSettings.numOfFeatures];
     //double[][] allFeaturesAvgGroupedNorm2DArray= new double[GlobalSettings.calibrationNumOfTrialsToPerformTotal *2][GlobalSettings.numOfFeatures+1];
@@ -307,8 +316,8 @@ public class LinkDetectedHandler_New extends Handler {
                 if (isTrialCollectionSimulated) {
                     //Process but drop single trial
                     numOfSimulatedTrialsObservedCounter++;
-                    logAppEvent("<Features Calculated>");
-                    logAppEvent("SIMULATED trial creation [# " + numOfSimulatedTrialsObservedCounter + "]\n");
+                    //logAppEvent("<Features Calculated>");
+                    //logAppEvent("SIMULATED trial creation [# " + numOfSimulatedTrialsObservedCounter + "]\n");
 
                 } else {
                     isTrialCollectionSimulated = true; //jsnieves:COMMENT: transition period or otherwise
@@ -750,7 +759,7 @@ public class LinkDetectedHandler_New extends Handler {
     }
 
 
-    public void fireTrialCollectorInitializer () {
+    public void fireTrialCollectorInitializer() {
 
         numOfActualTrialsCollectedGivenCurrentClassifierCounter = 0; //ensure we are gathering data from here on out and not just averaging (i.e. -- e.g. the last 3 seconds of baseline with 1 second where the user was following instructions)
         trialBuilderNumOfSinglePacketInstancesConsumedCounter = 0;
@@ -810,6 +819,7 @@ public class LinkDetectedHandler_New extends Handler {
         } catch (IOException ex){
             ex.printStackTrace();
             showToast("FILE NOT FOUND", Toast.LENGTH_SHORT);
+            System.out.println("Training Model Not Loaded");
         }
 
 /*

@@ -44,6 +44,7 @@ public class TrainingActivity_New extends AppCompatActivity implements Navigatio
         toolbar.setTitle("Record Training Data");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         loadFragment();
     }

@@ -74,7 +74,9 @@ public class EvaluationFragment_New extends Fragment {
                     //linkDH.initLogCreate();
                     //linkDH.initDrawWaveView();
 
+                    linkDH.updateTrialCount();
                 } catch (Exception e) {
+
                 }
             }
         }.start();
@@ -140,6 +142,27 @@ public class EvaluationFragment_New extends Fragment {
     }
 
 
+    public void finishTraining(){
+        hand.removeCallbacks(tRunnable);
+        hand = new Handler();
+
+        isTrialInProgress = false;
+        isStartOfTransitionPeriod = false;
+
+        btn_startPauseResume.setText("Start");
+        tv_instruction.setText("Evaluation Not Running");
+        tv_timer.setText("");
+        count_left.setText("");
+        enableSettings();
+        Toast.makeText(getActivity().getApplicationContext(), "Evaluation Complete!", Toast.LENGTH_LONG).show();
+
+        launchResultsScreen();
+    }
+
+    public void launchResultsScreen(){
+
+    }
+
 
     EditText edit_duration_transition, edit_duration_open, edit_duration_closed;
     EditText edit_count;
@@ -165,6 +188,7 @@ public class EvaluationFragment_New extends Fragment {
                     String text = edit_duration_transition.getText().toString();
                     int c = Integer.parseInt(text);
                     GlobalSettings.setTransitionDuration(c);
+                    linkDH.updateTrialCount();
                 }
             }
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -176,6 +200,7 @@ public class EvaluationFragment_New extends Fragment {
                     String text = edit_duration_open.getText().toString();
                     int c = Integer.parseInt(text);
                     GlobalSettings.setAlertDuration(c);
+                    linkDH.updateTrialCount();
                 }
             }
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -187,6 +212,7 @@ public class EvaluationFragment_New extends Fragment {
                     String text = edit_duration_closed.getText().toString();
                     int c = Integer.parseInt(text);
                     GlobalSettings.setFatigueDuration(c);
+                    linkDH.updateTrialCount();
                 }
             }
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -202,6 +228,7 @@ public class EvaluationFragment_New extends Fragment {
                     String text = edit_count.getText().toString();
                     int c = Integer.parseInt(text);
                     GlobalSettings.setTrialCount(c);
+                    linkDH.updateTrialCount();
                 }
             }
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -307,7 +334,7 @@ public class EvaluationFragment_New extends Fragment {
             if (counter <= GlobalSettings.calibrationNumOfTrialsToPerformAlertOrFatigue * 2) {
                 hand.postDelayed(this, 100);
             } else {
-                isTrialInProgress = false;
+                finishTraining();
             }
         }
     }

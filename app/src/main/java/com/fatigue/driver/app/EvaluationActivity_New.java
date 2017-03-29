@@ -33,6 +33,7 @@ public class EvaluationActivity_New extends AppCompatActivity implements Navigat
         toolbar.setTitle("Evaluate SVM");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         loadFragment();
     }

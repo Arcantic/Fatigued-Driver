@@ -38,6 +38,8 @@
             android:name="com.fatigue.driver.app.MainActivity"
             android:launchMode="singleTop"
             android:theme="@style/AppTheme"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -51,6 +53,8 @@
             android:name="com.fatigue.driver.app.IntroActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateAlwaysHidden"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"
             >
         </activity>
 
@@ -58,6 +62,8 @@
             android:name="com.fatigue.driver.app.LoginActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateAlwaysHidden"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"
             >
         </activity>
 
@@ -68,6 +74,8 @@
             android:parentActivityName="com.fatigue.driver.app.MainActivity"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="stateAlwaysHidden"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"
             >
         </activity>
 
@@ -76,6 +84,8 @@
             android:parentActivityName="com.fatigue.driver.app.MainActivity"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="stateAlwaysHidden"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"
             >
         </activity>
 
@@ -86,6 +96,8 @@
             android:parentActivityName="com.fatigue.driver.app.MainActivity"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="stateAlwaysHidden"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"
             >
         </activity>
 
@@ -94,9 +106,10 @@
             android:parentActivityName="com.fatigue.driver.app.MainActivity"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="stateAlwaysHidden"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"
             >
         </activity>
-
 
 
         <activity
@@ -104,8 +117,11 @@
             android:parentActivityName="com.fatigue.driver.app.MainActivity"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="stateAlwaysHidden"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"
             >
         </activity>
+
 
         <activity
             android:name="com.fatigue.driver.app.TestTwo"

@@ -71,6 +71,7 @@ public class TrainingFragment_New extends Fragment {
                     //linkDH.initLogCreate();
                     //linkDH.initDrawWaveView();
 
+                    linkDH.updateTrialCount();
                 } catch (Exception e) {
                 }
             }
@@ -97,6 +98,9 @@ public class TrainingFragment_New extends Fragment {
                 if(!isTrialInProgress && linkDH.isConnected){
                     tv_timer.setText("0.0");
                     roundUpCount();
+
+                    //Reset the logging locations at trial start.
+                    linkDH.initLogCreate();
 
                     linkDH.fireTrialCollectorInitializer();
                     tRunnable = new TimerRunnable();
@@ -131,6 +135,27 @@ public class TrainingFragment_New extends Fragment {
         Toast.makeText(getActivity().getApplicationContext(), "Training Canceled", Toast.LENGTH_SHORT).show();
     }
 
+    public void finishTraining(){
+        hand.removeCallbacks(tRunnable);
+        hand = new Handler();
+
+        isTrialInProgress = false;
+        isStartOfTransitionPeriod = false;
+
+        btn_startPauseResume.setText("Start");
+        tv_instruction.setText("Training Not Running");
+        tv_timer.setText("");
+        count_left.setText("");
+        enableSettings();
+        Toast.makeText(getActivity().getApplicationContext(), "Training Complete!", Toast.LENGTH_LONG).show();
+
+        launchResultsScreen();
+    }
+
+    public void launchResultsScreen(){
+
+    }
+
     //Round up the count to an even number
     public void roundUpCount(){
         String text = edit_count.getText().toString();
@@ -160,6 +185,7 @@ public class TrainingFragment_New extends Fragment {
                     String text = edit_duration_transition.getText().toString();
                     int c = Integer.parseInt(text);
                     GlobalSettings.setTransitionDuration(c);
+                    linkDH.updateTrialCount();
                 }
             }
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -171,6 +197,7 @@ public class TrainingFragment_New extends Fragment {
                     String text = edit_duration_open.getText().toString();
                     int c = Integer.parseInt(text);
                     GlobalSettings.setAlertDuration(c);
+                    linkDH.updateTrialCount();
                 }
             }
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -182,6 +209,7 @@ public class TrainingFragment_New extends Fragment {
                     String text = edit_duration_closed.getText().toString();
                     int c = Integer.parseInt(text);
                     GlobalSettings.setFatigueDuration(c);
+                    linkDH.updateTrialCount();
                 }
             }
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -197,6 +225,7 @@ public class TrainingFragment_New extends Fragment {
                     String text = edit_count.getText().toString();
                     int c = Integer.parseInt(text);
                     GlobalSettings.setTrialCount(c);
+                    linkDH.updateTrialCount();
                 }
             }
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -301,11 +330,9 @@ public class TrainingFragment_New extends Fragment {
                     counter++;
 
                     if (counter <= GlobalSettings.calibrationNumOfTrialsToPerformAlertOrFatigue) {
-                        //
                         tv_timer.setText((String.valueOf(formatter.format((double) GlobalSettings.alertTrialCollectionIntervalDuration))));
                         linkDH.fireTrialCollectorInstance(true);//eyesOpen collect
                         tv_instruction.setText("Open eyes");
-
                     } else if (counter <= GlobalSettings.calibrationNumOfTrialsToPerformAlertOrFatigue * 2) {
                         tv_timer.setText((String.valueOf(formatter.format((double) GlobalSettings.fatigueTrialCollectionIntervalDuration))));
                         linkDH.fireTrialCollectorInstance(false);//eyesClosed
@@ -320,7 +347,7 @@ public class TrainingFragment_New extends Fragment {
             if (counter <= GlobalSettings.calibrationNumOfTrialsToPerformAlertOrFatigue * 2) {
                 hand.postDelayed(this, 100);
             } else {
-                isTrialInProgress = false;
+                finishTraining();
             }
         }
     }
