@@ -3,11 +3,11 @@ package com.fatigue.driver.app;
 public class GlobalSettings {
 
     public static final String APP_SETTINGS_FILENAME = "config.ini";
-    public static final int COLLECTION_INTERVAL_DURATION_ALERT_IN_SECONDS = 5;
-    public static final int COLLECTION_INTERVAL_DURATION_FATIGUE_IN_SECONDS = 3;
+    public static int COLLECTION_INTERVAL_DURATION_ALERT_IN_SECONDS = 5;
+    public static int COLLECTION_INTERVAL_DURATION_FATIGUE_IN_SECONDS = 3;
 
-    public static final int NUMBER_OF_RAW_PACKETS_TO_CONSUME_FOR_EACH_TRIAL_ALERT = 5;
-    public static final int NUMBER_OF_RAW_PACKETS_TO_CONSUME_FOR_EACH_TRIAL_FATIGUE = 3;
+    public static int NUMBER_OF_RAW_PACKETS_TO_CONSUME_FOR_EACH_TRIAL_ALERT = 5;
+    public static int NUMBER_OF_RAW_PACKETS_TO_CONSUME_FOR_EACH_TRIAL_FATIGUE = 3;
 
     public static String appRootFolderName = "DriverFatigue";
     public static String appLogFileName = "DriverFatigueApp.log";
@@ -56,11 +56,13 @@ public class GlobalSettings {
     public static int alertDelayTimeBetweenTrialCollections = 1;
     public static int fatigueDelayTimeBetweenTrialCollections = 1;
 
-    public static int calibrationNumOfTrialsToPerformTotal = 100; //TODO temp value
+    public static int calibrationNumOfTrialsToPerformTotal = 20; //TODO temp value
     //Set these the same... (above/2)
-    public static int calibrationNumOfTrialsToPerformAlert = 50; //TODO temp value
-    public static int calibrationNumOfTrialsToPerformFatigue = 50; //TODO temp value
-    public static int calibrationNumOfTrialsToPerformAlertOrFatigue = 50; //TODO temp value
+    public static int calibrationNumOfTrialsToPerformAlert = 10; //TODO temp value
+    public static int calibrationNumOfTrialsToPerformFatigue = 10; //TODO temp value
+    public static int calibrationNumOfTrialsToPerformAlertOrFatigue = 10; //TODO temp value
+
+
 
     public static void setTrialCount(int count){
         calibrationNumOfTrialsToPerformTotal = count;
@@ -71,11 +73,13 @@ public class GlobalSettings {
         alertDelayTimeBetweenTrialCollections = fatigueDelayTimeBetweenTrialCollections = dur;
     }
     public static void setAlertDuration(int dur){
-        alertTrialCollectionIntervalDuration = dur;
+        alertTrialCollectionIntervalDuration = COLLECTION_INTERVAL_DURATION_ALERT_IN_SECONDS = NUMBER_OF_RAW_PACKETS_TO_CONSUME_FOR_EACH_TRIAL_ALERT = dur;
     }
     public static void setFatigueDuration(int dur){
-        fatigueTrialCollectionIntervalDuration = dur;
+        fatigueTrialCollectionIntervalDuration = COLLECTION_INTERVAL_DURATION_FATIGUE_IN_SECONDS = NUMBER_OF_RAW_PACKETS_TO_CONSUME_FOR_EACH_TRIAL_FATIGUE = dur;
     }
+
+
 
     public static int numOfFeatures = 7; //TODO smarter implementation of this
 

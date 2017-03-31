@@ -95,6 +95,9 @@ public class LinkDetectedHandler_New extends Handler {
         featuresNormalized2DArrayFatigued= new double[GlobalSettings.calibrationNumOfTrialsToPerformFatigue][GlobalSettings.numOfFeatures];
         featuresNormalizedWithClassifierAtIndexZero2DArrayAlert=new double[featuresNormalized2DArrayAlert.length][GlobalSettings.numOfFeatures+1];
         featuresNormalizedWithClassifierAtIndexZero2DArrayFatigued =new double[featuresNormalized2DArrayFatigued.length][GlobalSettings.numOfFeatures+1];
+
+        magnitude2DArraySingleTrialAlert = new double[(int)GlobalSettings.COLLECTION_INTERVAL_DURATION_ALERT_IN_SECONDS][GlobalSettings.samplingSizeInterval];
+        magnitude2DArraySingleTrialFatigue = new double[(int)GlobalSettings.COLLECTION_INTERVAL_DURATION_FATIGUE_IN_SECONDS][GlobalSettings.samplingSizeInterval];
     }
 
     //double[][] featuresPriorToNormalization2DArray = new double[GlobalSettings.calibrationNumOfTrialsToPerformAlertOrFatigue][GlobalSettings.numOfFeatures];
@@ -240,8 +243,9 @@ public class LinkDetectedHandler_New extends Handler {
             logPacket(rawPacketArray, rawBufferedOutputStream);
         }
 
-        if (isRawDataProcessingRequested) {
 
+
+        if (isRawDataProcessingRequested) {
             rawNormalizedArray = Util.normalizeRawArray(rawPacketArray); //jsnieves:COMMENT: Normalize to remove DC component?? TODO check with Caleb
             rawComplexArray = Util.makeComplexArray(rawNormalizedArray); //jsnieves:COMMENT: Create Complex array
             fftComplexArrayResults = FFT.fft(rawComplexArray);  //jsnieves:COMMENT: Calc FFT ComplexArray
@@ -256,13 +260,12 @@ public class LinkDetectedHandler_New extends Handler {
             }
 
             totalNumOfSinglePacketInstancesObservedCounter++; //jsnieves:COMMENT: 1 second of data
-
         }
 
-        //if(isAppLoggingEvents){} !!!!!! (jsnieves:COMMENT)
+
+
 
         if(isProcessedRawDataToBeTransformedAsFeaturesForEval && loadedEvalModel!=null){
-
             evalFeaturesWithClassifierAtIndexZero[0] = isEvalEyesOpenAlert ? GlobalSettings.EYES_OPEN : GlobalSettings.EYES_CLOSED;
             evalFeatures = Util.groupMagnitudesBandwidth(magnitudesArray);
             System.arraycopy(evalFeatures, 0, evalFeaturesWithClassifierAtIndexZero, 1, evalFeaturesWithClassifierAtIndexZero.length-1);
@@ -276,7 +279,6 @@ public class LinkDetectedHandler_New extends Handler {
             }
 
         } else if (isProcessedRawDataToBeTransformedAsTrainingData) {
-
             if (trialBuilderNumOfSinglePacketInstancesConsumedCounter < (isTrialEyesOpenAlert ? GlobalSettings.NUMBER_OF_RAW_PACKETS_TO_CONSUME_FOR_EACH_TRIAL_ALERT : GlobalSettings.NUMBER_OF_RAW_PACKETS_TO_CONSUME_FOR_EACH_TRIAL_FATIGUE)) {
                 //jsnieves:COMMENT: continue collection
                 //make generic here, look at later (re check)
@@ -744,32 +746,41 @@ public class LinkDetectedHandler_New extends Handler {
 
     }
 
-    public void fireTrialCollectorInstance ( boolean eyesOpen){
 
-        //if(!isTrialCurrentlyInProgress){}//TODO keep
+
+    public void fireTrialCollectorInstance ( boolean eyesOpen){
         count=0;
         logAppEvent("ACTUAL trial instance fired off");
         isTrialCollectionSimulated = false;
         trialBuilderNumOfSinglePacketInstancesConsumedCounter = 0;
         isTrialEyesOpenAlert = eyesOpen;
         isProcessedRawDataToBeTransformedAsTrainingData=true;
-
-        //numOfSimulatedTrialsObservedCounter=0;
-        //numOfActualTrialsCollectedGivenCurrentClassifierCounter =0; //ensure we are gathering data from here on out, not averaging e.g. the last 3 seconds of baseline with 1 second where the user was following instructions
     }
 
-
     public void fireTrialCollectorInitializer() {
-
         numOfActualTrialsCollectedGivenCurrentClassifierCounter = 0; //ensure we are gathering data from here on out and not just averaging (i.e. -- e.g. the last 3 seconds of baseline with 1 second where the user was following instructions)
         trialBuilderNumOfSinglePacketInstancesConsumedCounter = 0;
         numOfActualAlertTrialsCollected=0;
         numOfActualFatigueTrialsCollected=0;
-
-        //isTrialEyesOpenAlert= eyesOpen;
-        //isTrialCollectionSimulated=true;
-        //numOfSimulatedTrialsObservedCounter = 0;
     }
+
+    public void stopTrialCollector(){
+        count=0;
+        isTrialCollectionSimulated = true;
+        numOfActualAlertTrialsCollected=0;
+        numOfActualFatigueTrialsCollected=0;
+        numOfActualTrialsCollectedGivenCurrentClassifierCounter = 0;
+        trialBuilderNumOfSinglePacketInstancesConsumedCounter = 0;
+    }
+
+    public void resetTrialCollector(){
+        magnitude2DArraySingleTrialAlert = new double[(int)GlobalSettings.COLLECTION_INTERVAL_DURATION_ALERT_IN_SECONDS][GlobalSettings.samplingSizeInterval];
+        magnitude2DArraySingleTrialFatigue = new double[(int)GlobalSettings.COLLECTION_INTERVAL_DURATION_FATIGUE_IN_SECONDS][GlobalSettings.samplingSizeInterval];
+    }
+
+
+
+
 
     public void fireContinuousEvalTesting (boolean eyesOpen) {
         //To measure app detection response time

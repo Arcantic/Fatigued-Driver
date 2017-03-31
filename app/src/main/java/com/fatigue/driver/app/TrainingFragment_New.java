@@ -122,7 +122,7 @@ public class TrainingFragment_New extends Fragment {
     public void cancelTest(){
         hand.removeCallbacks(tRunnable);
         hand = new Handler();
-        deleteTrainingResults();
+        resetTrainingCollector();
 
         isTrialInProgress = false;
         isStartOfTransitionPeriod = false;
@@ -268,8 +268,10 @@ public class TrainingFragment_New extends Fragment {
         edit_count.setEnabled(true);
     }
 
-    public void deleteTrainingResults(){
-
+    public void resetTrainingCollector(){
+        System.out.println("Stopping Trial Collection");
+        linkDH.stopTrialCollector();
+        linkDH.resetTrialCollector();
     }
 
 
