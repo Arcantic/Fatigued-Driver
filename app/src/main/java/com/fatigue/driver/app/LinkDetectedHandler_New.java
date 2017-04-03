@@ -346,8 +346,8 @@ public class LinkDetectedHandler_New extends Handler {
                             featuresNormalized2DArrayAlert = Util.normalizeFeaturesWithBound(featuresPriorToNormalization2DArrayAlert);
                             featuresNormalized2DArrayFatigued = Util.normalizeFeaturesWithBound(featuresPriorToNormalization2DArrayFatigue);
 
-                            //featuresNormalized2DArrayAlert = featuresPriorToNormalization2DArrayAlert; //TODO normalization
-                            //featuresNormalized2DArrayFatigued = featuresPriorToNormalization2DArrayFatigue;
+                            featuresNormalized2DArrayAlert = featuresPriorToNormalization2DArrayAlert; //TODO normalization
+                            featuresNormalized2DArrayFatigued = featuresPriorToNormalization2DArrayFatigue;
 
                             //jsnieves:COMMENT: Conform Array to svm standard
                             for (int i = 0; i < featuresNormalizedWithClassifierAtIndexZero2DArrayAlert.length; i++) {
@@ -782,67 +782,40 @@ public class LinkDetectedHandler_New extends Handler {
 
 
 
-    public void fireContinuousEvalTesting (boolean eyesOpen) {
-        //To measure app detection response time
 
-        isProcessedRawDataToBeTransformedAsFeaturesForEval=true;
-        isProcessedRawDataToBeTransformedAsFeaturesForContinuousEval=true;
 
-    }
-
-    public void stopEvalTesting (boolean eyesOpen) {
-
-        isProcessedRawDataToBeTransformedAsFeaturesForEval=false;
-
-        isTrialCollectionSimulated=true; //? TODO check
-
-    }
 
     public void fireEvalTestingInstance (boolean eyesOpen) {
-
         isEvalEyesOpenAlert=eyesOpen;
 
         count=0;
         isProcessedRawDataToBeTransformedAsFeaturesForEval=true;
         isProcessedRawDataToBeTransformedAsFeaturesForContinuousEval=true; //TODO remove
-
     }
 
     public void fireEvalInitializer () {
-
 //TODO fix below
-
         evalFeatures = new double[magnitudesArray.length+1];
-
         svmEvaluator = new SVMEvaluator();
-
         try {
-
-            //FileReader fIn = new FileReader(GlobalSettings.svmModelFileName);
-            //BufferedReader bufferedReader = new BufferedReader(fIn);
-
-
             BufferedReader bufferedReaderInputModel = new BufferedReader(new FileReader(currentUserEvaluationDir.getPath() +File.separator+ GlobalSettings.svmModelFileName));
             //        svm_model loadedEvalModel = svm.svm_load_model(currentUserEvaluationDir.getPath() + GlobalSettings.svmModelFileName);
             loadedEvalModel = svm.svm_load_model(bufferedReaderInputModel);
-
-
         } catch (IOException ex){
             ex.printStackTrace();
             showToast("FILE NOT FOUND", Toast.LENGTH_SHORT);
             System.out.println("Training Model Not Loaded");
         }
-
-/*
-        numOfActualTrialsCollectedGivenCurrentClassifierCounter = 0; //ensure we are gathering data from here on out and not just averaging (i.e. -- e.g. the last 3 seconds of baseline with 1 second where the user was following instructions)
-        trialBuilderNumOfSinglePacketInstancesConsumedCounter = 0;
-        numOfActualAlertTrialsCollected=0;
-        numOfActualFatigueTrialsCollected=0;
-*/
-        //isTrialEyesOpenAlert= eyesOpen;
-        //isTrialCollectionSimulated=true;
-        //numOfSimulatedTrialsObservedCounter = 0;
     }
+
+    public void stopEvalTesting(){
+        count=0;
+        isTrialCollectionSimulated = true;
+        isProcessedRawDataToBeTransformedAsFeaturesForEval = false;
+        isProcessedRawDataToBeTransformedAsFeaturesForContinuousEval=false;
+    }
+
+
 
     public void setIsTrialCollectionSimulated (boolean b){
         isTrialCollectionSimulated = b;

@@ -104,21 +104,23 @@ public class EvaluationFragment_New extends Fragment {
 
             @Override
             public void onClick(View arg0) {
-                if(!isTrialInProgress && linkDH.isConnected){
-                    tv_timer.setText("0.0");
+                if (linkDH != null) {
+                    if (!isTrialInProgress && linkDH.isConnected) {
+                        tv_timer.setText("0.0");
 
-                    linkDH.fireEvalInitializer();
-                    tRunnable = new EvaluationFragment_New.TimerRunnable();
-                    isTrialInProgress=true;
+                        linkDH.fireEvalInitializer();
+                        tRunnable = new EvaluationFragment_New.TimerRunnable();
+                        isTrialInProgress = true;
 
-                    hand.post(tRunnable);
-                    btn_startPauseResume.setText("Stop");
+                        hand.post(tRunnable);
+                        btn_startPauseResume.setText("Stop");
 
-                    disableSettings();
-                }else if(!isTrialInProgress && !linkDH.isConnected){
-                    Toast.makeText(getActivity().getApplicationContext(), "Not Connected", Toast.LENGTH_LONG).show();
-                }else{
-                    cancelTest();
+                        disableSettings();
+                    } else if (!isTrialInProgress && !linkDH.isConnected) {
+                        Toast.makeText(getActivity().getApplicationContext(), "Not Connected", Toast.LENGTH_LONG).show();
+                    } else {
+                        cancelTest();
+                    }
                 }
             }
         });
@@ -128,7 +130,7 @@ public class EvaluationFragment_New extends Fragment {
     public void cancelTest(){
         hand.removeCallbacks(tRunnable);
         hand = new Handler();
-        deleteEvalResults();
+        linkDH.stopEvalTesting();
 
         isTrialInProgress = false;
         isStartOfTransitionPeriod = false;
@@ -137,6 +139,8 @@ public class EvaluationFragment_New extends Fragment {
         tv_instruction.setText("Evaluation Not Running");
         tv_timer.setText("");
         count_left.setText("");
+        evaluation_prev_command.setText("");
+        evaluation_prev_classification.setText("");
         enableSettings();
         Toast.makeText(getActivity().getApplicationContext(), "Evaluation Canceled", Toast.LENGTH_SHORT).show();
     }
@@ -145,6 +149,7 @@ public class EvaluationFragment_New extends Fragment {
     public void finishTraining(){
         hand.removeCallbacks(tRunnable);
         hand = new Handler();
+        linkDH.stopEvalTesting();
 
         isTrialInProgress = false;
         isStartOfTransitionPeriod = false;
@@ -153,6 +158,8 @@ public class EvaluationFragment_New extends Fragment {
         tv_instruction.setText("Evaluation Not Running");
         tv_timer.setText("");
         count_left.setText("");
+        evaluation_prev_command.setText("");
+        evaluation_prev_classification.setText("");
         enableSettings();
         Toast.makeText(getActivity().getApplicationContext(), "Evaluation Complete!", Toast.LENGTH_LONG).show();
 
@@ -274,10 +281,6 @@ public class EvaluationFragment_New extends Fragment {
         edit_count.setEnabled(true);
     }
 
-    public void deleteEvalResults(){
-
-    }
-
 
     public void playCompletionSound(){
         try {
@@ -290,7 +293,7 @@ public class EvaluationFragment_New extends Fragment {
 
     public class TimerRunnable implements Runnable {
 
-        double timeRemaining;
+        double timeRemaining, timeInitial;
         DecimalFormat formatter = new DecimalFormat("#0.0");
         int counter = 0;
 
@@ -302,12 +305,21 @@ public class EvaluationFragment_New extends Fragment {
             timeRemaining = Double.parseDouble(tv_timer.getText().toString());
             timeRemaining -= 0.1;
 
-            if (timeRemaining >= 0.0) {
+            if (timeRemaining > 0.0) {
                 tv_timer.setText((String.valueOf(formatter.format(timeRemaining))));
+                if(counter > 0 && timeRemaining < timeInitial-1.0) {
+                    evaluation_prev_command.setText("Last Command: " + getLastCommandActive());
+                    if (SVMEvaluator.lastCommandCorrect)
+                        evaluation_prev_classification.setText("Last Classification: " + getLastCommandActive());
+                    else
+                        evaluation_prev_classification.setText("Last Classification: " + getLastCommandActiveOpposite());
+                }
             } else {
                 isStartOfTransitionPeriod = !isStartOfTransitionPeriod; //flip
 
                 if (isStartOfTransitionPeriod) {
+                    //Stop evaluation during transition period
+                    linkDH.stopEvalTesting();
                     //Generate the next command (random)
                     generateNextCommand();
                     if (counter < GlobalSettings.calibrationNumOfTrialsToPerformAlertOrFatigue * 2) {
@@ -321,8 +333,10 @@ public class EvaluationFragment_New extends Fragment {
                 } else {
                     counter++;
 
+                    prev_command = next_command;
                     if (counter <= GlobalSettings.calibrationNumOfTrialsToPerformAlertOrFatigue * 2) {
                         tv_timer.setText((String.valueOf(formatter.format((double) getNextCommandDuration()))));
+                        timeInitial = Double.parseDouble(tv_timer.getText().toString());
                         linkDH.fireEvalTestingInstance(getNextCommandBoolean());
                         tv_instruction.setText(getNextCommandActive());
                     } else {
@@ -368,6 +382,19 @@ public class EvaluationFragment_New extends Fragment {
         if(next_command == BOOLEAN_EYES_OPEN)
             return GlobalSettings.alertTrialCollectionIntervalDuration;
         else return GlobalSettings.fatigueTrialCollectionIntervalDuration;
+    }
+
+
+    public boolean prev_command;
+    public String getLastCommandActive(){
+        if(prev_command == BOOLEAN_EYES_OPEN)
+            return "Open eyes";
+        else return "Close eyes";
+    }
+    public String getLastCommandActiveOpposite(){
+        if(prev_command == BOOLEAN_EYES_OPEN)
+            return "Close eyes";
+        else return "Open eyes";
     }
 
 

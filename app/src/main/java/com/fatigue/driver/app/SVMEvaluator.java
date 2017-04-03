@@ -16,6 +16,9 @@ public class SVMEvaluator {
     double correct=0;
     boolean isAccuracyToBeCalculated=true;
 
+    public static boolean lastCommandCorrect;
+    public static double accuracy;
+
     public double evaluate(double[] features, svm_model model)
     {
         svm_node[] nodes = new svm_node[features.length-1];
@@ -42,10 +45,13 @@ public class SVMEvaluator {
         if(isAccuracyToBeCalculated){
             if (features[0]==v){
                 correct++;
-            }
+                lastCommandCorrect = true;
+            }else lastCommandCorrect = false;
         }
         total++;
-            System.out.println("(Actual:" + features[0] + " Prediction:" + v + ")(Accuracy: " + correct/total +")");
+        System.out.println("(Actual:" + features[0] + " Prediction:" + v + ")(Accuracy: " + correct/total +")");
+
+        accuracy = (correct/total)*100;
 
         return v;
     }

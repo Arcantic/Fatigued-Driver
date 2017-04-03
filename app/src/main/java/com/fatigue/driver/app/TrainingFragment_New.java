@@ -95,25 +95,27 @@ public class TrainingFragment_New extends Fragment {
 
             @Override
             public void onClick(View arg0) {
-                if(!isTrialInProgress && linkDH.isConnected){
-                    tv_timer.setText("0.0");
-                    roundUpCount();
+                if(linkDH != null) {
+                    if (!isTrialInProgress && linkDH.isConnected) {
+                        tv_timer.setText("0.0");
+                        roundUpCount();
 
-                    //Reset the logging locations at trial start.
-                    linkDH.initLogCreate();
+                        //Reset the logging locations at trial start.
+                        linkDH.initLogCreate();
 
-                    linkDH.fireTrialCollectorInitializer();
-                    tRunnable = new TimerRunnable();
-                    isTrialInProgress=true;
+                        linkDH.fireTrialCollectorInitializer();
+                        tRunnable = new TimerRunnable();
+                        isTrialInProgress = true;
 
-                    hand.post(tRunnable);
-                    btn_startPauseResume.setText("Stop");
+                        hand.post(tRunnable);
+                        btn_startPauseResume.setText("Stop");
 
-                    disableSettings();
-                }else if(!isTrialInProgress && !linkDH.isConnected){
-                    Toast.makeText(getActivity().getApplicationContext(), "Not Connected", Toast.LENGTH_LONG).show();
-                }else{
-                    cancelTest();
+                        disableSettings();
+                    } else if (!isTrialInProgress && !linkDH.isConnected) {
+                        Toast.makeText(getActivity().getApplicationContext(), "Not Connected", Toast.LENGTH_LONG).show();
+                    } else {
+                        cancelTest();
+                    }
                 }
             }
         });
