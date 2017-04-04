@@ -7,7 +7,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -18,18 +17,22 @@ import com.neurosky.connection.DataType.MindDataType;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import libsvm.svm;
 import libsvm.svm_model;
 
-
 public class LinkDetectedHandler_New extends Handler {
-    private static final String TAG = LinkDetectedHandler_New.class.getSimpleName();
 
+    private static final String TAG = LinkDetectedHandler_New.class.getSimpleName();
+    public String saved_time = "";
     Context context;
     int count;
     int trialBuilderNumOfSinglePacketInstancesConsumedCounter;
@@ -47,7 +50,8 @@ public class LinkDetectedHandler_New extends Handler {
     double[] doubleLogArray;
     double[][] magnitude2DArraySingleTrialAlert = new double[(int)GlobalSettings.COLLECTION_INTERVAL_DURATION_ALERT_IN_SECONDS][GlobalSettings.samplingSizeInterval];
     double[][] magnitude2DArraySingleTrialFatigue = new double[(int)GlobalSettings.COLLECTION_INTERVAL_DURATION_FATIGUE_IN_SECONDS][GlobalSettings.samplingSizeInterval];
-    double[] magnitudesArray = new double[GlobalSettings.samplingSizeInterval];
+    double[] magnitudesArray = new double[GlobalSettings.samplingSizeInterval]; //remove
+    double[] magnitudeArray = new double[GlobalSettings.samplingSizeInterval];
     double[] magnitudesCollectedOverTimeForASingleTrialAveragedArray = new double[GlobalSettings.samplingSizeInterval];
     double[] featureValuesOfSingleTrialArray;
     double[][] featuresPriorToNormalization2DArrayAlert = new double[GlobalSettings.calibrationNumOfTrialsToPerformAlert][GlobalSettings.numOfFeatures];
@@ -56,9 +60,11 @@ public class LinkDetectedHandler_New extends Handler {
     double[][] featuresNormalized2DArrayFatigued= new double[GlobalSettings.calibrationNumOfTrialsToPerformFatigue][GlobalSettings.numOfFeatures];
     double[][] featuresNormalizedWithClassifierAtIndexZero2DArrayAlert=new double[featuresNormalized2DArrayAlert.length][GlobalSettings.numOfFeatures+1];
     double[][] featuresNormalizedWithClassifierAtIndexZero2DArrayFatigued =new double[featuresNormalized2DArrayFatigued.length][GlobalSettings.numOfFeatures+1];
+    double[] evalFeaturesNormalized = new double[GlobalSettings.numOfFeatures];
+    double[] minTrainingData=new double[GlobalSettings.numOfFeatures];
+    double[] maxTrainingData=new double[GlobalSettings.numOfFeatures];
     boolean isRawDataLoggingEnabled;
     boolean isProcessedRawDataLoggingEnabled;
-    boolean isProcessedRawDataToBeTransformedAsTrainingData;
     boolean isRecordingRawNormData; //TODO cleanup unused variables
     boolean isCalcFFT;
     boolean isCalcMagnitude;
@@ -78,31 +84,26 @@ public class LinkDetectedHandler_New extends Handler {
     boolean isProcessedRawDataToBeTransformedAsFeaturesForEval;
     boolean isProcessedRawDataToBeTransformedAsFeaturesForContinuousEval;
     boolean isEvalEyesOpenAlert;
+    boolean isProcessedRawDataToBeTransformedAsTrainingData=true;
     svm_model loadedEvalModel;
     boolean isConnected;
     TextView logOut;
+    ScrollView sv_Log;
     SVMEvaluator svmEvaluator;
     double[] evalFeatures=new double[GlobalSettings.numOfFeatures];
     double[] evalFeaturesWithClassifierAtIndexZero=new double[GlobalSettings.numOfFeatures+1];
+    File currentUsersMinMaxDataFile=null;
+    String time = Util.currentMinuteTimestampAsString();
+    String date = Util.currentMonthDateUnderscoreFormat();
+    String featuresTrainingDataMinMaxLogFileName = time + "_" + GlobalSettings.featuresMinMaxLogFileName;
+    View rootView;
+    File modelLogFileEvalCopy;
+    Runnable scrollLogView;
+    MindwaveHelperFragment mwHelper;
+    private File sdCard;
     private File appDir;
     private File usersDir;
-    private File currentUserDir; //User.user_name;
-
-    public void updateTrialCount(){
-        featuresPriorToNormalization2DArrayAlert = new double[GlobalSettings.calibrationNumOfTrialsToPerformAlert][GlobalSettings.numOfFeatures];
-        featuresPriorToNormalization2DArrayFatigue = new double[GlobalSettings.calibrationNumOfTrialsToPerformFatigue][GlobalSettings.numOfFeatures];
-        featuresNormalized2DArrayAlert= new double[GlobalSettings.calibrationNumOfTrialsToPerformAlert][GlobalSettings.numOfFeatures];
-        featuresNormalized2DArrayFatigued= new double[GlobalSettings.calibrationNumOfTrialsToPerformFatigue][GlobalSettings.numOfFeatures];
-        featuresNormalizedWithClassifierAtIndexZero2DArrayAlert=new double[featuresNormalized2DArrayAlert.length][GlobalSettings.numOfFeatures+1];
-        featuresNormalizedWithClassifierAtIndexZero2DArrayFatigued =new double[featuresNormalized2DArrayFatigued.length][GlobalSettings.numOfFeatures+1];
-
-        magnitude2DArraySingleTrialAlert = new double[(int)GlobalSettings.COLLECTION_INTERVAL_DURATION_ALERT_IN_SECONDS][GlobalSettings.samplingSizeInterval];
-        magnitude2DArraySingleTrialFatigue = new double[(int)GlobalSettings.COLLECTION_INTERVAL_DURATION_FATIGUE_IN_SECONDS][GlobalSettings.samplingSizeInterval];
-    }
-
-    //double[][] featuresPriorToNormalization2DArray = new double[GlobalSettings.calibrationNumOfTrialsToPerformAlertOrFatigue][GlobalSettings.numOfFeatures];
-    //double[][] featuresAvgGroupedNorm2DArray= new double[GlobalSettings.calibrationNumOfTrialsToPerformTotal][GlobalSettings.numOfFeatures];
-    //double[][] allFeaturesAvgGroupedNorm2DArray= new double[GlobalSettings.calibrationNumOfTrialsToPerformTotal *2][GlobalSettings.numOfFeatures+1];
+    private File currentUserDir;
     private File currentUserTrainingDir;
     private File currentUserTestingDir;
     private File currentUserEvaluationDir;
@@ -118,6 +119,7 @@ public class LinkDetectedHandler_New extends Handler {
     private File bandPwrFeaturesLogFile;
     private File bandPwrFeaturesAvgLogFile;
     private File svmTrainingDataLogFile;
+    private File minMaxFeaturesTrainingDataLogFile;
     private BufferedOutputStream appLogBufferedOutputStream;
     private BufferedOutputStream rawBufferedOutputStream;
     private BufferedOutputStream magnitudeBufferedOutputStream;
@@ -127,11 +129,14 @@ public class LinkDetectedHandler_New extends Handler {
     private BufferedOutputStream fftComplexArrayResultsBufferedOutputStream;
     private BufferedOutputStream bandPwrFeaturesAvgLogFileNameBufferedOutputStream;
     private BufferedOutputStream bandPwrFeaturesLogFileNameBufferedOutputStream;
+    private BufferedOutputStream featuresTrainingDataMinMaxBufferedOutputStream;
     private BufferedOutputStream svmTrainingDataBufferedOutputStream;
     private StringBuilder rawNormalizedStringBuilder = new StringBuilder();
     private StringBuilder rawComplexStringbuilder = new StringBuilder();
     private StringBuilder fftStringBuilder = new StringBuilder();
     private StringBuilder magnitudesStringBuilder = new StringBuilder();
+    private LinearLayout wave_layout;
+    private DrawWaveView waveView;
 
     public LinkDetectedHandler_New(Context context){
         this.context = context;
@@ -170,6 +175,15 @@ public class LinkDetectedHandler_New extends Handler {
 
         rawDataDoublesArray = new double[GlobalSettings.samplingSizeInterval];
 
+
+        scrollLogView = new Runnable () {
+            @Override
+            public void run() {
+                sv_Log.smoothScrollTo(0, logOut.getBottom());
+            }
+        };
+
+
         initLogCreate();
         // was before rawDataDoublesArray
 
@@ -204,15 +218,14 @@ public class LinkDetectedHandler_New extends Handler {
                 rawDataDoublesArray[count] = (double) msg.arg1;
                 count++;
 
-                //WAVEVIEW
+                if (count >= GlobalSettings.samplingSizeInterval) {
+                    count = 0;
+                    processRawPacket(rawDataDoublesArray);
+                }
+                // WAVEVIEW
                 updateWaveView(msg.arg1);
                 //WAVEVIEW
 
-                if(count>=512){
-                    count=0;
-                    processRawPacket(rawDataDoublesArray);
-                    //send to logger(rawDataDoublesArray);
-                }
                 break;
 
             case MindDataType.CODE_EEGPOWER:
@@ -237,21 +250,17 @@ public class LinkDetectedHandler_New extends Handler {
 
     public void processRawPacket(final double[] rawPacketArray) {
 
-        //if(isDataLoggingEnabled){ //jsnieves:COMMENT: Our most likely scenario
-
         if (isRawDataLoggingEnabled) {
             logPacket(rawPacketArray, rawBufferedOutputStream);
         }
 
-
-
         if (isRawDataProcessingRequested) {
-            rawNormalizedArray = Util.normalizeRawArray(rawPacketArray); //jsnieves:COMMENT: Normalize to remove DC component?? TODO check with Caleb
+            rawNormalizedArray = Util.normalizeRawArray(rawPacketArray); //jsnieves:COMMENT: Normalize to remove DC component??
             rawComplexArray = Util.makeComplexArray(rawNormalizedArray); //jsnieves:COMMENT: Create Complex array
             fftComplexArrayResults = FFT.fft(rawComplexArray);  //jsnieves:COMMENT: Calc FFT ComplexArray
             magnitudesArray = Magnitude.mag(fftComplexArrayResults);  //jsnieves:COMMENT: Find Magnitude values
 
-            //Log results?
+            //Log results
             if (isProcessedRawDataLoggingEnabled) {
                 logPacket(rawNormalizedArray, rawNormBufferedOutputStream, rawNormalizedStringBuilder);
                 logPacket(rawComplexArray, rawComplexBufferedOutputStream, rawComplexStringbuilder);
@@ -262,32 +271,35 @@ public class LinkDetectedHandler_New extends Handler {
             totalNumOfSinglePacketInstancesObservedCounter++; //jsnieves:COMMENT: 1 second of data
         }
 
-
-
-
         if(isProcessedRawDataToBeTransformedAsFeaturesForEval && loadedEvalModel!=null){
-            evalFeaturesWithClassifierAtIndexZero[0] = isEvalEyesOpenAlert ? GlobalSettings.EYES_OPEN : GlobalSettings.EYES_CLOSED;
-            evalFeatures = Util.groupMagnitudesBandwidth(magnitudesArray);
-            System.arraycopy(evalFeatures, 0, evalFeaturesWithClassifierAtIndexZero, 1, evalFeaturesWithClassifierAtIndexZero.length-1);
 
-            if(loadedEvalModel!=null) {
-                svmEvaluator.evaluate(evalFeaturesWithClassifierAtIndexZero, loadedEvalModel);
+            evalFeatures = Util.groupMagnitudesByBandwidth(magnitudeArray);
+            evalFeaturesWithClassifierAtIndexZero[0] = isEvalEyesOpenAlert ? GlobalSettings.EYES_OPEN : GlobalSettings.EYES_CLOSED;
+
+
+            if (minTrainingData != null && maxTrainingData != null) {
+                evalFeaturesNormalized = Util.normalizeArrayWithKnownMinMax(evalFeatures, minTrainingData, maxTrainingData);
+                System.arraycopy(evalFeaturesNormalized, 0, evalFeaturesWithClassifierAtIndexZero, 1, evalFeaturesWithClassifierAtIndexZero.length - 1);
+
+            } else {
+                //process un normalized
+
+                System.arraycopy(evalFeatures, 0, evalFeaturesWithClassifierAtIndexZero, 1, evalFeaturesWithClassifierAtIndexZero.length - 1);
             }
 
-            if(!isProcessedRawDataToBeTransformedAsFeaturesForContinuousEval){
-                isProcessedRawDataToBeTransformedAsFeaturesForEval=false; //wait for next eval instance to be fired
+            if (loadedEvalModel != null) {
+                svmEvaluator.evaluate(evalFeaturesWithClassifierAtIndexZero, loadedEvalModel);
             }
 
         } else if (isProcessedRawDataToBeTransformedAsTrainingData) {
             if (trialBuilderNumOfSinglePacketInstancesConsumedCounter < (isTrialEyesOpenAlert ? GlobalSettings.NUMBER_OF_RAW_PACKETS_TO_CONSUME_FOR_EACH_TRIAL_ALERT : GlobalSettings.NUMBER_OF_RAW_PACKETS_TO_CONSUME_FOR_EACH_TRIAL_FATIGUE)) {
                 //jsnieves:COMMENT: continue collection
-                //make generic here, look at later (re check)
 
                 if (isTrialEyesOpenAlert) {
-                    magnitude2DArraySingleTrialAlert[trialBuilderNumOfSinglePacketInstancesConsumedCounter] = magnitudesArray; //rename ! to single trial Collector or something similar
+                    magnitude2DArraySingleTrialAlert[trialBuilderNumOfSinglePacketInstancesConsumedCounter] = magnitudesArray;
                     //System.out.println("Alert magnitudesArray test printout index 0: " + magnitudesArray[0]);
                 } else {
-                    magnitude2DArraySingleTrialFatigue[trialBuilderNumOfSinglePacketInstancesConsumedCounter] = magnitudesArray; //rename ! to single trial Collector or something similar
+                    magnitude2DArraySingleTrialFatigue[trialBuilderNumOfSinglePacketInstancesConsumedCounter] = magnitudesArray;
                     //System.out.println("Fatigue magnitudesArray test printout index 0: " + magnitudesArray[0]);
                 }
 
@@ -295,24 +307,19 @@ public class LinkDetectedHandler_New extends Handler {
                 logAppEvent((isTrialEyesOpenAlert ? "Alert" : "Fatigue")+" Mag. calc. (" + trialBuilderNumOfSinglePacketInstancesConsumedCounter + ") from pkt (#" + totalNumOfSinglePacketInstancesObservedCounter+")");
 
             } else {
-                //No no, process and log but do not add to 2DArray
-                //All trial instances have been collected here
-
-                //reset for next trial collection
                 trialBuilderNumOfSinglePacketInstancesConsumedCounter = 0;
 
                 if(isTrialEyesOpenAlert) {
-                    magnitudesCollectedOverTimeForASingleTrialAveragedArray = Util.calcDoubleArrayMean(magnitude2DArraySingleTrialAlert); //TOO recheck here, should we calc features first then average?
+                    magnitudesCollectedOverTimeForASingleTrialAveragedArray = Util.calcDoubleArrayMean(magnitude2DArraySingleTrialAlert);
                 }else {
                     magnitudesCollectedOverTimeForASingleTrialAveragedArray = Util.calcDoubleArrayMean(magnitude2DArraySingleTrialFatigue);
                 }
 
                 logPacket(magnitudesCollectedOverTimeForASingleTrialAveragedArray, magnitudeIntervalCollectionAveragedBOS);
 
-                featureValuesOfSingleTrialArray = Util.groupMagnitudesBandwidth(magnitudesCollectedOverTimeForASingleTrialAveragedArray); //COMMENT: "Don't hold me to that" -Caleb 2017 (printout)
+                featureValuesOfSingleTrialArray = Util.groupMagnitudesByBandwidth(magnitudesCollectedOverTimeForASingleTrialAveragedArray);
 
                 //logAppEvent("Trial instance [# " + numOfActualTrialsCollectedGivenCurrentClassifierCounter + "] magnitudesCollectedOverTimeForASingleTrialAveragedArray " + "LOGGED");
-                //!!!TODO: logPacket(featureValuesOfSingleTrialArray, XXXBOS);
                 //logAppEvent("Trial instance [# " + numOfActualTrialsCollectedGivenCurrentClassifierCounter + "] featureValuesOfSingleTrialArray " + "LOGGED");
 
                 if (isTrialCollectionSimulated) {
@@ -343,11 +350,22 @@ public class LinkDetectedHandler_New extends Handler {
 
                             //jsnieves:COMMENT: Normalize between 0 and 1 //TODO TEMP features not normalized
 
-                            featuresNormalized2DArrayAlert = Util.normalizeFeaturesWithBound(featuresPriorToNormalization2DArrayAlert);
-                            featuresNormalized2DArrayFatigued = Util.normalizeFeaturesWithBound(featuresPriorToNormalization2DArrayFatigue);
 
-                            featuresNormalized2DArrayAlert = featuresPriorToNormalization2DArrayAlert; //TODO normalization
-                            featuresNormalized2DArrayFatigued = featuresPriorToNormalization2DArrayFatigue;
+
+                            double[][] featuresPriorToNormalization2DArray_ALL = new double[featuresPriorToNormalization2DArrayAlert.length*2][featuresPriorToNormalization2DArrayAlert[0].length*2];
+                            double[][] featuresNormalized2DArray_ALL = new double[featuresPriorToNormalization2DArrayAlert.length*2][featuresPriorToNormalization2DArrayAlert[0].length*2];
+
+                            for (int i = 0; i < featuresNormalized2DArrayAlert.length; i++) {
+                                featuresPriorToNormalization2DArray_ALL[i] = featuresPriorToNormalization2DArrayAlert[i];
+                                featuresPriorToNormalization2DArray_ALL[i + featuresNormalized2DArrayAlert.length] = featuresPriorToNormalization2DArrayFatigue[i];
+                            }
+
+                            featuresNormalized2DArray_ALL = Util.normalizeFeaturesWithBound(featuresPriorToNormalization2DArray_ALL,minMaxFeaturesTrainingDataLogFile);
+
+                            for (int i = 0; i < featuresNormalized2DArrayAlert.length; i++) {
+                                featuresNormalized2DArrayAlert[i] = featuresNormalized2DArray_ALL[i];
+                                featuresNormalized2DArrayFatigued[i]= featuresNormalized2DArray_ALL[i+featuresNormalized2DArrayAlert.length];
+                            }
 
                             //jsnieves:COMMENT: Conform Array to svm standard
                             for (int i = 0; i < featuresNormalizedWithClassifierAtIndexZero2DArrayAlert.length; i++) {
@@ -364,32 +382,29 @@ public class LinkDetectedHandler_New extends Handler {
                             int aLen = featuresNormalizedWithClassifierAtIndexZero2DArrayAlert.length;
                             int fLen = featuresNormalizedWithClassifierAtIndexZero2DArrayFatigued.length;
 
-                            double[][] allFeaturesNormalized2DArray = new double[aLen + fLen][GlobalSettings.numOfFeatures + 1]; //jsnieves:COMMENT: FINALLL
+                            double[][] allFeaturesNormalized2DArray = new double[aLen + fLen][GlobalSettings.numOfFeatures + 1]; //jsnieves:COMMENT: FINAL
                             //jsnieves:COMMENT: need to shift by one index first
                             System.arraycopy(featuresNormalizedWithClassifierAtIndexZero2DArrayAlert, 0, allFeaturesNormalized2DArray, 0, aLen);
                             System.arraycopy(featuresNormalizedWithClassifierAtIndexZero2DArrayFatigued, 0, allFeaturesNormalized2DArray, aLen, fLen);
 
                             logSVMTrainingDataAll(allFeaturesNormalized2DArray, svmTrainingDataBufferedOutputStream);
 
-                            logAppEvent("All SVM training data stored");
+                            //logAppEvent("All SVM training data stored");
 
                         }
                     } else {
 
-                        logAppEvent("ERROR Here\n");
+                        //logAppEvent("ERROR Here\n");
                     }
                 }
             }
 
         } else if (GlobalSettings.isEvaluatingRealtimeData){
-            //can't be training and evaluating so else if used here
-            //if(isEvaluatingRealtimeData && svm_model!=null ...etc)
-
-            //TODO Eval coding
-            //reverse order of if block
 
         }
     }
+
+    //TODO:elim method
 
     public void logPacket ( final double[] doubleArray, final BufferedOutputStream bos){
         if(bos!=null){
@@ -419,8 +434,6 @@ public class LinkDetectedHandler_New extends Handler {
             }).start();
         }
     }
-
-    //TODO:elim method
 
     public synchronized void logPacket ( final Object array, final BufferedOutputStream bos, final StringBuilder stringBuilder){
         //jsnieves:COMMENT:array is either double[] or Complex[]
@@ -476,8 +489,6 @@ public class LinkDetectedHandler_New extends Handler {
 
                 try {
 
-                    //svmStringBuilder.append((isTrialEyesClosed ? 1 : 0) + " "); //"My b" -Jason (2017)
-
                     for (int i = 0; i < GlobalSettings.calibrationNumOfTrialsToPerformAlertOrFatigue * 2; i++) {
 
                         svmStringBuilderAll.append((int) svmFeatAvgGroupedNorm2DArray[i][0] + " ");
@@ -500,49 +511,33 @@ public class LinkDetectedHandler_New extends Handler {
                     bos.write(svmStringBuildCollector.getBytes());
                     bos.flush();
 
-                    isCalcTrialFeatures = false; //TODO remove
-                    // END of e.g. 100 trial collections and stored to svm_train
-                    //TODO organize
-                    //create model file
+                    isCalcTrialFeatures = false;
 
-                    double[][] trainingDataset;// = new double[GlobalSettings.calibrationNumOfTrialsToPerformAlertOrFatigue * 2][GlobalSettings.numOfFeatures + 1];
+                    double[][] trainingDataset;
                     trainingDataset = svmFeatAvgGroupedNorm2DArray;
 
                     svm_model model = SVMTrainer.createModel(trainingDataset); //TEMP TODO uncomment
 
+
                     String modelFileName = GlobalSettings.svmModelFileName;//SVM_MODEL.txt as of now
                     File modelLogFile = new File(currentUserTrainingDir.getPath(), modelFileName);
                     String modelLogFileString = modelLogFile.toString();
-
-
                     File modelLogFileEvalCopy = new File(currentUserEvaluationDir.getPath(), modelFileName);
-
-                    //try just building string here
-                    //jsnieves:COMMENT:save model to file
 
                     svm.svm_save_model(modelLogFileString, model); //TEMP TODO uncomment
                     svm.svm_save_model(modelLogFileEvalCopy.toString(), model); //TEMP TODO uncomment
 
 
-                    //copy to Evaluation folder too?
+                    //Save extras for loading later
+                    String modelFileName_backup = saved_time + "_Model.txt";
+                    File modelLogFile_backup = new File(currentUserTrainingDir.getPath(), modelFileName_backup);
+                    String modelLogFileString_backup = modelLogFile_backup.toString();
+                    File modelLogFileEvalCopy_backup = new File(currentUserEvaluationDir.getPath(), modelFileName_backup);
+
+                    svm.svm_save_model(modelLogFileString_backup, model);
+                    svm.svm_save_model(modelLogFileEvalCopy_backup.toString(), model);
 
                     logAppEvent("SVM model file Created!");
-
-                    /*int svCoefLength = model.sv_coef.length;
-                    for(int i=0;i<svCoefLength;i++){
-                        for(int j=0;j<model.l;j++) {
-                            System.out.println("model.sv_coef[" + i + "] : " + model.sv_coef[i][j]);
-                        }
-                    }*/
-
-                    /*double[][] trainingDataset = new double[GlobalSettings.calibrationNumOfTrialsToPerformTotal][GlobalSettings.numOfFeatures+1];
-                    for(int i =1;i<svmFeatAvgGroupedNorm2DArray.length;i++){
-                        trainingDataset[i][0]= isTrialEyesClosed ? 1:0;
-                        for(int j=1 ;j<= GlobalSettings.numOfFeatures;j++) {
-
-                            trainingDataset[i][j] = svmFeatAvgGroupedNorm2DArray[i][j-1];
-                        }
-                    }*/
 
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -570,7 +565,6 @@ public class LinkDetectedHandler_New extends Handler {
 
                 try {
 
-                    //svmStringBuilder.append((isTrialEyesClosed ? 1 : 0) + " "); //"My b" --Jason 2017
 
                     for (int i = 0; i < GlobalSettings.calibrationNumOfTrialsToPerformTotal; i++) {
 
@@ -589,12 +583,12 @@ public class LinkDetectedHandler_New extends Handler {
                     }
 
                     svmStringBuildCollector = svmStringBuilder.toString();
-                    svmStringBuilder.setLength(0); //clears this
+                    svmStringBuilder.setLength(0);
 
                     bos.write(svmStringBuildCollector.getBytes());
                     bos.flush();
 
-                    isCalcTrialFeatures = false; //END of e.g. 100 trial collections and stored to svm_train
+                    isCalcTrialFeatures = false;
 
                     //TODO organize
 
@@ -613,20 +607,11 @@ public class LinkDetectedHandler_New extends Handler {
                     String modelFileName = GlobalSettings.svmModelFileName;//SVM_MODEL.txt as of now
                     File modelLogFile = new File(currentUserTrainingDir.getPath(), modelFileName);
                     String modelLogFileString = modelLogFile.toString();
-                    //try just building string here
 
                     //jsnieves:COMMENT:save model to file
                     svm.svm_save_model(modelLogFileString, model);
-                    //copy to Evaluation folder too?
 
                     logAppEvent("SVM model file Created!");
-
-                    //int svCoefLength = model.sv_coef.length;
-                    //for(int i=0;i<svCoefLength;i++){
-
-                    //  for(int j=0;j<model.l;j++) {
-//                            System.out.println("model.sv_coef[" + i + "] : " + model.sv_coef[i][j]);
-//                        }                    }
 
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -636,8 +621,10 @@ public class LinkDetectedHandler_New extends Handler {
     }
 
     public void initLogCreate () {
-
-        final String time = Util.currentMinuteTimestampAsString();
+        Date date = new Date();
+        SimpleDateFormat ft = new SimpleDateFormat("yyyy_MM_dd-HH_mm_ss");
+        final String time = ft.format(date);
+        saved_time = time;
 
         String appLogFileName = GlobalSettings.appLogFileName;
         String rawFileName = time + "_" + GlobalSettings.rawLogFileName;
@@ -653,8 +640,8 @@ public class LinkDetectedHandler_New extends Handler {
         //new File(Environment.getExternalStorageDirectory() + "/DF/abc/");
 
         if (Util.isExternalStorageWritable()) {
-            appDir = Environment.getExternalStorageDirectory().getAbsoluteFile(); //TODO rename XX app rootDir XX environment dir path
-            appDir = new File(appDir + File.separator + GlobalSettings.getAppRootFolderName()); // + File.separator +folderDate
+            sdCard = Environment.getExternalStorageDirectory().getAbsoluteFile(); //TODO rename XX app rootDir XX environment dir path
+            appDir = new File(sdCard + File.separator + GlobalSettings.getAppRootFolderName()); // + File.separator +folderDate
 
             usersDir = new File(appDir + File.separator + "Users");
             //Util.deleteDir(usersDir); //temporary purge every time app is started
@@ -676,8 +663,11 @@ public class LinkDetectedHandler_New extends Handler {
             bandPwrFeaturesLogFile = new File(currentUserRawDirTimestamped.getPath(), bandPwrFeaturesLogFileName);
             bandPwrFeaturesAvgLogFile = new File(currentUserRawDirTimestamped.getPath(), bandPwrFeaturesAvgLogFileName);
             svmTrainingDataLogFile = new File(currentUserTrainingDir.getPath(), svmTrainingDataLogFileName);
+            minMaxFeaturesTrainingDataLogFile = new File(currentUserTrainingDir.getPath(), featuresTrainingDataMinMaxLogFileName);
 
-            if (!appDir.exists() || appDir.exists()) { //TODO temporary deletion
+
+
+            if (!appDir.exists() || appDir.exists()) {
 
                 //Util.deleteDir(usersDir); //temporary
 
@@ -727,6 +717,8 @@ public class LinkDetectedHandler_New extends Handler {
             bandPwrFeaturesLogFileNameBufferedOutputStream = new BufferedOutputStream(new FileOutputStream(fftComplexLogFile), 102400);
 
             svmTrainingDataBufferedOutputStream = new BufferedOutputStream(new FileOutputStream(svmTrainingDataLogFile), 102400);
+            featuresTrainingDataMinMaxBufferedOutputStream = new BufferedOutputStream(new FileOutputStream(minMaxFeaturesTrainingDataLogFile), 102400);
+
 
         } catch (FileNotFoundException ex) {
             //jsnieves:TODO:Handle this
@@ -758,6 +750,7 @@ public class LinkDetectedHandler_New extends Handler {
     }
 
     public void fireTrialCollectorInitializer() {
+        minMaxFeaturesTrainingDataLogFile = new File(currentUserTrainingDir.getPath(), featuresTrainingDataMinMaxLogFileName);
         numOfActualTrialsCollectedGivenCurrentClassifierCounter = 0; //ensure we are gathering data from here on out and not just averaging (i.e. -- e.g. the last 3 seconds of baseline with 1 second where the user was following instructions)
         trialBuilderNumOfSinglePacketInstancesConsumedCounter = 0;
         numOfActualAlertTrialsCollected=0;
@@ -778,12 +771,38 @@ public class LinkDetectedHandler_New extends Handler {
         magnitude2DArraySingleTrialFatigue = new double[(int)GlobalSettings.COLLECTION_INTERVAL_DURATION_FATIGUE_IN_SECONDS][GlobalSettings.samplingSizeInterval];
     }
 
+    public void initLoadMinMaxValues(){
 
+        StringBuffer datax = new StringBuffer("");
+        try {
+            currentUsersMinMaxDataFile = new File(currentUserTrainingDir + File.separator + time +"_"+ GlobalSettings.featuresMinMaxLogFileName);
 
+            FileInputStream fIn = new FileInputStream(currentUsersMinMaxDataFile);
+            //FileInputStream fIn = context.openFileInput( Environment.getExternalStorageDirectory().getAbsoluteFile().toString() + "/" + GlobalSettings.getAppRootFolderName() + "/" + "Users" + "/" + GlobalSettings.userName + "/" + "Evaluation" + "/" + GlobalSettings.featuresMinMaxLogFileName);
+            InputStreamReader isr = new InputStreamReader ( fIn ) ;
+            BufferedReader buffreader = new BufferedReader ( isr ) ;
+            int i=0;
+            double[] minMaxTrainingData=new double[GlobalSettings.numOfFeatures*2];
+            String readString = buffreader.readLine ( ) ;
+            while ( readString != null  && i < GlobalSettings.numOfFeatures*2) {
+                minMaxTrainingData[i]=Double.valueOf(readString);
+                i++;
+                datax.append(readString);
+                readString = buffreader.readLine ( );
+            }
 
+            isr.close ( );
 
+            //only for two-class
+            for(int j =0;j< GlobalSettings.numOfFeatures;j++){
+                minTrainingData[j]=minMaxTrainingData[j*2];
+                maxTrainingData[j]=minMaxTrainingData[(j*2)+1];
+            }
 
-
+        } catch ( IOException ioe ) {
+            ioe.printStackTrace ( ) ;
+        }
+    }
 
     public void fireEvalTestingInstance (boolean eyesOpen) {
         isEvalEyesOpenAlert=eyesOpen;
@@ -798,7 +817,7 @@ public class LinkDetectedHandler_New extends Handler {
         evalFeatures = new double[magnitudesArray.length+1];
         svmEvaluator = new SVMEvaluator();
         try {
-            BufferedReader bufferedReaderInputModel = new BufferedReader(new FileReader(currentUserEvaluationDir.getPath() +File.separator+ GlobalSettings.svmModelFileName));
+            BufferedReader bufferedReaderInputModel = new BufferedReader(new FileReader(currentUserEvaluationDir.getPath() + File.separator+ GlobalSettings.svmModelFileName));
             //        svm_model loadedEvalModel = svm.svm_load_model(currentUserEvaluationDir.getPath() + GlobalSettings.svmModelFileName);
             loadedEvalModel = svm.svm_load_model(bufferedReaderInputModel);
         } catch (IOException ex){
@@ -808,14 +827,25 @@ public class LinkDetectedHandler_New extends Handler {
         }
     }
 
+    public void updateTrialCount(){
+        featuresPriorToNormalization2DArrayAlert = new double[GlobalSettings.calibrationNumOfTrialsToPerformAlert][GlobalSettings.numOfFeatures];
+        featuresPriorToNormalization2DArrayFatigue = new double[GlobalSettings.calibrationNumOfTrialsToPerformFatigue][GlobalSettings.numOfFeatures];
+        featuresNormalized2DArrayAlert= new double[GlobalSettings.calibrationNumOfTrialsToPerformAlert][GlobalSettings.numOfFeatures];
+        featuresNormalized2DArrayFatigued= new double[GlobalSettings.calibrationNumOfTrialsToPerformFatigue][GlobalSettings.numOfFeatures];
+        featuresNormalizedWithClassifierAtIndexZero2DArrayAlert=new double[featuresNormalized2DArrayAlert.length][GlobalSettings.numOfFeatures+1];
+        featuresNormalizedWithClassifierAtIndexZero2DArrayFatigued =new double[featuresNormalized2DArrayFatigued.length][GlobalSettings.numOfFeatures+1];
+
+        magnitude2DArraySingleTrialAlert = new double[(int)GlobalSettings.COLLECTION_INTERVAL_DURATION_ALERT_IN_SECONDS][GlobalSettings.samplingSizeInterval];
+        magnitude2DArraySingleTrialFatigue = new double[(int)GlobalSettings.COLLECTION_INTERVAL_DURATION_FATIGUE_IN_SECONDS][GlobalSettings.samplingSizeInterval];
+    }
+
+
     public void stopEvalTesting(){
         count=0;
         isTrialCollectionSimulated = true;
         isProcessedRawDataToBeTransformedAsFeaturesForEval = false;
         isProcessedRawDataToBeTransformedAsFeaturesForContinuousEval=false;
     }
-
-
 
     public void setIsTrialCollectionSimulated (boolean b){
         isTrialCollectionSimulated = b;
