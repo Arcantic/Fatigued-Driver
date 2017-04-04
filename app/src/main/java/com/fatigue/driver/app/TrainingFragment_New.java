@@ -155,7 +155,17 @@ public class TrainingFragment_New extends Fragment {
     }
 
     public void launchResultsScreen(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Training Complete");
+        builder.setMessage("Training has completed successfully, and the model file has been generated as " + linkDH.saved_time + "_Model");
+        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.dismiss();
+            }
+        });
 
+        final AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     //Round up the count to an even number

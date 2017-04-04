@@ -1,5 +1,6 @@
 package com.fatigue.driver.app;
 
+import android.content.DialogInterface;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -146,7 +148,7 @@ public class EvaluationFragment_New extends Fragment {
     }
 
 
-    public void finishTraining(){
+    public void finishEvaluation(){
         hand.removeCallbacks(tRunnable);
         hand = new Handler();
         linkDH.stopEvalTesting();
@@ -166,8 +168,22 @@ public class EvaluationFragment_New extends Fragment {
         launchResultsScreen();
     }
 
-    public void launchResultsScreen(){
 
+
+    public void launchResultsScreen(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Evaluation Complete");
+        builder.setMessage("x " + "alert trials were performed."
+                + System.lineSeparator() + "y " + "fatigue trials were performed."
+                + System.lineSeparator() + "Overall accuracy: " + Math.round(SVMEvaluator.accuracy  * 100.0) / 100.0 + "%");
+        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.dismiss();
+            }
+        });
+
+        final AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
 
@@ -348,7 +364,7 @@ public class EvaluationFragment_New extends Fragment {
             if (counter <= GlobalSettings.calibrationNumOfTrialsToPerformAlertOrFatigue * 2) {
                 hand.postDelayed(this, 100);
             } else {
-                finishTraining();
+                finishEvaluation();
             }
         }
     }

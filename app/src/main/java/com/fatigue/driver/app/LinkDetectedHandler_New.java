@@ -22,6 +22,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import libsvm.svm;
 import libsvm.svm_model;
@@ -510,18 +512,25 @@ public class LinkDetectedHandler_New extends Handler {
 
                     svm_model model = SVMTrainer.createModel(trainingDataset); //TEMP TODO uncomment
 
+
                     String modelFileName = GlobalSettings.svmModelFileName;//SVM_MODEL.txt as of now
                     File modelLogFile = new File(currentUserTrainingDir.getPath(), modelFileName);
                     String modelLogFileString = modelLogFile.toString();
-
-
                     File modelLogFileEvalCopy = new File(currentUserEvaluationDir.getPath(), modelFileName);
-
-                    //try just building string here
-                    //jsnieves:COMMENT:save model to file
 
                     svm.svm_save_model(modelLogFileString, model); //TEMP TODO uncomment
                     svm.svm_save_model(modelLogFileEvalCopy.toString(), model); //TEMP TODO uncomment
+
+
+                    //Save extras for loading later
+                    String modelFileName_backup = saved_time + "_Model.txt";
+                    File modelLogFile_backup = new File(currentUserTrainingDir.getPath(), modelFileName_backup);
+                    String modelLogFileString_backup = modelLogFile_backup.toString();
+                    File modelLogFileEvalCopy_backup = new File(currentUserEvaluationDir.getPath(), modelFileName_backup);
+
+                    svm.svm_save_model(modelLogFileString_backup, model);
+                    svm.svm_save_model(modelLogFileEvalCopy_backup.toString(), model);
+
 
 
                     //copy to Evaluation folder too?
@@ -635,9 +644,12 @@ public class LinkDetectedHandler_New extends Handler {
         }).start();
     }
 
+    public String saved_time = "";
     public void initLogCreate () {
-
-        final String time = Util.currentMinuteTimestampAsString();
+        Date date = new Date();
+        SimpleDateFormat ft = new SimpleDateFormat("yyyy_MM_dd-HH_mm_ss");
+        final String time = ft.format(date);
+        saved_time = time;
 
         String appLogFileName = GlobalSettings.appLogFileName;
         String rawFileName = time + "_" + GlobalSettings.rawLogFileName;
