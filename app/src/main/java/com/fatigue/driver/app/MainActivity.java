@@ -2,6 +2,8 @@ package com.fatigue.driver.app; /*
  |  CREATED on 10/27/16.
 */
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -11,9 +13,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -33,6 +38,12 @@ import android.widget.AdapterView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileReader;
+import java.io.IOError;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,6 +91,7 @@ public class MainActivity extends AppCompatActivity
         //If a user has been selected, then load the MainFragment.
         //else, load the UserSelect fragment.
         loadMainFragment();
+        loadDefaultModelFile();
 
 
         //Check for Bluetooth Connection
@@ -109,6 +121,34 @@ public class MainActivity extends AppCompatActivity
             Fragment fragment = new MainFragment();
             fragmentTransaction.replace(R.id.content_frame, fragment);
             fragmentTransaction.commit();
+        }
+    }
+
+    public void loadDefaultModelFile(){
+        try {
+            File appDir = Environment.getExternalStorageDirectory().getAbsoluteFile();
+            appDir = new File(appDir + File.separator + GlobalSettings.getAppRootFolderName());
+            File fl = new File(appDir + File.separator + "Users" + File.separator + GlobalSettings.userName + File.separator + "Evaluation");
+
+            File[] files = fl.listFiles(new FileFilter() {
+                public boolean accept(File file) {
+                    return file.isFile();
+                }
+            });
+            long lastMod = Long.MIN_VALUE;
+            File choice = null;
+            for (File file : files) {
+                if (file.lastModified() > lastMod) {
+                    choice = file;
+                    lastMod = file.lastModified();
+                }
+            }
+
+            GlobalSettings.svmModelFileName = choice.getName();
+            System.out.println("MODEL NAME = " + choice.getName());
+        } catch (Exception ex){
+            System.out.println("Could not find model");
+            ex.printStackTrace();
         }
     }
 
