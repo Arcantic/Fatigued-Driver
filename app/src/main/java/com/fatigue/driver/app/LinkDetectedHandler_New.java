@@ -95,7 +95,7 @@ public class LinkDetectedHandler_New extends Handler {
     File currentUsersMinMaxDataFile=null;
     String time = Util.currentMinuteTimestampAsString();
     String date = Util.currentMonthDateUnderscoreFormat();
-    String featuresTrainingDataMinMaxLogFileName = time + "_" + GlobalSettings.featuresMinMaxLogFileName;
+    String featuresTrainingDataMinMaxLogFileName = GlobalSettings.featuresMinMaxLogFileName;
     View rootView;
     File modelLogFileEvalCopy;
     Runnable scrollLogView;
@@ -775,23 +775,32 @@ public class LinkDetectedHandler_New extends Handler {
 
         StringBuffer datax = new StringBuffer("");
         try {
-            currentUsersMinMaxDataFile = new File(currentUserTrainingDir + File.separator + time +"_"+ GlobalSettings.featuresMinMaxLogFileName);
 
+            System.out.println("LOADING FILE");
+            currentUsersMinMaxDataFile = new File(currentUserTrainingDir + File.separator + GlobalSettings.featuresMinMaxLogFileName);
+
+            currentUsersMinMaxDataFile.setReadOnly();
             FileInputStream fIn = new FileInputStream(currentUsersMinMaxDataFile);
             //FileInputStream fIn = context.openFileInput( Environment.getExternalStorageDirectory().getAbsoluteFile().toString() + "/" + GlobalSettings.getAppRootFolderName() + "/" + "Users" + "/" + GlobalSettings.userName + "/" + "Evaluation" + "/" + GlobalSettings.featuresMinMaxLogFileName);
             InputStreamReader isr = new InputStreamReader ( fIn ) ;
             BufferedReader buffreader = new BufferedReader ( isr ) ;
+
             int i=0;
             double[] minMaxTrainingData=new double[GlobalSettings.numOfFeatures*2];
-            String readString = buffreader.readLine ( ) ;
+            String readString = buffreader.readLine();
+
+            System.out.println("GONNA LOOP THEM NOW");
             while ( readString != null  && i < GlobalSettings.numOfFeatures*2) {
                 minMaxTrainingData[i]=Double.valueOf(readString);
                 i++;
                 datax.append(readString);
+                System.out.println("READING LINE: " + readString);
                 readString = buffreader.readLine ( );
             }
 
             isr.close ( );
+            fIn.close();
+            buffreader.close();
 
             //only for two-class
             for(int j =0;j< GlobalSettings.numOfFeatures;j++){
@@ -801,6 +810,7 @@ public class LinkDetectedHandler_New extends Handler {
 
         } catch ( IOException ioe ) {
             ioe.printStackTrace ( ) ;
+            System.out.println("Failed to load MINMAX file...");
         }
     }
 
