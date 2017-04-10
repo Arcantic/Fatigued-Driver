@@ -6,6 +6,9 @@
     <color name="colorAccentDark">#FF3D00</color> <!--A400-->
     <color name="colorBackground">#fffafafa</color>
 
+    <color name="colorGreen">#2cac46</color>
+    <color name="colorDrkRed">#8f2328</color>
+
     <color name="colorBlackPrimary">#de000000</color>
     <color name="colorBlackSecondary">#8a000000</color>
     <color name="colorWhitePrimary">#FFffffff</color>

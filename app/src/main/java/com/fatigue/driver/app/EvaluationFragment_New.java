@@ -83,6 +83,7 @@ public class EvaluationFragment_New extends Fragment {
             }
         }.start();
 
+        Toast.makeText(getActivity().getApplicationContext(), "Using " + GlobalSettings.svmModelFileName, Toast.LENGTH_SHORT).show();
         initView(view);
 
         //initMindwaveHelper();
@@ -109,6 +110,7 @@ public class EvaluationFragment_New extends Fragment {
                 if (linkDH != null) {
                     if (!isTrialInProgress && linkDH.isConnected) {
                         tv_timer.setText("0.0");
+                        roundUpCount();
 
                         linkDH.fireEvalInitializer();
                         tRunnable = new EvaluationFragment_New.TimerRunnable();
@@ -128,6 +130,17 @@ public class EvaluationFragment_New extends Fragment {
         });
     }
 
+    //Round up the count to an even number
+    public void roundUpCount(){
+        String text = edit_count.getText().toString();
+        int c = Integer.parseInt(text);
+        if(c%2!=0) {
+            c += 1;
+            edit_count.setText(String.valueOf(c));
+        }
+        GlobalSettings.setTrialCount(c);
+    }
+
 
     public void cancelTest(){
         hand.removeCallbacks(tRunnable);
@@ -136,6 +149,8 @@ public class EvaluationFragment_New extends Fragment {
 
         isTrialInProgress = false;
         isStartOfTransitionPeriod = false;
+        command_count_fatigued = 0;
+        command_count_alert = 0;
 
         btn_startPauseResume.setText("Start");
         tv_instruction.setText("Evaluation Not Running");
@@ -166,6 +181,8 @@ public class EvaluationFragment_New extends Fragment {
         Toast.makeText(getActivity().getApplicationContext(), "Evaluation Complete!", Toast.LENGTH_LONG).show();
 
         launchResultsScreen();
+        command_count_fatigued = 0;
+        command_count_alert = 0;
     }
 
 
@@ -173,8 +190,8 @@ public class EvaluationFragment_New extends Fragment {
     public void launchResultsScreen(){
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Evaluation Complete");
-        builder.setMessage("x " + "alert trials were performed."
-                + System.lineSeparator() + "y " + "fatigue trials were performed."
+        builder.setMessage(command_count_alert*GlobalSettings.alertTrialCollectionIntervalDuration + " alert trials were performed."
+                + System.lineSeparator() + command_count_fatigued*GlobalSettings.fatigueTrialCollectionIntervalDuration + " fatigue trials were performed."
                 + System.lineSeparator() + "Overall accuracy: " + Math.round(SVMEvaluator.accuracy  * 100.0) / 100.0 + "%");
         builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
@@ -336,8 +353,12 @@ public class EvaluationFragment_New extends Fragment {
                 if (isStartOfTransitionPeriod) {
                     //Stop evaluation during transition period
                     linkDH.stopEvalTesting();
-                    //Generate the next command (random)
-                    generateNextCommand();
+
+                    if (counter+1 <= GlobalSettings.calibrationNumOfTrialsToPerformAlertOrFatigue * 2) {
+                        //Generate the next command (random)
+                        generateNextCommand();
+                    }
+
                     if (counter < GlobalSettings.calibrationNumOfTrialsToPerformAlertOrFatigue * 2) {
                         tv_timer.setText((String.valueOf(formatter.format(GlobalSettings.alertDelayTimeBetweenTrialCollections))));
                         tv_instruction.setText(getNextCommandPrep());
@@ -374,12 +395,19 @@ public class EvaluationFragment_New extends Fragment {
 
     public boolean next_command;
     public boolean BOOLEAN_EYES_CLOSED = false, BOOLEAN_EYES_OPEN = true;
+    public int command_count_alert = 0, command_count_fatigued = 0;
     public void generateNextCommand(){
         int r = new Random().nextInt(2);
-        if(r==0)
+        if(r==0 && command_count_fatigued < GlobalSettings.calibrationNumOfTrialsToPerformAlertOrFatigue) {
             next_command = BOOLEAN_EYES_CLOSED;
-        else
+            command_count_fatigued++;
+        } else if(command_count_alert < GlobalSettings.calibrationNumOfTrialsToPerformAlertOrFatigue) {
             next_command = BOOLEAN_EYES_OPEN;
+            command_count_alert++;
+        } else {
+            next_command = BOOLEAN_EYES_CLOSED;
+            command_count_fatigued++;
+        }
     }
     public boolean getNextCommandBoolean(){
         return next_command;
