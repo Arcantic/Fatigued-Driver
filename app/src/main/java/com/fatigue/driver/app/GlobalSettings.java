@@ -14,8 +14,8 @@ public class GlobalSettings {
     public static int numOfPacketsToConsumePerTrial_Fatigue = 2;
     public static int alertTrialCollectionIntervalDuration = 5;
     public static int fatigueTrialCollectionIntervalDuration = 2;
-    //public static int alertDelayTimeBetweenTrialCollections = 1;
-    //public static int fatigueDelayTimeBetweenTrialCollections = 1;
+    public static int alertDelayTimeBetweenTrialCollections = 1;
+    public static int fatigueDelayTimeBetweenTrialCollections = 1;
     public static int timeToDelayBetweenTrialCollections_Alert = 1;
     public static int timeToDelayBetweenTrialCollections_Fatigue = 1;
     public static int calibrationNumOfTrialsToPerformTotal = 200; //TODO temp value
@@ -28,7 +28,7 @@ public class GlobalSettings {
     public static int numOfTrialsToPerformForTraining_Agnostic = 100;
     public static String svmTrainingDataLogFileName = "svm_train.txt"; //TEMP remove extension
     public static String svmModelFileName = "SVM_MODEL.txt"; //TEMP remove extension
-    public static String featuresMinMaxLogFileName = "MINMAX_OF_FEATURES.txt"; //TEMP remove extension
+    public static String featuresMinMaxLogFileName = "14.13_ER_4_4_MINMAX_OF_FEATURES.txt"; //TEMP remove extension
     public static String userName = "UNKNOWN";
     public static String appRootFolderName = "DriverFatigue";
     public static String appLogFileName = "DriverFatigueApp.log";
@@ -82,7 +82,7 @@ public class GlobalSettings {
                 = calibrationNumOfTrialsToPerformAlertOrFatigue = count/2;
     }
     public static void setTransitionDuration(int dur){
-        timeToDelayBetweenTrialCollections_Alert = timeToDelayBetweenTrialCollections_Fatigue = dur;
+        timeToDelayBetweenTrialCollections_Alert = timeToDelayBetweenTrialCollections_Fatigue = alertDelayTimeBetweenTrialCollections = fatigueDelayTimeBetweenTrialCollections = dur;
     }
     public static void setAlertDuration(int dur){
         alertTrialCollectionIntervalDuration = COLLECTION_INTERVAL_DURATION_ALERT_IN_SECONDS = NUMBER_OF_RAW_PACKETS_TO_CONSUME_FOR_EACH_TRIAL_ALERT = dur;

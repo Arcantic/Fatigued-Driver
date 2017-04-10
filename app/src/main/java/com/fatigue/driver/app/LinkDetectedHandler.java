@@ -167,7 +167,7 @@ public class LinkDetectedHandler extends Handler {
     private LinearLayout wave_layout;
     private DrawWaveView waveView;
 
-    public LinkDetectedHandler(Context context, MindwaveHelperFragment mwHelper) {
+    public LinkDetectedHandler(Context context) {
         this.context = context;
         rootView = ((Activity) context).getWindow().getDecorView().findViewById(android.R.id.content);
 
@@ -844,7 +844,7 @@ public class LinkDetectedHandler extends Handler {
         //TODO fix below
         initLoadMinMaxValues();
         evalFeatures = new double[magnitudeArray.length + 1];
-        svmEvaluator = new SVMEvaluator(this);
+        //svmEvaluator = new SVMEvaluator(this);
 
 
 
