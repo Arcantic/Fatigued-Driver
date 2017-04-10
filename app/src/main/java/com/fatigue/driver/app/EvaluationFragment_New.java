@@ -83,6 +83,7 @@ public class EvaluationFragment_New extends Fragment {
             }
         }.start();
 
+        Toast.makeText(getActivity().getApplicationContext(), "Using " + GlobalSettings.svmModelFileName, Toast.LENGTH_SHORT).show();
         initView(view);
 
         //initMindwaveHelper();
@@ -352,8 +353,12 @@ public class EvaluationFragment_New extends Fragment {
                 if (isStartOfTransitionPeriod) {
                     //Stop evaluation during transition period
                     linkDH.stopEvalTesting();
-                    //Generate the next command (random)
-                    generateNextCommand();
+
+                    if (counter+1 <= GlobalSettings.calibrationNumOfTrialsToPerformAlertOrFatigue * 2) {
+                        //Generate the next command (random)
+                        generateNextCommand();
+                    }
+
                     if (counter < GlobalSettings.calibrationNumOfTrialsToPerformAlertOrFatigue * 2) {
                         tv_timer.setText((String.valueOf(formatter.format(GlobalSettings.alertDelayTimeBetweenTrialCollections))));
                         tv_instruction.setText(getNextCommandPrep());
@@ -393,10 +398,10 @@ public class EvaluationFragment_New extends Fragment {
     public int command_count_alert = 0, command_count_fatigued = 0;
     public void generateNextCommand(){
         int r = new Random().nextInt(2);
-        if(r==0 && command_count_fatigued < GlobalSettings.calibrationNumOfTrialsToPerformAlertOrFatigue/2) {
+        if(r==0 && command_count_fatigued < GlobalSettings.calibrationNumOfTrialsToPerformAlertOrFatigue) {
             next_command = BOOLEAN_EYES_CLOSED;
             command_count_fatigued++;
-        } else if(command_count_alert < GlobalSettings.calibrationNumOfTrialsToPerformAlertOrFatigue/2) {
+        } else if(command_count_alert < GlobalSettings.calibrationNumOfTrialsToPerformAlertOrFatigue) {
             next_command = BOOLEAN_EYES_OPEN;
             command_count_alert++;
         } else {
