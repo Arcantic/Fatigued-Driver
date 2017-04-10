@@ -186,7 +186,7 @@ public class LinkDetectedHandler_New extends Handler {
 
         initLogCreate();
         // was before rawDataDoublesArray
-
+        initLoadMinMaxValues();
         initDrawWaveView();
     }
 
@@ -838,6 +838,11 @@ public class LinkDetectedHandler_New extends Handler {
         magnitude2DArraySingleTrialAlert = new double[(int)GlobalSettings.COLLECTION_INTERVAL_DURATION_ALERT_IN_SECONDS][GlobalSettings.samplingSizeInterval];
         magnitude2DArraySingleTrialFatigue = new double[(int)GlobalSettings.COLLECTION_INTERVAL_DURATION_FATIGUE_IN_SECONDS][GlobalSettings.samplingSizeInterval];
     }
+
+
+
+
+
 
 
     public void stopEvalTesting(){
